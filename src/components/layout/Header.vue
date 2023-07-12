@@ -1,12 +1,12 @@
 <template>
     <div>
-        <!-- 折叠图标按钮 -->
-        <el-icon @click="changeCollapseState" >
+        <!-- 折叠图标按钮,使用v-if/v-else控制显示图标组件 -->
+        <el-icon @click="changeCollapseState" v-if="!isCollapse">
             <IEpFold />
         </el-icon>
-        <!-- <el-icon>
-            <Expand />
-        </el-icon> -->
+        <el-icon v-else @click="changeCollapseState">
+            <IEpExpand />
+        </el-icon>
     </div>
 </template>
 
