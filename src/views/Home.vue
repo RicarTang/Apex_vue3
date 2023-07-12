@@ -18,14 +18,14 @@ import Menu from '@/components/layout/Menu.vue'
 </script>
 
 <style scoped>
-/* .common-layout {
-} */
+.common-layout {
+    height: 100%;
+}
 .el-container {
-    /* height: 100%; */
     padding: 0px;
     margin: 0px;
     height: 100%;
-    widows: 100%;
+    width: 100%;
 }
 
 .el-header,
