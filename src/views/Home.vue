@@ -1,11 +1,16 @@
 <template>
+    <!-- 首页布局容器 -->
     <div class="common-layout">
         <el-container>
-            <el-aside width="200px">
-                aside
+            <el-aside width="auto">
+                <!-- 菜单组件 -->
+                <Menu></Menu>
             </el-aside>
             <el-container>
-                <el-header>Header</el-header>
+                <el-header>
+                    <!-- header组件 -->
+                    <Header></Header>
+                </el-header>
                 <el-main>Main</el-main>
                 <el-footer>Footer</el-footer>
             </el-container>
@@ -15,12 +20,28 @@
 
 <script setup>
 import Menu from '@/components/layout/Menu.vue'
+import Header from '@/components/layout/Header.vue'
+import { ElMessage } from 'element-plus';
+const testButton = () => {
+    ElMessage({ showClose: true, type: 'info', message: "dianjile" })
+}
+
+onMounted(() => {
+    // 渲染玩显示消息通知
+    ElNotification({
+        title: '哈哈哈',
+        message: '这是一个简单的接口测试平台雏形',
+        duration: 0,
+    })
+
+}) 
 </script>
 
 <style scoped>
 .common-layout {
     height: 100%;
 }
+
 .el-container {
     padding: 0px;
     margin: 0px;
@@ -28,13 +49,13 @@ import Menu from '@/components/layout/Menu.vue'
     width: 100%;
 }
 
-.el-header,
+/* .el-header,
 .el-footer {
     background-color: #b3c0d1;
     color: #333;
     text-align: center;
     line-height: 60px;
-}
+} */
 
 .el-aside {
     background-color: #d3dce6;
