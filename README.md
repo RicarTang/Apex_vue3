@@ -1,4 +1,7 @@
 使用vue3构建测试平台前端实战
+后端地址参考（开发中）：https://github.com/RicarTang/Fastapi_tortoise
+## 开发状态
+- 开发中
 ## 技术栈
 - Vue3
 - element plus，使用自动导入插件
