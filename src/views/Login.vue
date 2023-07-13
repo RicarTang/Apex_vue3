@@ -18,6 +18,7 @@
 import { reactive } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
 //
 const ruleFormRef = ref(null)
 
@@ -56,13 +57,25 @@ const rules = {
 }
 // 登录
 const onSubmit = async () => {
-    try {
-        const res = await fetch.fetchLogin(form.inputValue)
-        console.log(res)
-        router.push('/')
-    } catch (error) {
-        console.log(error);
+    if (!ruleFormRef) {
+        return//判断formEl是否为空，为空
     }
+    ruleFormRef.value.validate(async (valid) => {
+        if (valid) { //如果校验成功 请求数据
+            try {
+                const res = await fetch.fetchLogin(form.inputValue)
+                ElMessage({
+                    message: '登录成功',
+                    type: 'success',
+                })
+                // 路由跳转
+                router.push('/')
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    })
+
 }
 </script>
 
@@ -80,7 +93,8 @@ const onSubmit = async () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 10px; /* 设置圆角的大小 */
+    border-radius: 10px;
+    /* 设置圆角的大小 */
 
 }
 </style>

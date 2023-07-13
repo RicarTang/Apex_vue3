@@ -1,19 +1,22 @@
 import axios from 'axios'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import NProgress from 'nprogress'
 import { ElMessage } from 'element-plus'
+import jwt_decode from 'jwt-decode'//解析token
+import { useAuthStore } from '@/stores/auth';
 
 // 设置请求头和请求路径
 axios.defaults.timeout = 10000 // 超时时间
 axios.defaults.baseURL = import.meta.env.VITE_API_HOST  //后端host
+
 
 // http request 拦截器
 axios.interceptors.request.use(
   (config) => {
     NProgress.start()
     config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    if (Cookies.get('access_token')) {
-      config.headers.Authorization = 'Bearer' + Cookies.get('access_token')
+    if (localStorage.token) {
+      config.headers.Authorization = 'Bearer' + localStorage.token
     }
     return config
   },
@@ -26,7 +29,18 @@ axios.interceptors.response.use(
   (response) => {
     NProgress.done()
     if (response.config.url === '/user/login') {
-      Cookies.set('access_token', response.data.result.access_token)
+      const token = response.data.result.access_token
+      // 解析token
+      const decode = jwt_decode(token);
+      console.log(decode)
+      //存储token解析的内容 以及修改登录的状态
+      const store = useAuthStore();
+      store.setAuth(!!decode) //由于decode是对象，所以对他取反再取反，双非就变成了布尔类型
+      store.setUser(decode)
+      // 存储token至cookies
+      // Cookies.set('access_token', token)
+      // 存储token至localStorage
+      localStorage.setItem('token',token)
       return Promise.resolve(response)
     }
     // if (response.data.code === 11000) {
@@ -52,14 +66,14 @@ axios.interceptors.response.use(
         break
       case 401:
         errMessage = '未授权，请重新登录'
-        ElMessage({
-          message: error.response.data.message,
-          type: 'warning',
-        })
-        Cookies.remove('access_token')
-        setTimeout(() => {
-          location.reload()
-        }, 3000)
+        // ElMessage({
+        //   message: error.response.data.message,
+        //   type: 'warning',
+        // })
+        // Cookies.remove('access_token')
+        // setTimeout(() => {
+        //   location.reload()
+        // }, 3000)
         break
       case 403:
         errMessage = '拒绝访问'
