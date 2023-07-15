@@ -3,6 +3,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { useAuthStore } from '@/stores/auth';
 import moment from 'moment';
+import { ElMessage } from 'element-plus';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,12 +42,15 @@ router.beforeEach(async (to, from, next) => {
       // env获取token的有效时间
       const tokenTime = import.meta.env.VITE_TOKEN_TIME
       // token过期时间
-      // const tokenExpires = dayjs(store.getUser.exp).add(dayjs.duration({'minute' : 60}))
       const tokenExpires = moment.unix(store.getUser.exp).add(tokenTime, 'minutes')
       // 判断token是否过期
       if (moment(moment().valueOf()).isBefore(tokenExpires)) {
         // 已登录，继续导航到目标路由
         next();
+      }else{
+        // 登陆token过期，跳转login
+        next('/login')
+        ElMessage.warning('登陆过期，请重新登陆！')
       }
     } else {
       // 未登录，跳转到登录页

@@ -8,7 +8,8 @@
         <HelpFilled />
       </el-icon>
       <template #title>
-        <div class="jsoText">Jsocc</div>
+        <!-- <div >简单测试平台</div> -->
+        <h2>简单测试平台</h2>
       </template>
     </el-menu-item>
     <el-menu-item index="1">
