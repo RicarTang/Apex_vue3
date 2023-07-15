@@ -16,7 +16,7 @@ axios.interceptors.request.use(
     NProgress.start()
     config.headers['Content-Type'] = 'application/json;charset=UTF-8'
     if (localStorage.token) {
-      config.headers.Authorization = 'Bearer' + localStorage.token
+      config.headers.Authorization = 'Bearer ' + localStorage.token
     }
     return config
   },

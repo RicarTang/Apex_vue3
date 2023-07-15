@@ -1,13 +1,11 @@
 <template>
-    <div>
         <!-- 折叠图标按钮,使用v-if/v-else控制显示图标组件 -->
-        <el-icon @click="changeCollapseState" v-if="!isCollapse">
+        <el-icon @click="changeCollapseState" v-if="!isCollapse" :size="size">
             <IEpFold />
         </el-icon>
-        <el-icon v-else @click="changeCollapseState">
+        <el-icon v-else @click="changeCollapseState" :size="size">
             <IEpExpand />
         </el-icon>
-    </div>
 </template>
 
 <script setup>
@@ -15,6 +13,8 @@
 import emitter from '@/utils/eventBus'
 // 图标按钮状态
 const isCollapse = ref(false)
+// 图标大小
+const size = 30
 // 改变图标按钮状态函数，控制菜单折叠
 const changeCollapseState = () => {	
     isCollapse.value = !isCollapse.value	//首先把menuL取反
@@ -25,4 +25,5 @@ const changeCollapseState = () => {
 
 </script>
 
-<style></style>
+<style>
+</style>

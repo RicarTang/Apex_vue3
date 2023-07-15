@@ -8,23 +8,40 @@ import { ElMessage } from 'element-plus';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // 访问路由/时重定向至/home
+    {
+      path: '/',
+      redirect: '/home'
+    },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/Login.vue'),
+      component: () => import('@/views/Login.vue'),
       meta: {
         title: 'Login', // 设置页面标题
       },
     },
     {
-      path: '/',
+      path: '/home',
       name: 'home',
-      component: () => import('../views/Home.vue'),
+      component: () => import('@/views/Home.vue'),
       meta: {
-        title: 'Home Page', // 设置页面标题
+        title: '主页', // 设置页面标题
         requiresAuth: true,// 访问路由需要认证
       },
+      children: [
+        {
+          path: 'users',
+          name: 'users',
+          component: () => import('@/components/table/UsersTable.vue'),
+          meta: {
+            requiresAuth: true,// 访问路由需要认证
+          },
+        }
+      ]
     },
+
+
   ]
 })
 
@@ -39,15 +56,11 @@ router.beforeEach(async (to, from, next) => {
     const store = useAuthStore() // 局部使用store
     // 判断有无存储token
     if (localStorage.token) {
-      // env获取token的有效时间
-      const tokenTime = import.meta.env.VITE_TOKEN_TIME
-      // token过期时间
-      const tokenExpires = moment.unix(store.getUser.exp).add(tokenTime, 'minutes')
       // 判断token是否过期
-      if (moment(moment().valueOf()).isBefore(tokenExpires)) {
+      if (moment(moment().valueOf()).isBefore(moment.unix(store.getUser.exp))) {
         // 已登录，继续导航到目标路由
         next();
-      }else{
+      } else {
         // 登陆token过期，跳转login
         next('/login')
         ElMessage.warning('登陆过期，请重新登陆！')
@@ -55,6 +68,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 未登录，跳转到登录页
       next('/login');
+      ElMessage.warning('未登录，请先登录！')
     }
   } else {
     // 路由不需要进行身份验证，继续导航到目标路由
