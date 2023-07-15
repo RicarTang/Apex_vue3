@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount, onMounted, reactive, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 
@@ -26,15 +26,22 @@ const tableData = ref([])
 
 // 拉取所有用户用户数据
 const fetchUsersData = async () => {
-  const users = await fetch.fetchUsers()
+  const users = await fetch.fetchUsers({
+    pagesize:50,
+    page:1
+  })
   // 赋值
   tableData.value = users.data.result
 }
-
-onMounted(async () => {
+onBeforeMount(async () => {
   // 页面渲染后展示数据
   await fetchUsersData()
 })
+
+// onMounted(async () => {
+//   // 页面渲染后展示数据
+//   await fetchUsersData()
+// })
 </script>
 
 <style>
