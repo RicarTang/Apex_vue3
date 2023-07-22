@@ -36,7 +36,7 @@ onMounted(() => {
   ElNotification({
     title: '哈哈哈',
     message: '这是一个简单的接口测试平台雏形',
-    duration: 0
+    duration: 5000
   })
 })
 </script>

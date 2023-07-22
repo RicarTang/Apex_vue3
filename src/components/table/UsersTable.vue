@@ -27,11 +27,11 @@ const tableData = ref([])
 // 拉取所有用户用户数据
 const fetchUsersData = async () => {
   const users = await fetch.fetchUsers({
-    pagesize:50,
+    limit:50,
     page:1
   })
   // 赋值
-  tableData.value = users.data.result
+  tableData.value = users.data.result.data
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据
