@@ -17,7 +17,7 @@
           <el-button type="primary" @click="goToUser">
             <router-link to="/home/users">所有用户</router-link>
           </el-button>
-          
+
           <router-view>
 
           </router-view>
@@ -32,17 +32,25 @@
 import Menu from '@/components/layout/Menu.vue'
 import Header from '@/components/layout/Header.vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router';
 const testButton = () => {
   ElMessage({ showClose: true, type: 'info', message: 'dianjile' })
 }
 
+const router = useRouter()
+
+// 路由跳转
+const navigateToUser = () =>{
+  router.push("/home/users")
+}
 onMounted(() => {
   // 渲染玩显示消息通知
   ElNotification({
     title: '哈哈哈',
     message: '这是一个简单的接口测试平台雏形',
     duration: 5000
-  })
+  });
+  navigateToUser()
 });
 
 </script>
