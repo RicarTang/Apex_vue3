@@ -14,8 +14,13 @@
         <el-main>
           <!-- 渲染子路由 -->
           <!-- router-link相当于a标签，点击跳转路由 -->
-          <!-- <router-link to="/home/users"></router-link> -->
-        <router-view></router-view>
+          <el-button type="primary" @click="goToUser">
+            <router-link to="/home/users">所有用户</router-link>
+          </el-button>
+          
+          <router-view>
+
+          </router-view>
         </el-main>
         <el-footer>Footer</el-footer>
       </el-container>
@@ -38,7 +43,8 @@ onMounted(() => {
     message: '这是一个简单的接口测试平台雏形',
     duration: 5000
   })
-})
+});
+
 </script>
 
 <style scoped>
