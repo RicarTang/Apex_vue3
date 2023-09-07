@@ -17,7 +17,15 @@
           <!-- <el-button type="primary" @click="goToUser">
             <router-link to="/home/users">所有用户</router-link>
           </el-button> -->
-
+          <!-- 面包屑 -->
+          <div class="crumb">
+            <el-breadcrumb :separator-icon="ArrowRight">
+            <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
+            <el-breadcrumb-item>promotion management</el-breadcrumb-item>
+            <el-breadcrumb-item>promotion list</el-breadcrumb-item>
+            <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+          </el-breadcrumb>
+          </div>
           <router-view></router-view>
         </el-main>
         <el-footer>Footer</el-footer>
@@ -31,6 +39,7 @@ import Menu from '@/components/layout/Menu.vue'
 import Header from '@/components/layout/Header.vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
+import { ArrowRight } from '@element-plus/icons-vue'
 const testButton = () => {
   ElMessage({ showClose: true, type: 'info', message: 'dianjile' })
 }
@@ -53,9 +62,10 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .common-layout {
   height: 100%;
+  
 }
 
 .el-container {
@@ -86,7 +96,17 @@ onMounted(() => {
   color: #333;
   text-align: center;
   line-height: 160px;
+  .crumb{
+    display: flex;
+    height: 3rem;
+    margin-bottom: 20px;
+    padding-left: 12px;
+    align-items: center; /* 垂直居中 */
+    background-color: #ffffff;
+    border-radius: 4px;
+  }
 }
+
 
 /* .el-menu {
     background-color: #d3dce6;

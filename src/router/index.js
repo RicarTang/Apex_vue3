@@ -10,11 +10,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/workspace'
+      redirect: { name: 'workspaceRoute' }
     },
     {
       path: '/login',
-      name: 'login',
+      name: 'loginRoute',
       component: () => import('@/views/Login.vue'),
       meta: {
         title: '登录', // 设置页面标题
@@ -22,7 +22,7 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'home',
+      name: 'homeRoute',
       component: () => import('@/views/Home.vue'),
       meta: {
         title: '主页', // 设置页面标题
@@ -31,7 +31,7 @@ const router = createRouter({
       children: [
         {
           path: 'users',
-          name: 'users',
+          name: 'userRoute',
           component: () => import('@/components/table/Users.vue'),
           meta: {
             title: '用户',
@@ -40,8 +40,8 @@ const router = createRouter({
         },
         {
           path: 'workspace',
-          name: 'workspace',
-          component: ()=> import('@/components/dashborad/Workspace.vue'),
+          name: 'workspaceRoute',
+          component: () => import('@/components/dashborad/Workspace.vue'),
           meta: {
             title: '工作台', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
@@ -49,7 +49,7 @@ const router = createRouter({
         }
       ]
     },
-    
+
 
 
   ]
@@ -73,12 +73,12 @@ router.beforeEach(async (to, from, next) => {
         next();
       } else {
         // 登陆token过期，跳转login
-        next('/login')
+        next({ name: 'loginRoute' })
         ElMessage.warning('登陆过期，请重新登陆！')
       }
     } else {
       // 未登录，跳转到登录页
-      next('/login');
+      next({ name: 'loginRoute' });
       ElMessage.warning('未登录，请先登录！')
     }
   } else {

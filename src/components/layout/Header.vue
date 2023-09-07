@@ -1,4 +1,5 @@
 <template>
+    <div class="collapse">
         <!-- 折叠图标按钮,使用v-if/v-else控制显示图标组件 -->
         <el-icon @click="changeCollapseState" v-if="!isCollapse" :size="size">
             <IEpFold />
@@ -6,6 +7,10 @@
         <el-icon v-else @click="changeCollapseState" :size="size">
             <IEpExpand />
         </el-icon>
+    </div>
+    <el-col :span="24" class="avatar-col">
+        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+    </el-col>
 </template>
 
 <script setup>
@@ -16,7 +21,7 @@ const isCollapse = ref(false)
 // 图标大小
 const size = 30
 // 改变图标按钮状态函数，控制菜单折叠
-const changeCollapseState = () => {	
+const changeCollapseState = () => {
     isCollapse.value = !isCollapse.value	//首先把menuL取反
     // isCollapse.value ? head_icon.value = 'Expand' : head_icon.value = 'Fold'	//这里是改变按钮上面的图标式样
     emitter.emit("isCollapse", isCollapse.value)	//通过mitt的emit把menuL传递出去，sayInfo传参名称
@@ -25,5 +30,14 @@ const changeCollapseState = () => {
 
 </script>
 
-<style>
+<style lang="scss" scoped>
+.avatar-row {
+    text-align: right;
+    /* 将内容右对齐 */
+}
+
+.avatar-col {
+    display: inline-block;
+    /* 使用内联块显示 */
+}
 </style>
