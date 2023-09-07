@@ -69,7 +69,7 @@ const onSubmit = async () => {
                     type: 'success',
                 })
                 // 路由跳转
-                router.push('/')
+                router.replace('/')
             } catch (error) {
                 console.log(error);
             }

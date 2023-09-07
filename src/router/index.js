@@ -8,21 +8,20 @@ import { ElMessage } from 'element-plus';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // 访问路由/时重定向至/home
     {
       path: '/',
-      redirect: '/home'
+      redirect: '/workspace'
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
       meta: {
-        title: 'Login', // 设置页面标题
+        title: '登录', // 设置页面标题
       },
     },
     {
-      path: '/home',
+      path: '/',
       name: 'home',
       component: () => import('@/views/Home.vue'),
       meta: {
@@ -33,13 +32,24 @@ const router = createRouter({
         {
           path: 'users',
           name: 'users',
-          component: () => import('@/components/table/UsersTable.vue'),
+          component: () => import('@/components/table/Users.vue'),
           meta: {
+            title: '用户',
+            requiresAuth: true,// 访问路由需要认证
+          },
+        },
+        {
+          path: 'workspace',
+          name: 'workspace',
+          component: ()=> import('@/components/dashborad/Workspace.vue'),
+          meta: {
+            title: '工作台', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
           },
         }
       ]
     },
+    
 
 
   ]
@@ -47,6 +57,7 @@ const router = createRouter({
 
 // 添加导航守卫
 router.beforeEach(async (to, from, next) => {
+  console.log(`导航至${to.path}`)
   // 加载进度条
   NProgress.start()
   // 修改标题

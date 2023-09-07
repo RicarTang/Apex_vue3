@@ -14,13 +14,11 @@
         <el-main>
           <!-- 渲染子路由 -->
           <!-- router-link相当于a标签，点击跳转路由 -->
-          <el-button type="primary" @click="goToUser">
+          <!-- <el-button type="primary" @click="goToUser">
             <router-link to="/home/users">所有用户</router-link>
-          </el-button>
+          </el-button> -->
 
-          <router-view>
-
-          </router-view>
+          <router-view></router-view>
         </el-main>
         <el-footer>Footer</el-footer>
       </el-container>
@@ -40,8 +38,8 @@ const testButton = () => {
 const router = useRouter()
 
 // 路由跳转
-const navigateToUser = () =>{
-  router.push("/home/users")
+const navigateToUser = () => {
+  router.push("/users")
 }
 onMounted(() => {
   // 渲染玩显示消息通知
@@ -50,7 +48,7 @@ onMounted(() => {
     message: '这是一个简单的接口测试平台雏形',
     duration: 5000
   });
-  navigateToUser()
+  // navigateToUser()
 });
 
 </script>

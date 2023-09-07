@@ -13,6 +13,8 @@ NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 const app = createApp(App)
 
+// 关闭控制台开发者警告
+// app.config.productionTip = false
 app.use(createPinia())
 app.use(router)
 app.use(mitt)
