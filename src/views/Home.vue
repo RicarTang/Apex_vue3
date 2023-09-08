@@ -13,20 +13,10 @@
         </el-header>
         <el-main>
           <!-- 渲染子路由 -->
-          <!-- router-link相当于a标签，点击跳转路由 -->
-          <!-- <el-button type="primary" @click="goToUser">
-            <router-link to="/home/users">所有用户</router-link>
-          </el-button> -->
-          <!-- 面包屑 -->
-          <div class="crumb">
-            <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-            <el-breadcrumb-item>promotion management</el-breadcrumb-item>
-            <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-            <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
-          </el-breadcrumb>
-          </div>
+          <BreadcurmbComponent></BreadcurmbComponent>
+          <el-empty v-if="showEmpty" description="description" />
           <router-view></router-view>
+
         </el-main>
         <el-footer>Footer</el-footer>
       </el-container>
@@ -40,24 +30,15 @@ import Header from '@/components/layout/Header.vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { ArrowRight } from '@element-plus/icons-vue'
+import BreadcurmbComponent from '@/components/breadcrumb/Breadcurmb.vue';
 const testButton = () => {
   ElMessage({ showClose: true, type: 'info', message: 'dianjile' })
 }
 
 const router = useRouter()
 
-// 路由跳转
-const navigateToUser = () => {
-  router.push("/users")
-}
 onMounted(() => {
-  // 渲染玩显示消息通知
-  ElNotification({
-    title: '哈哈哈',
-    message: '这是一个简单的接口测试平台雏形',
-    duration: 5000
-  });
-  // navigateToUser()
+
 });
 
 </script>
@@ -65,7 +46,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .common-layout {
   height: 100%;
-  
+
 }
 
 .el-container {
@@ -78,6 +59,7 @@ onMounted(() => {
 .el-header,
 .el-footer {
   display: flex;
+  width: 100%;
   /* 弹性布局align-items属性设置垂直居中对齐 */
   align-items: center;
   background-color: #b3c0d1;
@@ -96,15 +78,8 @@ onMounted(() => {
   color: #333;
   text-align: center;
   line-height: 160px;
-  .crumb{
-    display: flex;
-    height: 3rem;
-    margin-bottom: 20px;
-    padding-left: 12px;
-    align-items: center; /* 垂直居中 */
-    background-color: #ffffff;
-    border-radius: 4px;
-  }
+
+
 }
 
 

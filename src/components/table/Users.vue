@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData">
+  <el-table :data="tableData" v-loading="loading">
     <el-table-column prop="id" label="id" width="100" />
     <el-table-column prop="created_at" label="创建时间" width="200" />
     <el-table-column prop="update_at" label="更新时间" width="200" />
@@ -23,29 +23,35 @@ import { ElMessage } from 'element-plus'
 
 // tableDate,供el-table数据
 const tableData = ref([])
+const loading = ref(false)
 
 // 拉取所有用户用户数据
 const fetchUsersData = async () => {
-  const users = await fetch.fetchUsers({
-    limit:50,
-    page:1
-  })
-  // 赋值
-  tableData.value = users.data.result.data
+  loading.value = true;
+  try {
+    const users = await fetch.fetchUsers({
+      limit: 20,
+      page: 1
+    })
+    // 赋值
+    tableData.value = users.data.result.data
+  } catch (error) {
+    console.log("加载失败")
+  } finally {
+    loading.value = false;
+  }
+
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据
   await fetchUsersData()
 })
 
-// onMounted(async () => {
-//   // 页面渲染后展示数据
-//   await fetchUsersData()
-// })
+
 </script>
 
 <style>
-.el-table{
+.el-table {
   width: 100%;
   height: 100%;
 }

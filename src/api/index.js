@@ -9,9 +9,9 @@ export default {
     async fetchLogin(data) {
         // return await axios.post('/user/login', data)
         return await axios({
-            method:'post',
-            url:'/user/login',
-            data:data
+            method: 'post',
+            url: '/user/login',
+            data: data
         })
     },
     /**
@@ -19,12 +19,22 @@ export default {
      * @param {*} params 请求参数
      * @returns 
      */
-    async fetchUsers(params){
+    async fetchUsers(params) {
         return await axios({
-            method:'get',
-            url:'/user/users',
-            params:params
+            method: 'get',
+            url: '/user/users',
+            params: params
         })
-    }
+    },
+    /**
+     * 退出登录
+     */
+    async logout() {
+        await axios({
+            method: 'post',
+            url: '/user/logout'
+        });
+    },
+
 
 }

@@ -15,7 +15,7 @@
 </template>
   
 <script setup>
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -77,6 +77,16 @@ const onSubmit = async () => {
     })
 
 }
+// mount
+onMounted(() => {
+    // 渲染玩显示消息通知
+    ElNotification({
+        title: '欢迎登录！',
+        message: '管理员账号：admin;密码：123456',
+        duration: 5000
+    });
+}
+)
 </script>
 
 <style scoped>

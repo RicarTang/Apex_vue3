@@ -37,11 +37,8 @@ axios.interceptors.response.use(
       const store = useAuthStore();
       store.setAuth(!!decode) //由于decode是对象，所以对他取反再取反，双非就变成了布尔类型
       store.setUser(decode)
-      // 存储token至cookies
-      // Cookies.set('access_token', token)
       // 存储token至localStorage
-      localStorage.setItem('token',token)
-      return Promise.resolve(response)
+      localStorage.setItem('token', token)
     }
     // if (response.data.code === 11000) {
     //   Cookies.set('access_token', response.data.message, { expires: 1 / 12 })
@@ -66,14 +63,6 @@ axios.interceptors.response.use(
         break
       case 401:
         errMessage = '未授权，请重新登录'
-        // ElMessage({
-        //   message: error.response.data.message,
-        //   type: 'warning',
-        // })
-        // Cookies.remove('access_token')
-        // setTimeout(() => {
-        //   location.reload()
-        // }, 3000)
         break
       case 403:
         errMessage = '拒绝访问'
