@@ -1,16 +1,18 @@
 <template>
     <div class="login">
-        <el-form ref="ruleFormRef" :model="form.inputValue" label-width="120px" :rules="rules">
-            <el-form-item label="Username:" prop="username">
-                <el-input v-model="form.inputValue.username" />
-            </el-form-item>
-            <el-form-item label="Password:" prop="password">
-                <el-input v-model="form.inputValue.password" />
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="onSubmit">登录</el-button>
-            </el-form-item>
-        </el-form>
+        <div class="login-form">
+            <el-form ref="ruleFormRef" :model="form.inputValue" label-width="120px" :rules="rules">
+                <el-form-item label="Username:" prop="username">
+                    <el-input v-model="form.inputValue.username" />
+                </el-form-item>
+                <el-form-item label="Password:" prop="password">
+                    <el-input v-model="form.inputValue.password" />
+                </el-form-item>
+                <el-form-item class="submit">
+                    <el-button round type="primary" @click="onSubmit">登录</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
     </div>
 </template>
   
@@ -89,22 +91,48 @@ onMounted(() => {
 )
 </script>
 
-<style scoped>
+<style lang="scss">
 .login {
-    display: flex;
-    /* 表单内容居中 */
-    justify-content: center;
-    align-items: center;
-    width: 28rem;
-    height: 20rem;
-    background-color: bisque;
-    /* 居中表单盒子 */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 10px;
-    /* 设置圆角的大小 */
+    height: 100%;
+    width: 100%;
+    background-image: url("/public/assets/background/background-login.jpg");
+    background-position: 75% 35%;
+
+    .login-form {
+        display: flex;
+        /* 表单内容居中 */
+        justify-content: center;
+        align-items: center;
+        width: 28rem;
+        height: 20rem;
+        background-color: #227c9c;
+        /* 居中表单盒子 */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(50%, -50%);
+        /* 设置圆角的大小 */
+        border-radius: 10px;
+
+        .el-form-item__label {
+
+            color: #fff;
+
+        }
+
+        .submit {
+            .el-button {
+                width: 9rem;
+                margin: 2.5rem 0 0 0;
+
+            }
+            .el-form-item__content{
+                margin-left: 100px !important;
+            }
+        }
+
+
+    }
 
 }
 </style>
