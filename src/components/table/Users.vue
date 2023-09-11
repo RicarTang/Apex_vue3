@@ -14,12 +14,14 @@
       </template>
     </el-table-column>
   </el-table>
-  <Pagination page="1" size="20" layout="total, prev, pager, next, jumper" total="500" @pagChange="fetchUsersData" />
+  <el-pagination background layout="prev, pager, next ,total,sizes" :total="total" @current-change="handleCurrentChange"
+      @size-change="handleSizeChange" />
+  <!-- <Pagination page="1" size="20" layout="total, prev, pager, next, jumper" total="500" @pagChange="fetchUsersData" /> -->
 </template>
 
 <script setup>
 import { onBeforeMount, onMounted, reactive, ref } from 'vue'
-import Pagination from '@/components/pagination/Pagination.vue'
+// import Pagination from '@/components/pagination/Pagination.vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 
@@ -27,16 +29,31 @@ import { ElMessage } from 'element-plus'
 const tableData = ref([])
 const loading = ref(false)
 
+/**翻页相关 */
+const state = reactive({
+  page: 1,
+  limit: 10
+})
+const total = ref(0)
+//改变page,调用接口
+const handleCurrentChange = async (val) => {
+  state.page = val;
+  await fetchUsersData(state)
+};
+//改变limit,调用接口
+const handleSizeChange = async (val) => {
+  state.limit = val;
+  await fetchUsersData(state)
+};
+
 // 拉取所有用户用户数据
-const fetchUsersData = async () => {
+const fetchUsersData = async (params) => {
   loading.value = true;
   try {
-    const users = await fetch.fetchUsers({
-      limit: 20,
-      page: 1
-    })
+    const users = await fetch.fetchUsers(params)
     // 赋值
     tableData.value = users.data.result.data
+    total.value = users.data.result.total
   } catch (error) {
     console.log("加载失败")
   } finally {
@@ -46,7 +63,7 @@ const fetchUsersData = async () => {
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据
-  await fetchUsersData()
+  await fetchUsersData(state)
 })
 
 
@@ -55,6 +72,10 @@ onBeforeMount(async () => {
 <style>
 .el-table {
   width: 100%;
-  height: 100%;
+  height: 80%;
+}
+.el-pagination{
+  height: 20%;
+  justify-content:center;
 }
 </style>

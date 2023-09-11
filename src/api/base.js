@@ -1,15 +1,15 @@
 import axios from 'axios'
-// import Cookies from 'js-cookie'
 import NProgress from 'nprogress'
 import { ElMessage } from 'element-plus'
 import jwt_decode from 'jwt-decode'//解析token
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 // 设置请求头和请求路径
 axios.defaults.timeout = 10000 // 超时时间
 axios.defaults.baseURL = import.meta.env.VITE_API_HOST  //后端host
 
-
+const router = useRouter()
 // http request 拦截器
 axios.interceptors.request.use(
   (config) => {
@@ -101,6 +101,9 @@ axios.interceptors.response.use(
       message: errMessage,
       type: 'warning',
     })
+    if(error.response.status === 401){
+      router.replace('/login')
+    }
     return Promise.reject(error.response) // 返回接口返回的错误信息
   }
 )
