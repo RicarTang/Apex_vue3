@@ -12,11 +12,13 @@
           <Header></Header>
         </el-header>
         <el-main>
-          <!-- 渲染子路由 -->
+          <!-- 面包屑 -->
           <BreadcurmbComponent></BreadcurmbComponent>
           <el-empty v-if="showEmpty" description="description" />
-          <router-view></router-view>
-
+          <!-- 渲染子路由 -->
+          <div class="main">
+            <router-view></router-view>
+          </div>
         </el-main>
         <el-footer>Footer</el-footer>
       </el-container>
@@ -31,9 +33,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { ArrowRight } from '@element-plus/icons-vue'
 import BreadcurmbComponent from '@/components/breadcrumb/Breadcurmb.vue';
-const testButton = () => {
-  ElMessage({ showClose: true, type: 'info', message: 'dianjile' })
-}
+
 
 const router = useRouter()
 
@@ -78,7 +78,9 @@ onMounted(() => {
   color: #333;
   text-align: center;
   line-height: 160px;
-
+  .main{
+    height: 45rem;
+  }
 
 }
 

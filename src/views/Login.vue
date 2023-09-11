@@ -93,6 +93,7 @@ onMounted(() => {
 
 <style lang="scss">
 .login {
+    /**设置登录页背景 */
     height: 100%;
     width: 100%;
     background-image: url("/public/assets/background/background-login.jpg");
@@ -113,26 +114,19 @@ onMounted(() => {
         transform: translate(50%, -50%);
         /* 设置圆角的大小 */
         border-radius: 10px;
-
         .el-form-item__label {
-
             color: #fff;
-
         }
-
         .submit {
+            /**调整按钮位置 */
             .el-button {
                 width: 9rem;
                 margin: 2.5rem 0 0 0;
-
             }
             .el-form-item__content{
                 margin-left: 100px !important;
             }
         }
-
-
     }
-
 }
 </style>

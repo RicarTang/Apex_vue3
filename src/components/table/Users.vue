@@ -14,10 +14,12 @@
       </template>
     </el-table-column>
   </el-table>
+  <Pagination page="1" size="20" layout="total, prev, pager, next, jumper" total="500" @pagChange="fetchUsersData" />
 </template>
 
 <script setup>
 import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import Pagination from '@/components/pagination/Pagination.vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 
