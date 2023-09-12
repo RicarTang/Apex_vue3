@@ -35,6 +35,28 @@ export default {
             url: '/user/logout'
         });
     },
+    /**
+     * 拉取所有测试用例
+     * @param {*} params 请求参数
+     */
+    async fetchTestcases(params) {
+        return await axios({
+            method: 'get',
+            url: '/testcase/getAll',
+            params: params
+        })
+    },
+    /**
+     * 拉取所有测试套件
+     * @param {*} params 请求参数
+     */
+    async fetchTestsuites(params) {
+        return await axios({
+            method: 'get',
+            url: '/testsuite/getAll',
+            params: params
+        })
+    },
 
 
 }

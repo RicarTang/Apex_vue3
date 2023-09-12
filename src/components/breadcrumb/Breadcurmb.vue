@@ -20,8 +20,8 @@
     height: 3rem;
     margin-bottom: 20px;
     padding-left: 12px;
-    align-items: center;
     /* 垂直居中 */
+    align-items: center;
     background-color: #ffffff;
     border-radius: 4px;
 }

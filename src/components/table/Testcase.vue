@@ -1,52 +1,88 @@
 <template>
-  <el-table :data="tableData">
-    <el-table-column prop="id" label="id" width="100" />
-    <el-table-column prop="created_at" label="创建时间" width="200" />
-    <el-table-column prop="update_at" label="更新时间" width="200" />
-    <el-table-column prop="username" label="用户名" width="100" />
-    <el-table-column prop="descriptions" label="简介" width="300" />
-    <el-table-column prop="is_active" label="是否活动用户" width="200" />
-    <el-table-column prop="is_super" label="是否超级管理员" width="200" />
-    <el-table-column fixed="right" label="操作" width="120">
-      <template #default>
-        <el-button link type="primary" size="small" @click="handleClick">Detail</el-button>
-        <el-button link type="primary" size="small">Edit</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div>
+    <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
+      :loading="loading" :selected="selected">
+    </CommonTable>
+  </div>
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
+import CommonTable from '@/components/table/CommonTable.vue'
 
-// tableDate,供el-table数据
+// 默认请求参数
+const state = ref({ page: 1, limit: 10 })
+// 表格数据
 const tableData = ref([])
+// 数据total
+const total = ref(0)
+// loading状态
+const loading = ref(false)
+// 表格多选框状态
+const selected = ref(false)
 
-// 拉取所有用户用户数据
-const fetchUsersData = async () => {
-  const users = await fetch.fetchUsers({
-    limit:50,
-    page:1
-  })
-  // 赋值
-  tableData.value = users.data.result.data
+// 表头
+const tableController = [
+  { label: 'id', prop: 'id' },
+  { label: '创建时间', prop: 'created_at' },
+  { label: '更新时间', prop: 'update_at' },
+  { label: '用例编号', prop: 'case_no' },
+  { label: '用例名称/标题', prop: 'case_title' },
+  { label: '用例说明', prop: 'case_description' },
+  { label: '用例模块', prop: 'case_module' },
+  { label: '用例子模块', prop: 'case_sub_module' },
+  { label: '是否执行', prop: 'case_is_execute' },
+  { label: '接口地址path', prop: 'api_path' },
+  { label: 'api请求方法', prop: 'api_method' },
+  { label: '请求头', prop: 'request_headers' },
+  { label: '请求参数类型', prop: 'request_param_type' },
+  { label: '请求参数', prop: 'request_param' },
+  { label: '预期状态码', prop: 'expect_code' },
+  { label: '预期结果', prop: 'expect_result' },
+  { label: '预期返回数据', prop: 'expect_data' },
+  { label: '是否保存请求体到redis', prop: 'request_to_redis' },
+  { label: '是否保存响应体到redis', prop: 'response_to_redis' },
+  { label: '用例编写者', prop: 'case_editor' },
+  { label: '备注', prop: 'remark' },
+  { type: 'template', key: '操作' },
+]
+
+/**接收emit传过来的page参数 */
+async function pagerState(params) {
+  state.value = params
+  await fetchTestcasesData(params)
+}
+
+/**
+ * 拉取所有测试拥挤
+ * @param {*} params page limit对象
+ */
+async function fetchTestcasesData(params) {
+  loading.value = true;
+  try {
+    const testcases = await fetch.fetchTestcases(params)
+    // 赋值
+    tableData.value = testcases.data.result.data
+    total.value = testcases.data.result.total
+  } catch (error) {
+    console.log("加载失败")
+    ElMessage({
+      message: '加载失败',
+      type: 'error',
+    })
+  } finally {
+    loading.value = false;
+  }
+
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据
-  await fetchUsersData()
+  await fetchTestcasesData(state.value)
 })
 
-// onMounted(async () => {
-//   // 页面渲染后展示数据
-//   await fetchUsersData()
-// })
+
 </script>
 
-<style>
-.el-table{
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style></style>

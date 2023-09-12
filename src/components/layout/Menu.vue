@@ -44,10 +44,10 @@
         </el-icon>
         <span>测试</span>
       </template>
-      <el-menu-item index="/suite">
+      <el-menu-item index="/testsuites">
         <template #title><span>套件管理</span></template>
       </el-menu-item>
-      <el-menu-item index="/case">
+      <el-menu-item index="/testcases">
         <template #title><span>用例管理</span></template>
       </el-menu-item>
     </el-sub-menu>

@@ -31,7 +31,7 @@ const router = createRouter({
       children: [
         {
           path: 'users',
-          name: 'userRoute',
+          name: 'usersRoute',
           component: () => import('@/components/table/Users.vue'),
           meta: {
             title: '用户',
@@ -46,7 +46,25 @@ const router = createRouter({
             title: '工作台', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
           },
-        }
+        },
+        {
+          path: 'testcases',
+          name: 'testcasesRoute',
+          component: () => import('@/components/table/Testcase.vue'),
+          meta: {
+            title: '测试用例', // 设置页面标题
+            requiresAuth: true,// 访问路由需要认证
+          },
+        },
+        {
+          path: 'testsuites',
+          name: 'testsuitesRoute',
+          component: () => import('@/components/table/Testsuite.vue'),
+          meta: {
+            title: '测试套件', // 设置页面标题
+            requiresAuth: true,// 访问路由需要认证
+          },
+        },
       ]
     },
 
