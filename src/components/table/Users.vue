@@ -1,53 +1,45 @@
 <template>
-  <el-table :data="tableData" v-loading="loading">
-    <el-table-column prop="id" label="id" width="100" />
-    <el-table-column prop="created_at" label="创建时间" width="200" />
-    <el-table-column prop="update_at" label="更新时间" width="200" />
-    <el-table-column prop="username" label="用户名" width="100" />
-    <el-table-column prop="descriptions" label="简介" width="300" />
-    <el-table-column prop="is_active" label="是否活动用户" width="200" />
-    <el-table-column prop="is_super" label="是否超级管理员" width="200" />
-    <el-table-column fixed="right" label="操作" width="120">
-      <template #default>
-        <el-button link type="primary" size="small" @click="handleClick">Detail</el-button>
-        <el-button link type="primary" size="small">Edit</el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  <el-pagination background layout="prev, pager, next ,total,sizes" :total="total" @current-change="handleCurrentChange"
-      @size-change="handleSizeChange" />
-  <!-- <Pagination page="1" size="20" layout="total, prev, pager, next, jumper" total="500" @pagChange="fetchUsersData" /> -->
+  <div>
+    <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
+      :loading="loading" :selected="selected">
+    </CommonTable>
+  </div>
 </template>
 
 <script setup>
 import { onBeforeMount, onMounted, reactive, ref } from 'vue'
-// import Pagination from '@/components/pagination/Pagination.vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
+import CommonTable from '@/components/table/CommonTable.vue'
 
-// tableDate,供el-table数据
+const state = ref({ page: 1, limit: 20 })
 const tableData = ref([])
-const loading = ref(false)
-
-/**翻页相关 */
-const state = reactive({
-  page: 1,
-  limit: 10
-})
 const total = ref(0)
-//改变page,调用接口
-const handleCurrentChange = async (val) => {
-  state.page = val;
-  await fetchUsersData(state)
-};
-//改变limit,调用接口
-const handleSizeChange = async (val) => {
-  state.limit = val;
-  await fetchUsersData(state)
-};
+const loading = ref(false)
+const selected = ref(false)
 
-// 拉取所有用户用户数据
-const fetchUsersData = async (params) => {
+const tableController = [
+  { key: 'id', value: 'id' },
+  { key: '创建时间', value: 'created_at' },
+  { key: '更新时间', value: 'update_at' },
+  { key: '用户名', value: 'username' },
+  { key: '简介', value: 'descriptions' },
+  { key: '是否活动用户', value: 'is_active' },
+  { key: '是否超级管理员', value: 'is_super' },
+  { type: 'template', key: '操作' },
+]
+
+/**接收emit传过来的page参数 */
+async function pagerState(params) {
+  state.value = params
+  await fetchUsersData(params)
+}
+
+/**
+ * 拉取所有用户用户数据
+ * @param {*} params page limit对象
+ */
+async function fetchUsersData(params) {
   loading.value = true;
   try {
     const users = await fetch.fetchUsers(params)
@@ -56,6 +48,10 @@ const fetchUsersData = async (params) => {
     total.value = users.data.result.total
   } catch (error) {
     console.log("加载失败")
+    ElMessage({
+        message: '加载失败',
+        type: 'error',
+    })
   } finally {
     loading.value = false;
   }
@@ -63,19 +59,11 @@ const fetchUsersData = async (params) => {
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据
-  await fetchUsersData(state)
+  await fetchUsersData(state.value)
+  // await pagerFresh()
 })
 
 
 </script>
 
-<style>
-.el-table {
-  width: 100%;
-  height: 80%;
-}
-.el-pagination{
-  height: 20%;
-  justify-content:center;
-}
-</style>
+<style></style>
