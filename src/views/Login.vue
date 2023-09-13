@@ -1,15 +1,15 @@
 <template>
     <div class="login">
         <div class="login-form">
-            <el-form ref="ruleFormRef" :model="form.inputValue" label-width="120px" :rules="rules">
+            <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules">
                 <el-form-item label="Username:" prop="username">
-                    <el-input v-model="form.inputValue.username" />
+                    <el-input v-model="form.username" />
                 </el-form-item>
                 <el-form-item label="Password:" prop="password">
-                    <el-input v-model="form.inputValue.password" />
+                    <el-input v-model="form.password" />
                 </el-form-item>
                 <el-form-item class="submit">
-                    <el-button round type="primary" @click="onSubmit">登录</el-button>
+                    <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()">登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -17,7 +17,7 @@
 </template>
   
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
@@ -28,11 +28,9 @@ const ruleFormRef = ref(null)
 const router = useRouter()
 
 // 登录表单
-const form = reactive({
-    inputValue: {
-        username: '',
-        password: '',
-    },
+const form = ref({
+    username: 'admin',
+    password: '123456',
 })
 // 表单规则
 const rules = {
@@ -57,15 +55,17 @@ const rules = {
         }
     ]
 }
-// 登录
-const onSubmit = async () => {
+/**
+ * 登录
+ */
+async function onSubmit() {
     if (!ruleFormRef) {
         return//判断formEl是否为空，为空
     }
     ruleFormRef.value.validate(async (valid) => {
         if (valid) { //如果校验成功 请求数据
             try {
-                const res = await fetch.fetchLogin(form.inputValue)
+                const res = await fetch.fetchLogin(form.value)
                 ElMessage({
                     message: '登录成功',
                     type: 'success',
@@ -79,7 +79,13 @@ const onSubmit = async () => {
     })
 
 }
-// mount
+/**回车键登录 */
+function keyDown(e) {
+    if (e.keyCode == 13 || e.keyCode == 100) {
+        onSubmit()
+    }
+}
+
 onMounted(() => {
     // 渲染玩显示消息通知
     ElNotification({
@@ -87,12 +93,18 @@ onMounted(() => {
         message: '管理员账号：admin;密码：123456',
         duration: 5000
     });
-}
-)
+    //绑定监听事件
+    window.addEventListener('keydown', keyDown)
+})
+onUnmounted(() => {
+    //销毁事件
+    window.removeEventListener('keydown', keyDown, false)
+});
 </script>
 
 <style lang="scss">
 .login {
+    display: flex;
     /**设置登录页背景 */
     height: 100%;
     width: 100%;
@@ -111,19 +123,23 @@ onMounted(() => {
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(50%, -50%);
+        transform: translate(40%, -50%);
         /* 设置圆角的大小 */
         border-radius: 10px;
+
         .el-form-item__label {
             color: #fff;
         }
+
         .submit {
+
             /**调整按钮位置 */
             .el-button {
                 width: 9rem;
                 margin: 2.5rem 0 0 0;
             }
-            .el-form-item__content{
+
+            .el-form-item__content {
                 margin-left: 100px !important;
             }
         }

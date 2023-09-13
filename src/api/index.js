@@ -57,6 +57,17 @@ export default {
             params: params
         })
     },
+    /**
+     * 新增用户
+     * @param {*} params 请求参数
+     */
+    async addUser(params) {
+        return await axios({
+            method: 'post',
+            url: '/user/create',
+            body: params
+        })
+    },
 
 
 }

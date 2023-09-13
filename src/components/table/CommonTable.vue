@@ -8,11 +8,11 @@
                 <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
                 <!-- 接受 传值 渲染 表头 -->
                 <!-- 表头数据的 单独控制tableController -->
-                <el-table-column :align="center ? 'center' : ''" v-for="t in tableController" :key="t.prop" :label="t.label"
+                <el-table-column :align="center ? 'center' : ''" v-for="(t,index) in tableController" :key="index" :label="t.label"
                     :prop="t.prop" :width="t.width ? t.width : ''"  sortable>
                     <!-- #default="scope" 作用域插槽 使用子组件内部数据 操作列 -->
                     <template #default="scope" v-if="t.type === 'template'">
-                        <slot :name="t.key" :row="scope.row">
+                        <slot :name="t.label" :row="scope.row">
                             <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
                             <el-button size="small" type="danger"
                                 @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
@@ -106,14 +106,14 @@ function handleCurrentChange(ev) {
     display: flex;
     /* 设置主轴方向为垂直（上下） */
     flex-direction: column;
-    height: 44.5rem;
+    height: 43rem;
     width: 100%;
     // background-color: #fff;
 
     .table-box {
         display: flex;
         width: 100%;
-        height: 80%;
+        // height: 80%;
 
         .el-table {
             border-radius: 8px;

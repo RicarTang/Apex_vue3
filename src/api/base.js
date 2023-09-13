@@ -103,6 +103,7 @@ axios.interceptors.response.use(
     })
     if(error.response.status === 401){
       router.replace('/login')
+      console.log("跳转至login页面")
     }
     return Promise.reject(error.response) // 返回接口返回的错误信息
   }

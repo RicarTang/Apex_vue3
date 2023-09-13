@@ -1,21 +1,25 @@
 <template>
-    <el-drawer :model-value="dialogState" :title="title" :before-close="handleClose" class="demo-drawer">
-        <div class="demo-drawer__content">
-            <el-form :model="form">
-                <!-- <el-form-item label="Name" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" autocomplete="off" />
+    <el-drawer :model-value="dialogState" :title="title" :before-close="handleClose" >
+        <div class="drawer__content">
+            <el-form ref="ruleFormRef" :model="formData" :rules="rules">
+                <!-- 使用 v-for 渲染表单字段 -->
+                <el-form-item v-for="(field, index) in formFields" :label="field.label" :key="index">
+                    <!-- 根据 field 的类型来渲染不同类型的输入框 -->
+                    <template v-if="field.type === 'input'">
+                        <el-input v-model="formData[field.name]"></el-input>
+                    </template>
+                    <template v-else-if="field.type === 'select'">
+                        <el-select v-model="field.default">
+                            <el-option v-for="(option, optionIndex) in field.options" :key="optionIndex"
+                                :label="option.label" :value="option.value"></el-option>
+                        </el-select>
+                    </template>
+                    <!-- 可以根据需要添加其他字段类型的渲染 -->
                 </el-form-item>
-                <el-form-item label="Area" :label-width="formLabelWidth">
-                    <el-select v-model="form.region" placeholder="Please select activity area">
-                        <el-option label="Area1" value="shanghai" />
-                        <el-option label="Area2" value="beijing" />
-                    </el-select>
-                </el-form-item> -->
-                表单
             </el-form>
-            <div class="demo-drawer__footer">
+            <div class="drawer__footer">
                 <el-button @click="cancelForm">Cancel</el-button>
-                <el-button type="primary" :loading="loading" @click="onClick">{{
+                <el-button type="primary" :loading="loading" @click="submitUpdate">{{
                     loading ? 'Submitting ...' : 'Submit'
                 }}</el-button>
             </div>
@@ -24,24 +28,47 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
 
-const emit = defineEmits(['dialogState'])
+const emit = defineEmits(['dialogState','updateData'])
 const props = defineProps({
     // 标题
     title: {
         type: String,
-        default: "修改"
+        default: ""
     },
     // 抽屉显示状态
     dialogState: {
         type: Boolean,
         default: false
+    },
+    // 表单label字段
+    formFields: {
+        type: Array,
+        default: []
+    },
+    // 表单
+    formData:{
+        type: Object,
+        default: {}
+    },
+    // 表单规则
+    rules:{
+        type: Object,
+        default: {}
+    },
+    // loading
+    loading:{
+        type: Boolean,
+        default:false
     }
 
 })
-const onClick = () => {
-    console.log("点击")
+const submitUpdate = () => {
+    // 传递表单值
+    emit('updateData',props.formData)
+
+    // 关闭
+    cancelForm()
 }
 
 function handleClose(done) {
@@ -58,9 +85,10 @@ function handleClose(done) {
 
 const cancelForm = () => {
     //   loading.value = false
-    emit('dialogState', false)
+    emit('dialogState', false);
+    console.log(props.rules)
 }
 
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>
