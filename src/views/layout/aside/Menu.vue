@@ -1,15 +1,16 @@
 <template>
-  <el-menu :router="true" :default-active="activeMenu" class="el-menu-vertical-demo" :collapse="isCollapse">
-    <el-menu-item index="0">
-      <el-icon :size="size" :color="color" v-if="isCollapse">
-        <!-- 根据 isCollapse 来显示图标或标题 -->
+  <el-menu :router="true" :default-active="activeMenu" class="el-menu-vertical-demo" :collapse="isCollapse"
+    background-color="#2a3853" active-text-color="#ffd7ae" text-color="#8b99b4">
+    <el-menu-item index="">
+      <!-- <el-icon :size="size" :color="color" v-if="isCollapse">
         <ChromeFilled />
-      </el-icon>
+      </el-icon> -->
       <template #title>
 
         <h2>TF测试平台</h2>
       </template>
     </el-menu-item>
+
     <el-sub-menu index="1">
       <template #title>
         <el-icon>
@@ -74,6 +75,14 @@ const isCollapse = ref(false)
 // 默认激活菜单项
 const activeMenu = ref('')
 
+// // 使用 watch 监听路由的变化
+// watch(() => route.path,
+//   (newPath, oldPath) => {
+//     console.log(`路由已经从 ${oldPath} 变为 ${newPath}`);
+//     // 在这里执行你的逻辑
+//     activeMenu.value = newPath
+//   }
+// );
 
 onMounted(() => {
   // 传递菜单收纳状态
@@ -82,19 +91,9 @@ onMounted(() => {
   })
   // 拿取当前路由
   activeMenu.value = route.path
-  console.log(activeMenu.value)
+  console.log("当前路由", activeMenu.value)
 })
 </script>
 
 <style lang="scss" scoped>
-// .el-menu-vertical-demo:not(.el-menu--collapse) {
-//   // width: 200px;
-//   // min-height: 400px;
-//   height: 100%;
-// }
-/* // 重要以下就是添加menu的宽度和高度。 */
-// .el-menu-container:not(.el-menu--collapse) {
-//   width: 200px;
-//   height: calc(100vh);
-// }
 </style>

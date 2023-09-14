@@ -19,10 +19,10 @@
     display: flex;
     height: 3rem;
     // margin-bottom: 20px;
-    padding-left: 12px;
+    // padding-left: 12px;
     /* 垂直居中 */
     align-items: center;
-    background-color: #ffffff;
+    // background-color: #ffffff;
     border-radius: 4px;
 }
 </style>

@@ -11,6 +11,8 @@ import { onBeforeMount, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
+import {enumMapping} from '@/utils/enum'
+import moment from 'moment';
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
@@ -64,10 +66,10 @@ async function fetchTestcasesData(params) {
   try {
     const testcases = await fetch.fetchTestcases(params)
     // 赋值
-    tableData.value = testcases.data.result.data
+    tableData.value = formatTableData(testcases.data.result.data)
     total.value = testcases.data.result.total
   } catch (error) {
-    console.log("加载失败")
+    console.log("加载失败",error)
     ElMessage({
       message: '加载失败',
       type: 'error',
@@ -76,6 +78,22 @@ async function fetchTestcasesData(params) {
     loading.value = false;
   }
 
+}
+/**格式化tableData */
+function formatTableData(data) {
+  const formatData = data.map((item) => {
+    // 格式化日期时间
+    item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss');
+    item.update_at = moment(item.update_at).format('YYYY-MM-DD HH:mm:ss');
+    // 格式化枚举
+    console.log("enum值",item.case_is_execute)
+    item.case_is_execute = enumMapping[item.case_is_execute] || '未知';
+    item.request_to_redis = enumMapping[item.request_to_redis] || '未知';
+    item.response_to_redis = enumMapping[item.response_to_redis] || '未知';
+    // 返回每条item组成新的数组
+    return item;
+  });
+  return formatData
 }
 onBeforeMount(async () => {
   // 页面渲染后展示数据

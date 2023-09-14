@@ -1,26 +1,41 @@
 <template>
-  <el-row class="table-nav">
+  <!-- <el-row class="table-nav">
     <el-col :span="22">
-      <!-- <span>搜索</span> -->
       <el-input v-model="input" placeholder="Please input" size="small" />
       <el-button type="primary">搜索</el-button>
 
     </el-col>
-    <!-- <el-col :span="2">
-      <el-button type="primary" @click="changeDialogState">编辑</el-button>
-    </el-col> -->
     <el-col :span="2">
       <el-button type="success" @click="clickAdd">新增</el-button>
     </el-col>
-  </el-row>
-
+  </el-row> -->
+  <!-- 搜索 -->
+  <div class="header">
+    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <el-form-item>
+        <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="danger" :icon="Delete" @click="clickAdd">删除</el-button>
+      </el-form-item>
+      <el-form-item label="用户名:">
+        <el-input v-model="formInline.username" placeholder="用户名" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :icon="Search" @click="searchUser">搜索</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+  <!-- 编辑/新建用户表单抽屉 -->
   <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
     :formFields="formFields" :loading="loading" :rules="rules" :title="drawerTitle"></Drawer>
+  <!-- 用户table -->
   <div class="table-content">
-    <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
-      :loading="loading" :selected="selected">
+    <CommonTable :tableData="tableData" :tableController="tableController" :loading="loading" :selected="selected">
     </CommonTable>
   </div>
+  <!-- 分页器 -->
+  <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
 </template>
 
 <script setup>
@@ -28,8 +43,11 @@ import { onBeforeMount, reactive, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
+import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
 import moment from 'moment';
+import { enumMapping } from '@/utils/enum'
+import { Plus, Delete, Search } from '@element-plus/icons-vue'
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
@@ -40,11 +58,16 @@ const total = ref(0)
 // loading状态
 const loading = ref(false)
 // 表格多选框状态
-const selected = ref(false)
+const selected = ref(true)
 // 抽屉显示状态
 const dialogState = ref(false)
 // drawer标题
 const drawerTitle = "新增"
+// 表格header
+const formInline = ref({
+  username: '',
+}
+)
 // 表头
 const tableController = [
   { label: 'id', prop: 'id' },
@@ -96,7 +119,23 @@ const formFields = [
   { label: "是否超级管理员", name: "is_super", type: "select", options: [{ label: "是", value: 1 }, { label: "否", value: 0 }], default: "否" },
 ]
 
-
+/**搜索用户 */
+async function searchUser() {
+  loading.value = true;
+  try {
+    let users = await fetch.queryUsers(formInline.value)
+    // 赋值
+    tableData.value = formatTableData(users.data.result.data);
+    total.value = users.data.result.total
+  } catch (error) {
+    ElMessage({
+      message: '加载失败',
+      type: 'error',
+    })
+  } finally {
+    loading.value = false;
+  }
+}
 
 
 /**新增用户 */
@@ -156,7 +195,6 @@ async function fetchUsersData(params) {
     tableData.value = formatTableData(users.data.result.data);
     total.value = users.data.result.total
   } catch (error) {
-    console.log("加载失败")
     ElMessage({
       message: '加载失败',
       type: 'error',
@@ -165,11 +203,7 @@ async function fetchUsersData(params) {
     loading.value = false;
   }
 }
-/**枚举对象 */
-const enumMapping = {
-  1: '是',
-  0: '否',
-};
+
 
 /**格式化tableData */
 function formatTableData(data) {
@@ -194,19 +228,17 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="scss" scoped>
-.table-nav {
+.header {
   display: flex;
-  height: 5rem;
+  margin: 6px 0;
+  padding: 6px 0;
+  // border: 1px solid #000;
+  // border-radius: 6px;
 
-  align-items: center;
-
-  .el-col {
-    display: flex;
-    justify-content: center;
-
-    .el-input__wrapper {
-      padding: 1px 15px;
-    }
-  }
+  // .el-form {
+  //   display: flex;
+  //   /**垂直居中 */
+  //   align-items: center;
+  // }
 }
 </style>

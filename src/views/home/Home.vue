@@ -14,7 +14,7 @@
         <el-main>
           <!-- 面包屑 -->
           <BreadcurmbComponent></BreadcurmbComponent>
-          <el-empty v-if="showEmpty" description="description" />
+          <!-- <el-empty v-if="showEmpty" description="description" /> -->
           <!-- 渲染子路由 -->
           <div class="main">
             <router-view></router-view>
@@ -67,14 +67,14 @@ onMounted(() => {
 }
 
 .el-aside {
-  background-color: #d3dce6;
-  color: #333;
+  background-color: #2a3853;
   text-align: center;
   line-height: 200px;
 }
 
 .el-main {
-  background-color: #e9eef3;
+  padding: 0 20px;
+  background-color: #fff;
   color: #333;
   // text-align: center;
   // line-height: 160px;

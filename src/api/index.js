@@ -27,6 +27,18 @@ export default {
         })
     },
     /**
+     * 查询用户
+     * @param {*} params 请求参数
+     * @returns 
+     */
+    async queryUsers(params) {
+        return await axios({
+            method: 'get',
+            url: '/user/query',
+            params: params
+        })
+    },
+    /**
      * 退出登录
      */
     async logout() {
@@ -65,7 +77,7 @@ export default {
         return await axios({
             method: 'post',
             url: '/user/create',
-            body: params
+            data: params
         })
     },
 
