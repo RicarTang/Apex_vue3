@@ -48,7 +48,7 @@ const tableController = [
   { label: '是否保存响应体到redis', prop: 'response_to_redis' },
   { label: '用例编写者', prop: 'case_editor' },
   { label: '备注', prop: 'remark' },
-  { type: 'template', key: '操作' },
+  { type: 'template', label: '操作',fixed:'right' },
 ]
 
 /**接收emit传过来的page参数 */

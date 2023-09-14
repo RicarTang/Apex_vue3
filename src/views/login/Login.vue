@@ -2,11 +2,11 @@
     <div class="login">
         <div class="login-form">
             <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules">
-                <el-form-item label="Username:" prop="username">
+                <el-form-item label="用户名:" prop="username">
                     <el-input v-model="form.username" />
                 </el-form-item>
-                <el-form-item label="Password:" prop="password">
-                    <el-input v-model="form.password" />
+                <el-form-item label="密码:" prop="password">
+                    <el-input v-model="form.password" type="password" show-password/>
                 </el-form-item>
                 <el-form-item class="submit">
                     <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()">登录</el-button>
@@ -17,7 +17,7 @@
 </template>
   
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';

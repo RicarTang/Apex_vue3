@@ -16,7 +16,7 @@ npm i
 ```
 2. 添加环境变量
 ```Bash
-echo -e "VITE_API_HOST=http://127.0.0.1:4000\nVITE_TOKEN_TIME=60" > .env.development # -e使转义字符生效
+echo "VITE_API_HOST=http://127.0.0.1:4000" > .env.development # 设置后端地址
 ```
 3. 启动项目
 ```Bash
