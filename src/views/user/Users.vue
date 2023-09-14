@@ -28,7 +28,7 @@
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
   <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
-    :formFields="formFields" :loading="loading" :rules="rules" :title="drawerTitle"></Drawer>
+    :formFields="formFields" :loading="buttonLoading" :rules="rules" :title="drawerTitle"></Drawer>
   <!-- 用户table -->
   <div class="table-content">
     <CommonTable :tableData="tableData" :tableController="tableController" :loading="loading" :selected="selected">
@@ -55,8 +55,10 @@ const state = ref({ page: 1, limit: 10 })
 const tableData = ref([])
 // 数据total
 const total = ref(0)
-// loading状态
+// 表格loading状态
 const loading = ref(false)
+// button loading状态
+const buttonLoading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
 // 抽屉显示状态

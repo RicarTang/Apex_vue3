@@ -1,5 +1,5 @@
 <template>
-    <el-drawer :model-value="dialogState" :title="title" :before-close="handleClose" >
+    <el-drawer :model-value="dialogState" :title="title" :before-close="handleClose">
         <div class="drawer__content">
             <el-form ref="ruleFormRef" :model="formData" :rules="rules">
                 <!-- 使用 v-for 渲染表单字段 -->
@@ -18,9 +18,9 @@
                 </el-form-item>
             </el-form>
             <div class="drawer__footer">
-                <el-button @click="cancelForm">Cancel</el-button>
-                <el-button type="primary" :loading="loading" @click="submitUpdate">{{
-                    loading ? 'Submitting ...' : 'Submit'
+                <el-button @click="cancelForm">取消</el-button>
+                <el-button type="primary" :loading="loading" @click="submit">{{
+                    loading ? '提交中 ...' : '提交'
                 }}</el-button>
             </div>
         </div>
@@ -28,8 +28,10 @@
 </template>
 
 <script setup>
+let timer
+const loading = ref(false)
 
-const emit = defineEmits(['dialogState','updateData'])
+const emit = defineEmits(['dialogState', 'updateData'])
 const props = defineProps({
     // 标题
     title: {
@@ -47,36 +49,41 @@ const props = defineProps({
         default: []
     },
     // 表单
-    formData:{
+    formData: {
         type: Object,
         default: {}
     },
     // 表单规则
-    rules:{
+    rules: {
         type: Object,
         default: {}
     },
     // loading
-    loading:{
+    loading: {
         type: Boolean,
-        default:false
+        default: false
     }
 
 })
-const submitUpdate = () => {
+const submit = () => {
     // 传递表单值
-    emit('updateData',props.formData)
+    emit('updateData', props.formData)
 
     // 关闭
     cancelForm()
 }
 
 function handleClose(done) {
-    ElMessageBox.confirm('Do you want to submit?')
+    ElMessageBox.confirm('是否提交？')
         .then(() => {
-            //   loading.value = true
-            console.log("关闭")
-            emit('dialogState', false)
+            loading.value = true
+            timer = setTimeout(() => {
+                done()
+                // 动画关闭需要一定的时间
+                setTimeout(() => {
+                    loading.value = false
+                }, 400)
+            }, 2000)
         })
         .catch(() => {
             // catch error
@@ -85,6 +92,7 @@ function handleClose(done) {
 
 const cancelForm = () => {
     //   loading.value = false
+    clearTimeout(timer)
     emit('dialogState', false);
     console.log(props.rules)
 }
