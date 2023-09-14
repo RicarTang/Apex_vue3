@@ -15,7 +15,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'loginRoute',
-      component: () => import('@/views/Login.vue'),
+      component: () => import('@/views/login/Login.vue'),
       meta: {
         title: '登录', // 设置页面标题
       },
@@ -23,7 +23,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'homeRoute',
-      component: () => import('@/views/Home.vue'),
+      component: () => import('@/views/home/Home.vue'),
       meta: {
         title: '主页', // 设置页面标题
         requiresAuth: true,// 访问路由需要认证
@@ -32,7 +32,7 @@ const router = createRouter({
         {
           path: 'users',
           name: 'usersRoute',
-          component: () => import('@/components/table/Users.vue'),
+          component: () => import('@/views/user/Users.vue'),
           meta: {
             title: '用户',
             requiresAuth: true,// 访问路由需要认证
@@ -41,7 +41,7 @@ const router = createRouter({
         {
           path: 'workspace',
           name: 'workspaceRoute',
-          component: () => import('@/components/dashborad/Workspace.vue'),
+          component: () => import('@/views/dashborad/Workspace.vue'),
           meta: {
             title: '工作台', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
@@ -50,7 +50,7 @@ const router = createRouter({
         {
           path: 'testcases',
           name: 'testcasesRoute',
-          component: () => import('@/components/table/Testcase.vue'),
+          component: () => import('@/views/test/Testcase.vue'),
           meta: {
             title: '测试用例', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
@@ -59,7 +59,7 @@ const router = createRouter({
         {
           path: 'testsuites',
           name: 'testsuitesRoute',
-          component: () => import('@/components/table/Testsuite.vue'),
+          component: () => import('@/views/test/Testsuite.vue'),
           meta: {
             title: '测试套件', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证

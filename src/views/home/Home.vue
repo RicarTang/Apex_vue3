@@ -27,8 +27,8 @@
 </template>
 
 <script setup>
-import Menu from '@/components/layout/Menu.vue'
-import Header from '@/components/layout/Header.vue'
+import Menu from '@/views/layout/aside/Menu.vue'
+import Header from '@/views/layout/header/Header.vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { ArrowRight } from '@element-plus/icons-vue'
