@@ -9,7 +9,7 @@ import { inject, onMounted } from "vue";
 const echarts = inject("echarts")
 console.log("echarts",echarts)
 onMounted(() => {
-    const myEcharts = echarts.init(document.getElementById("echarts"))
+    const myEcharts = echarts.init(document.getElementById("echarts"))  // 只能使用getElementById
     // 指定图表的配置项和数据
     // 指定图表的配置项和数据
     const option = {

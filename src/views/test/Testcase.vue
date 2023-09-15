@@ -23,7 +23,7 @@ const total = ref(0)
 // loading状态
 const loading = ref(false)
 // 表格多选框状态
-const selected = ref(false)
+const selected = ref(true)
 
 // 表头
 const tableController = [
@@ -48,7 +48,7 @@ const tableController = [
   { label: '是否保存响应体到redis', prop: 'response_to_redis' },
   { label: '用例编写者', prop: 'case_editor' },
   { label: '备注', prop: 'remark' },
-  { type: 'template', label: '操作',fixed:'right' },
+  { type: 'template', label: '操作',fixed:'right',width:'205px' },
 ]
 
 /**接收emit传过来的page参数 */
