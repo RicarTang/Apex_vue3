@@ -21,7 +21,7 @@ const total = ref(0)
 // loading状态
 const loading = ref(false)
 // 表格多选框状态
-const selected = ref(false)
+const selected = ref(true)
 
 // 表头
 const tableController = [
@@ -30,7 +30,7 @@ const tableController = [
     { label: '更新时间', prop: 'update_at' },
     { label: '套件编号', prop: 'suite_no' },
     { label: '套件名称/标题', prop: 'suite_title' },
-    { type: 'template', key: '操作' },
+    { type: 'template', label: '操作' },
 ]
 
 /**接收emit传过来的page参数 */

@@ -39,6 +39,15 @@ const router = createRouter({
           },
         },
         {
+          path: 'permission',
+          name: 'permissionRoute',
+          component: () => import('@/views/user/Permission.vue'),
+          meta: {
+            title: '权限管理',
+            requiresAuth: true,// 访问路由需要认证
+          },
+        },
+        {
           path: 'workspace',
           name: 'workspaceRoute',
           component: () => import('@/views/dashborad/Workspace.vue'),

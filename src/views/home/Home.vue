@@ -79,6 +79,7 @@ onMounted(() => {
   // text-align: center;
   // line-height: 160px;
   .main{
+    display: flex;
     height: 45rem;
   }
 
