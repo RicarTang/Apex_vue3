@@ -8,6 +8,7 @@
 </template>
   
 <script setup>
+import { ref } from 'vue'
 // 传递子组件参数 分页器的分页操作处理函数,传递分页page,limit给父组件
 const emit = defineEmits(['pagerFresh'])
 // 接收父组件参数 所有 props 传值

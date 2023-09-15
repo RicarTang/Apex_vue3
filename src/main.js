@@ -13,9 +13,15 @@ import ElementPlus from 'element-plus'
 import locale from 'element-plus/lib/locale/lang/zh-cn'
 // 
 import mitt from "mitt"
+// echarts
+import echarts from '@/plugins/echarts'
+
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 const app = createApp(App)
+
+// 全局挂载echarts
+app.provide("echarts",echarts)  // 通过provide注入
 
 // 关闭控制台开发者警告
 // app.config.productionTip = false
