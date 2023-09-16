@@ -30,23 +30,18 @@
 import Menu from '@/views/layout/aside/Menu.vue'
 import Header from '@/views/layout/header/Header.vue'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 import { ArrowRight } from '@element-plus/icons-vue'
-import BreadcurmbComponent from '@/components/breadcrumb/Breadcurmb.vue';
-
+import BreadcurmbComponent from '@/components/breadcrumb/Breadcurmb.vue'
 
 const router = useRouter()
 
-onMounted(() => {
-
-});
-
+onMounted(() => {})
 </script>
 
 <style lang="scss" scoped>
 .common-layout {
   height: 100%;
-
 }
 
 .el-container {
@@ -78,13 +73,13 @@ onMounted(() => {
   color: #333;
   // text-align: center;
   // line-height: 160px;
-  .main{
+  .main {
     display: flex;
     height: 45rem;
+    /* 设置主轴方向为垂直（上下） */
+    flex-direction: column;
   }
-
 }
-
 
 /* .el-menu {
     background-color: #d3dce6;
