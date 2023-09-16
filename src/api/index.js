@@ -50,6 +50,19 @@ export default {
         })
     },
     /**
+     * 更新用户
+     * @param {*} user_id 用户id
+     * @param {*} data 请求body
+     * @returns 
+     */
+    async updateUser(user_id,data) {
+        return await axios({
+            method: 'put',
+            url: `/user/${user_id}`,
+            data:data
+        })
+    },
+    /**
      * 退出登录
      */
     async logout() {
@@ -82,13 +95,13 @@ export default {
     },
     /**
      * 新增用户
-     * @param {*} params 请求参数
+     * @param {*} data 请求参数
      */
-    async addUser(params) {
+    async addUser(data) {
         return await axios({
             method: 'post',
             url: '/user/create',
-            data: params
+            data: data
         })
     },
 

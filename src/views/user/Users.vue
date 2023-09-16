@@ -51,7 +51,7 @@ import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
 import moment from 'moment'
-import { boolToStrEnum, strToBoolEnum } from '@/utils/enum'
+import { boolToStrEnum } from '@/utils/enum'
 import { Plus, Delete, Search } from '@element-plus/icons-vue'
 
 // 默认请求参数
@@ -130,18 +130,21 @@ async function searchUser() {
     loading.value = false
   }
 }
-
-/**新增用户 */
-async function addUser(params) {
+/**
+ * 新增用户
+ * @param {*} data 创建用户请求体
+ */
+async function addUser(data) {
+  buttonLoading.value = true
   try {
-    await fetch.addUser(params)
-    // 新增后刷新table
-    await fetchUsersData()
+    await fetch.addUser(data)
     // 新增成功弹窗
     ElMessage({
       message: '新增用户成功',
       type: 'success'
     })
+    // 新增后刷新table
+    await fetchUsersData()
   } catch (error) {
     // 失败弹窗
     ElMessage({
@@ -151,6 +154,34 @@ async function addUser(params) {
     console.log(error)
   } finally {
     // 新增用户成功返回后关闭drawer，取消按钮loading状态
+    buttonLoading.value = false
+    dialogState.value = false
+  }
+}
+/**编辑用户
+ *
+ * @param {*} user_id 用户id
+ * @param {*} data  请求体
+ */
+async function editUser(user_id, data) {
+  try {
+    await fetch.updateUser(user_id, data)
+    // 修改成功弹窗
+    ElMessage({
+      message: '编辑用户成功',
+      type: 'success'
+    })
+    // 编辑后刷新table
+    await fetchUsersData()
+  } catch (error) {
+    // 失败弹窗
+    ElMessage({
+      message: '编辑用户失败',
+      type: 'error'
+    })
+    console.log(error)
+  } finally {
+    // 编辑用户成功返回后关闭drawer，取消按钮loading状态
     buttonLoading.value = false
     dialogState.value = false
   }
@@ -174,26 +205,6 @@ function clickAdd() {
     { label: '用户名', name: 'username', type: 'input' },
     { label: '密码', name: 'password', type: 'input' },
     { label: '简介', name: 'descriptions', type: 'input' }
-    // {
-    //   label: '是否活动用户',
-    //   name: 'is_active',
-    //   type: 'select',
-    //   options: [
-    //     { label: '是', value: 1 },
-    //     { label: '否', value: 0 }
-    //   ],
-    //   default: '是'
-    // },
-    // {
-    //   label: '是否超级管理员',
-    //   name: 'is_super',
-    //   type: 'select',
-    //   options: [
-    //     { label: '是', value: 1 },
-    //     { label: '否', value: 0 }
-    //   ],
-    //   default: '否'
-    // }
   ]
 }
 /**接收emit传过来的page参数 */
@@ -206,11 +217,16 @@ function dialogStateEmit(params) {
   // 修改显示状态
   dialogState.value = params
 }
-/**接收drawer组件传递的formData */
+/**接收drawer组件传递的formData,选择性的请求接口 */
 async function updateFormData(params) {
   console.log('接收到的formData', params)
-  // 接收到数据意味着用户输入结束并且点击了提交按钮,新增用户
-  await addUser(params)
+  if (drawerTitle.value === '新增') {
+    // 接收到数据意味着用户输入结束并且点击了提交按钮,新增用户
+    await addUser(params)
+  } else {
+    // 编辑
+    await editUser(params.id, params)
+  }
 }
 
 /**

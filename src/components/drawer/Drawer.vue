@@ -37,7 +37,7 @@
     </div>
     <div class="drawer__footer">
       <el-button @click="cancelForm">取消</el-button>
-      <el-button type="primary" :loading="buttonLoading" @click="submit">{{
+      <el-button type="primary" :loading="loading" @click="submit">{{
         loading ? '提交中 ...' : '提交'
       }}</el-button>
     </div>
@@ -49,7 +49,7 @@ import { ref } from 'vue'
 // form表单ref
 const drawerRuleRef = ref(null)
 // button loading状态
-const buttonLoading = ref(props.loading)
+// const buttonLoading = ref(props.loading)
 
 const emit = defineEmits(['dialogState', 'updateData'])
 const props = defineProps({
@@ -91,9 +91,7 @@ function submit() {
   }
   drawerRuleRef.value.validate(async (valid) => {
     if (valid) {
-      //如果校验成功 请求数据
-      // 开始loading
-      buttonLoading.value = true
+      //如果校验成功 传递数据
       // 传递表单值
       emit('updateData', props.formData)
     }
@@ -106,8 +104,6 @@ function submit() {
 function handleClose(done) {
   ElMessageBox.confirm('是否提交？')
     .then(() => {
-      // 开始 loading
-      buttonLoading.value = true
       // 传递表单值
       emit('updateData', props.formData)
     })
