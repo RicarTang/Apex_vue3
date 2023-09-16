@@ -106,7 +106,6 @@ function submit() {
 function handleClose(done) {
   ElMessageBox.confirm('是否提交？')
     .then(() => {
-      console.log('done', done)
       // 开始 loading
       buttonLoading.value = true
       // 传递表单值

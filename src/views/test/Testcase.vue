@@ -1,9 +1,11 @@
 <template>
-  <div>
+  <div class="table-testcase-context">
     <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
       :loading="loading" :selected="selected">
     </CommonTable>
   </div>
+  <!-- 分页器 -->
+  <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
 </template>
 
 <script setup>
@@ -11,16 +13,16 @@ import { onBeforeMount, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
-import {enumMapping} from '@/utils/enum'
+import {boolToStrEnum} from '@/utils/enum'
 import moment from 'moment';
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
 // 表格数据
 const tableData = ref([])
-// 数据total
+// pager total
 const total = ref(0)
-// loading状态
+// 表格loading状态
 const loading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
@@ -58,7 +60,7 @@ async function pagerState(params) {
 }
 
 /**
- * 拉取所有测试拥挤
+ * 拉取所有测试用例
  * @param {*} params page limit对象
  */
 async function fetchTestcasesData(params) {
@@ -71,7 +73,7 @@ async function fetchTestcasesData(params) {
   } catch (error) {
     console.log("加载失败",error)
     ElMessage({
-      message: '加载失败',
+      message: '数据加载失败',
       type: 'error',
     })
   } finally {
@@ -86,10 +88,9 @@ function formatTableData(data) {
     item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss');
     item.update_at = moment(item.update_at).format('YYYY-MM-DD HH:mm:ss');
     // 格式化枚举
-    console.log("enum值",item.case_is_execute)
-    item.case_is_execute = enumMapping[item.case_is_execute] || '未知';
-    item.request_to_redis = enumMapping[item.request_to_redis] || '未知';
-    item.response_to_redis = enumMapping[item.response_to_redis] || '未知';
+    item.case_is_execute = boolToStrEnum[item.case_is_execute] || '未知';
+    item.request_to_redis = boolToStrEnum[item.request_to_redis] || '未知';
+    item.response_to_redis = boolToStrEnum[item.response_to_redis] || '未知';
     // 返回每条item组成新的数组
     return item;
   });

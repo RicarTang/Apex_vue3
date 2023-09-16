@@ -34,6 +34,8 @@
       :tableController="tableController"
       :loading="loading"
       :selected="selected"
+      @editData="editData"
+      @deleteData="deleteData"
     >
     </CommonTable>
   </div>
@@ -49,7 +51,7 @@ import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
 import moment from 'moment'
-import { enumMapping } from '@/utils/enum'
+import { boolToStrEnum, strToBoolEnum } from '@/utils/enum'
 import { Plus, Delete, Search } from '@element-plus/icons-vue'
 
 // 默认请求参数
@@ -67,11 +69,14 @@ const selected = ref(true)
 // 抽屉显示状态
 const dialogState = ref(false)
 // drawer标题
-const drawerTitle = '新增'
+const drawerTitle = ref('')
 // 表格header
 const formInline = ref({
   username: ''
 })
+// drawer表单字段
+const formFields = ref([])
+
 // 表头
 const tableController = [
   { label: 'id', prop: 'id' },
@@ -81,7 +86,7 @@ const tableController = [
   { label: '简介', prop: 'descriptions' },
   { label: '是否活动用户', prop: 'is_active' },
   { label: '是否超级管理员', prop: 'is_super' },
-  { type: 'template', label: '操作' }
+  { type: 'template', label: '操作', fixed: 'right', width: '205px' }
 ]
 // drawer表单字段值双向绑定
 const formData = ref({
@@ -112,32 +117,6 @@ const rules = {
     }
   ]
 }
-// drawer表单显示字段
-const formFields = [
-  { label: '用户名', name: 'username', type: 'input' },
-  { label: '密码', name: 'password', type: 'input' },
-  { label: '简介', name: 'descriptions', type: 'input' }
-  // {
-  //   label: '是否活动用户',
-  //   name: 'is_active',
-  //   type: 'select',
-  //   options: [
-  //     { label: '是', value: 1 },
-  //     { label: '否', value: 0 }
-  //   ],
-  //   default: '是'
-  // },
-  // {
-  //   label: '是否超级管理员',
-  //   name: 'is_super',
-  //   type: 'select',
-  //   options: [
-  //     { label: '是', value: 1 },
-  //     { label: '否', value: 0 }
-  //   ],
-  //   default: '否'
-  // }
-]
 
 /**搜索用户 */
 async function searchUser() {
@@ -147,7 +126,7 @@ async function searchUser() {
     // 赋值
     tableData.value = formatTableData(users.data.result.data)
     total.value = users.data.result.total
-  }  finally {
+  } finally {
     loading.value = false
   }
 }
@@ -155,13 +134,18 @@ async function searchUser() {
 /**新增用户 */
 async function addUser(params) {
   try {
-    const res = await fetch.addUser(params)
+    await fetch.addUser(params)
     // 新增后刷新table
     await fetchUsersData()
-    console.log('新增用户res', res)
-  } catch (error) {
+    // 新增成功弹窗
     ElMessage({
-      message: '创建失败',
+      message: '新增用户成功',
+      type: 'success'
+    })
+  } catch (error) {
+    // 失败弹窗
+    ElMessage({
+      message: '新增用户失败',
       type: 'error'
     })
     console.log(error)
@@ -177,12 +161,40 @@ async function addUser(params) {
  */
 function changeDialogState() {
   dialogState.value = !dialogState.value
-  console.log(dialogState.value)
 }
 
 /**点击新增按钮 */
 function clickAdd() {
+  // 修改drawer标题
+  drawerTitle.value = '新增'
+  // 更改状态
   changeDialogState()
+  // drawer表单显示字段
+  formFields.value = [
+    { label: '用户名', name: 'username', type: 'input' },
+    { label: '密码', name: 'password', type: 'input' },
+    { label: '简介', name: 'descriptions', type: 'input' }
+    // {
+    //   label: '是否活动用户',
+    //   name: 'is_active',
+    //   type: 'select',
+    //   options: [
+    //     { label: '是', value: 1 },
+    //     { label: '否', value: 0 }
+    //   ],
+    //   default: '是'
+    // },
+    // {
+    //   label: '是否超级管理员',
+    //   name: 'is_super',
+    //   type: 'select',
+    //   options: [
+    //     { label: '是', value: 1 },
+    //     { label: '否', value: 0 }
+    //   ],
+    //   default: '否'
+    // }
+  ]
 }
 /**接收emit传过来的page参数 */
 async function pagerState(params) {
@@ -196,8 +208,8 @@ function dialogStateEmit(params) {
 }
 /**接收drawer组件传递的formData */
 async function updateFormData(params) {
-  console.log(params)
-  // 新增用户
+  console.log('接收到的formData', params)
+  // 接收到数据意味着用户输入结束并且点击了提交按钮,新增用户
   await addUser(params)
 }
 
@@ -209,12 +221,12 @@ async function fetchUsersData(params) {
   loading.value = true
   try {
     const users = await fetch.fetchUsers(params)
-    // 赋值
+    // 赋值,formatTableData对接口数据进行格式化
     tableData.value = formatTableData(users.data.result.data)
     total.value = users.data.result.total
   } catch (error) {
     ElMessage({
-      message: '加载失败',
+      message: '数据加载失败',
       type: 'error'
     })
     console.log(error)
@@ -230,15 +242,77 @@ function formatTableData(data) {
     item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
     item.update_at = moment(item.update_at).format('YYYY-MM-DD HH:mm:ss')
     // 格式化枚举
-    item.is_active = enumMapping[item.is_active] || '未知'
-    item.is_super = enumMapping[item.is_super] || '未知'
+    item.is_active = boolToStrEnum[item.is_active] || '未知'
+    item.is_super = boolToStrEnum[item.is_super] || '未知'
     // 返回每条item组成新的数组
     return item
   })
   return formatData
 }
+/**
+ * 接收修改表格数据时的emit
+ * @param {*} index
+ * @param {*} row
+ */
+function editData(index, row) {
+  // drawer title
+  drawerTitle.value = '编辑'
+  // 打开drawer组件
+  changeDialogState()
+  // drawer组件表单字段
+  formFields.value = [
+    { label: '用户名', name: 'username', type: 'input' },
+    { label: '密码', name: 'password', type: 'input' },
+    { label: '简介', name: 'descriptions', type: 'input' },
+    {
+      label: '是否活动用户',
+      name: 'is_active',
+      type: 'select',
+      options: [
+        { label: '是', value: 1 },
+        { label: '否', value: 0 }
+      ],
+      default: row.is_active
+    },
+    {
+      label: '是否超级管理员',
+      name: 'is_super',
+      type: 'select',
+      options: [
+        { label: '是', value: 1 },
+        { label: '否', value: 0 }
+      ],
+      default: row.is_super
+    }
+  ]
+  // 传递字段值
+  formData.value = row
+  console.log(row)
+}
+/**
+ * 接收删除表格数据时的emit
+ * @param {*} index
+ * @param {*} row
+ */
+async function deleteData(index, row) {
+  // 调用delete接口,传入user_id
+  try {
+    await fetch.deleteUser(row.id)
+    ElMessage({
+      message: '成功删除',
+      type: 'success'
+    })
+  } catch (error) {
+    ElMessage({
+      message: '删除失败',
+      type: 'error'
+    })
+    console.log(error)
+  }
+}
+// 生命周期函数
 onBeforeMount(async () => {
-  // 页面渲染后展示数据
+  // 页面渲染后展示表格数据
   await fetchUsersData(state.value)
 })
 </script>

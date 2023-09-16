@@ -28,13 +28,12 @@
                 @click="handleEdit(scope.$index, scope.row)"
                 >编辑</el-button
               >
-              <el-button
-                size="small"
-                :icon="Delete"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
-              >
+              <!-- 删除按钮添加气泡确认框 -->
+              <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.$index, scope.row)">
+                <template #reference>
+                  <el-button size="small" :icon="Delete" type="danger">删除</el-button>
+                </template>
+              </el-popconfirm>
             </slot>
           </template>
         </el-table-column>
@@ -46,6 +45,7 @@
 import { ref } from 'vue'
 import { Delete, Edit } from '@element-plus/icons-vue'
 
+const emit = defineEmits(['editData', 'deleteData'])
 // 接收父组件参数 所有 props 传值
 const props = defineProps({
   // 表格数据
@@ -75,14 +75,22 @@ const props = defineProps({
   }
 })
 
-// 编辑数据
+/**
+ * 编辑数据回调函数
+ * @param {*} index  数据索引
+ * @param {*} row  数据代理对象
+ */
 const handleEdit = (index, row) => {
-  console.log(index, row)
-  console.log(row.id)
+  // 传送连个变量
+  emit('editData', index, row)
 }
-// 删除数据
+/**
+ * 删除数据回调函数
+ * @param {*} index  数据索引
+ * @param {*} row  数据代理对象
+ */
 const handleDelete = (index, row) => {
-  console.log(index, row)
+  emit('deleteData', index, row)
 }
 </script>
 <style lang="scss" scoped>

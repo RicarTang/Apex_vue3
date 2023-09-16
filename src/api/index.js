@@ -39,6 +39,17 @@ export default {
         })
     },
     /**
+     * 删除用户
+     * @param {*} user_id 用户id
+     * @returns 
+     */
+    async deleteUser(user_id) {
+        return await axios({
+            method: 'delete',
+            url: `/user/${user_id}`,
+        })
+    },
+    /**
      * 退出登录
      */
     async logout() {
