@@ -153,6 +153,7 @@ async function addUser(data) {
  * @param {*} data  请求体
  */
 async function editUser(user_id, data) {
+  confirmLoading.value = true
   try {
     await fetch.updateUser(user_id, data)
     // 修改成功弹窗
@@ -171,7 +172,7 @@ async function editUser(user_id, data) {
     console.log(error)
   } finally {
     // 编辑用户成功返回后关闭drawer，取消按钮loading状态
-    buttonLoading.value = false
+    confirmLoading.value = false
     dialogState.value = false
   }
 }
