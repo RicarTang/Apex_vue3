@@ -37,7 +37,7 @@
     </div>
     <div class="drawer__footer">
       <el-button @click="cancelForm">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="submit">{{
+      <el-button type="primary" :loading="confirmLoading" @click="submit">{{
         loading ? '提交中 ...' : '提交'
       }}</el-button>
     </div>
@@ -78,8 +78,8 @@ const props = defineProps({
     type: Object,
     default: {}
   },
-  // loading
-  loading: {
+  // 确认按钮loading
+  confirmLoading: {
     type: Boolean,
     default: false
   }

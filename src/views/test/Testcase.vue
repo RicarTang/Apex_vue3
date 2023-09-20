@@ -1,4 +1,32 @@
 <template>
+  <!-- 搜索 -->
+  <div class="header">
+    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <el-form-item>
+        <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="danger" :icon="Delete" @click="clickAdd">删除</el-button>
+      </el-form-item>
+      <el-form-item label="用例标题:">
+        <el-input v-model="formInline.caseTitle" placeholder="用例标题" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :icon="Search" @click="searchCaseTitle">搜索</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+   <!-- 编辑/新建用户表单抽屉 -->
+   <Drawer
+    @dialogState="dialogStateEmit"
+    @updateData="updateFormData"
+    :dialogState="dialogState"
+    :formData="formData"
+    :formFields="formFields"
+    :loading="buttonLoading"
+    :rules="rules"
+    :title="drawerTitle"
+  ></Drawer>
   <div class="table-testcase-context">
     <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
       :loading="loading" :selected="selected">
@@ -26,6 +54,14 @@ const total = ref(0)
 const loading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
+// 查询表单
+const formInline = ref({
+  caseTitle: ''
+})
+// drawer标题
+const drawerTitle = ref('')
+// 抽屉显示状态
+const dialogState = ref(false)
 
 // 表头
 const tableController = [
@@ -53,6 +89,10 @@ const tableController = [
   { type: 'template', label: '操作',fixed:'right',width:'205px' },
 ]
 
+onBeforeMount(async () => {
+  // 页面渲染后展示数据
+  await fetchTestcasesData(state.value)
+})
 /**接收emit传过来的page参数 */
 async function pagerState(params) {
   state.value = params
@@ -96,11 +136,25 @@ function formatTableData(data) {
   });
   return formatData
 }
-onBeforeMount(async () => {
-  // 页面渲染后展示数据
-  await fetchTestcasesData(state.value)
-})
-
+/**
+ * 更改抽屉显示状态
+ */
+ function changeDialogState() {
+  dialogState.value = !dialogState.value
+}
+/**点击新增按钮 */
+function clickAdd() {
+  // 修改drawer标题
+  drawerTitle.value = '新增'
+  // 更改状态
+  changeDialogState()
+  // drawer表单显示字段
+  formFields.value = [
+    { label: '用户名', name: 'username', type: 'input' },
+    { label: '密码', name: 'password', type: 'input' },
+    { label: '简介', name: 'descriptions', type: 'input' }
+  ]
+}
 
 </script>
 

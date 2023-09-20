@@ -17,26 +17,12 @@
     </el-form>
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
-  <Drawer
-    @dialogState="dialogStateEmit"
-    @updateData="updateFormData"
-    :dialogState="dialogState"
-    :formData="formData"
-    :formFields="formFields"
-    :loading="buttonLoading"
-    :rules="rules"
-    :title="drawerTitle"
-  ></Drawer>
+  <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
+    :formFields="formFields" :confirmLoading="confirmLoading" :rules="rules" :title="drawerTitle"></Drawer>
   <!-- 用户table -->
   <div class="table-content">
-    <CommonTable
-      :tableData="tableData"
-      :tableController="tableController"
-      :loading="loading"
-      :selected="selected"
-      @editData="editData"
-      @deleteData="deleteData"
-    >
+    <CommonTable :tableData="tableData" :tableController="tableController" :tableLoading="tableLoading"
+      :selected="selected" @editData="editData" @deleteData="deleteData">
     </CommonTable>
   </div>
   <!-- 分页器 -->
@@ -61,16 +47,16 @@ const tableData = ref([])
 // 数据total
 const total = ref(0)
 // 表格loading状态
-const loading = ref(false)
+const tableLoading = ref(false)
 // button loading状态
-const buttonLoading = ref(false)
+const confirmLoading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
 // 抽屉显示状态
 const dialogState = ref(false)
 // drawer标题
 const drawerTitle = ref('')
-// 表格header
+// 查询表单
 const formInline = ref({
   username: ''
 })
@@ -117,17 +103,20 @@ const rules = {
     }
   ]
 }
-
+onBeforeMount(async () => {
+  // 页面渲染后展示表格数据
+  await fetchUsersData(state.value)
+})
 /**搜索用户 */
 async function searchUser() {
-  loading.value = true
+  tableLoading.value = true
   try {
     let users = await fetch.queryUsers(formInline.value)
     // 赋值
     tableData.value = formatTableData(users.data.result.data)
     total.value = users.data.result.total
   } finally {
-    loading.value = false
+    tableLoading.value = false
   }
 }
 /**
@@ -135,7 +124,7 @@ async function searchUser() {
  * @param {*} data 创建用户请求体
  */
 async function addUser(data) {
-  buttonLoading.value = true
+  confirmLoading.value = true
   try {
     await fetch.addUser(data)
     // 新增成功弹窗
@@ -154,7 +143,7 @@ async function addUser(data) {
     console.log(error)
   } finally {
     // 新增用户成功返回后关闭drawer，取消按钮loading状态
-    buttonLoading.value = false
+    confirmLoading.value = false
     dialogState.value = false
   }
 }
@@ -234,7 +223,7 @@ async function updateFormData(params) {
  * @param {*} params page limit对象
  */
 async function fetchUsersData(params) {
-  loading.value = true
+  tableLoading.value = true
   try {
     const users = await fetch.fetchUsers(params)
     // 赋值,formatTableData对接口数据进行格式化
@@ -247,7 +236,7 @@ async function fetchUsersData(params) {
     })
     console.log(error)
   } finally {
-    loading.value = false
+    tableLoading.value = false
   }
 }
 
@@ -260,6 +249,8 @@ function formatTableData(data) {
     // 格式化枚举
     item.is_active = boolToStrEnum[item.is_active] || '未知'
     item.is_super = boolToStrEnum[item.is_super] || '未知'
+    // 为每条item添加自己的loading
+    item.loading = false;
     // 返回每条item组成新的数组
     return item
   })
@@ -311,6 +302,8 @@ function editData(index, row) {
  * @param {*} row
  */
 async function deleteData(index, row) {
+  // 修改row.loading的状态（每行数据的loading）
+  row.loading = true
   // 调用delete接口,传入user_id
   try {
     await fetch.deleteUser(row.id)
@@ -324,13 +317,11 @@ async function deleteData(index, row) {
       type: 'error'
     })
     console.log(error)
+  }finally{
+    row.loading = false
   }
 }
-// 生命周期函数
-onBeforeMount(async () => {
-  // 页面渲染后展示表格数据
-  await fetchUsersData(state.value)
-})
+
 </script>
 
 <style lang="scss" scoped>
@@ -338,13 +329,5 @@ onBeforeMount(async () => {
   display: flex;
   margin: 6px 0;
   padding: 6px 0;
-  // border: 1px solid #000;
-  // border-radius: 6px;
-
-  // .el-form {
-  //   display: flex;
-  //   /**垂直居中 */
-  //   align-items: center;
-  // }
 }
 </style>
