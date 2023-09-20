@@ -3,7 +3,7 @@
     <!-- 此处 可以 拓展 （elplus table 的特殊 表格props属性 ） -->
     <!-- :data="tableData" 绑定表格数据 -->
     <div class="table-box">
-      <el-table :data="tableData" v-loading="tableLoading" max-height="40rem" border>
+      <el-table :data="tableData" v-loading="tableLoading" max-height="40rem" border @selection-change="handleSelectionChange">
         <!-- 多选框 -->
         <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
         <!-- 接受 传值 渲染 表头 -->
@@ -46,7 +46,7 @@ import { ref } from 'vue'
 import { Delete, Edit } from '@element-plus/icons-vue'
 
 const deleteLoading = ref(false)
-const emit = defineEmits(['editData', 'deleteData'])
+const emit = defineEmits(['editData', 'deleteData','selectDatas'])
 // 接收父组件参数 所有 props 传值
 const props = defineProps({
   // 表格数据
@@ -92,6 +92,13 @@ const handleEdit = (index, row) => {
  */
 const handleDelete = (index, row) => {
   emit('deleteData', index, row)
+}
+/**
+ * 表格多选事件
+ * @param {*} val 选中的数据组成的数组
+ */
+function handleSelectionChange(val){
+  emit('selectDatas', val)
 }
 </script>
 <style lang="scss" scoped>

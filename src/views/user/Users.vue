@@ -6,7 +6,8 @@
         <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="danger" :icon="Delete" @click="clickAdd">删除</el-button>
+        <el-button type="danger" :icon="Delete" @click="selectDelete"
+          :disabled="tableSelected.length === 0">删除</el-button>
       </el-form-item>
       <el-form-item label="用户名:">
         <el-input v-model="formInline.username" placeholder="用户名" clearable></el-input>
@@ -22,7 +23,7 @@
   <!-- 用户table -->
   <div class="table-content">
     <CommonTable :tableData="tableData" :tableController="tableController" :tableLoading="tableLoading"
-      :selected="selected" @editData="editData" @deleteData="deleteData">
+      :selected="selected" @editData="editData" @deleteData="deleteData" @selectDatas="selectDatas">
     </CommonTable>
   </div>
   <!-- 分页器 -->
@@ -62,6 +63,8 @@ const formInline = ref({
 })
 // drawer表单字段
 const formFields = ref([])
+// 表格多选数据
+const tableSelected = ref([])
 
 // 表头
 const tableController = [
@@ -298,7 +301,7 @@ function editData(index, row) {
   console.log(row)
 }
 /**
- * 接收删除表格数据时的emit
+ * 接收删除表格数据时的emit并删除数据
  * @param {*} index
  * @param {*} row
  */
@@ -318,11 +321,60 @@ async function deleteData(index, row) {
       type: 'error'
     })
     console.log(error)
-  }finally{
+  } finally {
     row.loading = false
   }
 }
+/**
+ * 接收emit传递的选中的数据
+ * @param {*} val 
+ */
+function selectDatas(val) {
+  // 拿到每行数据的id，赋值给tableSelected
+  tableSelected.value = val.map((item)=>{
+    // 返回id
+    return item.id
+  })
+}
+/**
+ * 多选删除
+ */
+async function selectDelete() {
+  // 弹窗确认
+  ElMessageBox.confirm(
+    '是否删除选中数据?',
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(async () => {
+      try {
+        // 请求删除多条数据接口  @TODO 后端还没有这个接口
+        await fetch.deleteUser(row.id)
+        ElMessage({
+          type: 'success',
+          message: '删除成功',
+        })
+      } catch (error) {
+        ElMessage({
+          message: '删除失败',
+          type: 'error'
+        })
+        console.log(error)
+      }
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消删除',
+      })
+    })
 
+
+}
 </script>
 
 <style lang="scss" scoped>
