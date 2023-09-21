@@ -1,4 +1,5 @@
 <template>
+    <Search></Search>
     <div>
         <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
             :loading="loading" :selected="selected">
@@ -11,6 +12,7 @@ import { onBeforeMount, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
+import Search from '@/components/table/Search.vue'
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
