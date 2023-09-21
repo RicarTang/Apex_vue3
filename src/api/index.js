@@ -50,6 +50,19 @@ export default {
         })
     },
     /**
+     * 批量删除用户
+     * @param {*} body 请求体
+     * @returns 
+     */
+    async deleteUsers(body) {
+        return await axios({
+            method: 'delete',
+            url: `/user/batchDelete`,
+            data: body
+
+        })
+    },
+    /**
      * 更新用户
      * @param {*} user_id 用户id
      * @param {*} data 请求body

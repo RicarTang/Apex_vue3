@@ -331,7 +331,7 @@ async function deleteData(index, row) {
  */
 function selectDatas(val) {
   // 拿到每行数据的id，赋值给tableSelected
-  tableSelected.value = val.map((item)=>{
+  tableSelected.value = val.map((item) => {
     // 返回id
     return item.id
   })
@@ -352,12 +352,14 @@ async function selectDelete() {
   )
     .then(async () => {
       try {
-        // 请求删除多条数据接口  @TODO 后端还没有这个接口
-        await fetch.deleteUser(row.id)
+        // 请求删除多条数据接口
+        await fetch.deleteUsers({ users_id: tableSelected.value })
         ElMessage({
           type: 'success',
           message: '删除成功',
         })
+        // 刷新table
+        await fetchUsersData(state.value)
       } catch (error) {
         ElMessage({
           message: '删除失败',
@@ -372,8 +374,6 @@ async function selectDelete() {
         message: '取消删除',
       })
     })
-
-
 }
 </script>
 
