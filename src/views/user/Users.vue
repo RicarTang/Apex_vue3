@@ -297,8 +297,7 @@ function editData(index, row) {
     }
   ]
   // 传递字段值
-  formData.value = row
-  console.log(row)
+  formData.value = JSON.parse(JSON.stringify(row))  // 代理对象转为普通对象，解决修改时表格数据变动
 }
 /**
  * 接收删除表格数据时的emit并删除数据
