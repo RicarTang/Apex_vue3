@@ -1,5 +1,6 @@
 import axios from './base'
 
+
 export default {
     /**
      * 账号密码登陆
@@ -68,11 +69,11 @@ export default {
      * @param {*} data 请求body
      * @returns 
      */
-    async updateUser(user_id,data) {
+    async updateUser(user_id, data) {
         return await axios({
             method: 'put',
             url: `/user/${user_id}`,
-            data:data
+            data: data
         })
     },
     /**
@@ -114,6 +115,43 @@ export default {
         return await axios({
             method: 'post',
             url: '/user/create',
+            data: data
+        })
+    },
+    /**
+     * 下载测试用例模板
+     */
+    async downloadTestTemplate() {
+        return await axios({
+            method: 'get',
+            url: '/testcase/template/download',
+            responseType: 'blob', // 指定响应类型为blob
+        }).then((response) => {
+            // 获取文件数据和MIME类型
+            const blob = new Blob([response.data], { type: response.headers['content-type'] });
+            // 创建Blob URL
+            const url = window.URL.createObjectURL(blob);
+            // 创建<a>标签并设置属性
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "测试用例模板";
+            // 模拟点击<a>标签以触发下载
+            a.click();
+            // 释放Blob URL资源
+            window.URL.revokeObjectURL(url);
+        })
+            .catch((error) => {
+                console.error('下载文件时出错：', error);
+            });
+    },
+    /**
+     * 导入测试用例模板
+     * @param {*} data 请求参数
+     */
+    async importTestTemplate(data) {
+        return await axios({
+            method: 'post',
+            url: '/testcase/import',
             data: data
         })
     },

@@ -1,30 +1,39 @@
 <template>
   <!-- 搜索 -->
-  <!-- <div class="header">
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item>
-        <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="danger" :icon="Delete" @click="clickAdd">删除</el-button>
-      </el-form-item>
-      <el-form-item label="用例标题:">
-        <el-input v-model="formInline.caseTitle" placeholder="用例标题" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" :icon="Search" @click="searchCaseTitle">搜索</el-button>
-      </el-form-item>
-    </el-form>
-  </div> -->
   <div>
-    <Search :formFields="tableSearchFields" :formInline="tableSearchForm" :tableSelected="tableSelected"></Search>
+    <Search :formFields="tableSearchFields" :formInline="tableSearchForm" :tableSelected="tableSelected">
+      <template #default>
+        <!-- 启动测试按钮 -->
+        <el-form-item>
+          <el-button type="success" @click="clickTestButton" :disabled="tableSelected.length === 0">执行测试</el-button>
+        </el-form-item>
+        <!-- 下载模板按钮 -->
+        <el-form-item>
+          <el-badge is-dot>
+            <el-tooltip content="只有模板才能支持导入测试用例！" placement="top" effect="light">
+              <el-button type="info" @click="clickDownloadButton">下载模版</el-button>
+            </el-tooltip>
+          </el-badge>
+        </el-form-item>
+        <!-- 导入按钮 -->
+        <el-form-item>
+          <el-badge is-dot>
+            <el-tooltip content="请导入正确格式的测试用例模板！" placement="top" effect="light">
+              <el-upload ref="upload" :limit="1" :http-request="uploadTemplate" name="excel" :show-file-list="false">
+                <el-button type="primary" @click="clickImportButton" :loading="uploadLoading">导入用例</el-button>
+              </el-upload>
+            </el-tooltip>
+          </el-badge>
+        </el-form-item>
+      </template>
+    </Search>
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
   <!-- <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
     :formFields="formFields" :loading="buttonLoading" :rules="rules" :title="drawerTitle"></Drawer> -->
   <div class="table-testcase-context">
-    <CommonTable :tableData="tableData" :tableController="tableController"
-      :tableLoading="tableLoading" :selected="selected">
+    <CommonTable :tableData="tableData" :tableController="tableController" :tableLoading="tableLoading"
+      :selected="selected" @selectDatas="selectDatas" @editData="editData" @deleteData="deleteData">
     </CommonTable>
   </div>
   <div>
@@ -48,17 +57,19 @@ const tableData = ref([])
 const total = ref(0)
 // 表格loading状态
 const tableLoading = ref(false)
+// 上传按钮loading
+const uploadLoading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
 // 表格多选数据数组
-const tableSelected = ref([])
 // 查询表单
+const tableSelected = ref([])
 const tableSearchForm = ref({
   case_title: ''
 })
 // 表格搜索字段
 const tableSearchFields = ref([
-    { label: '用例标题', name: 'case_title', type: 'input' },
+  { label: '用例标题', name: 'case_title', type: 'input' },
 ])
 // drawer标题
 const drawerTitle = ref('')
@@ -110,7 +121,7 @@ async function fetchTestcasesData(params) {
   try {
     const testcases = await fetch.fetchTestcases(params)
     // 赋值
-    tableData.value = formatTableData(testcases.data.result.data,['case_is_execute','request_to_redis','response_to_redis'])
+    tableData.value = formatTableData(testcases.data.result.data, ['case_is_execute', 'request_to_redis', 'response_to_redis'])
     total.value = testcases.data.result.total
   } catch (error) {
     console.log("加载失败", error)
@@ -142,7 +153,50 @@ function clickAdd() {
     { label: '简介', name: 'descriptions', type: 'input' }
   ]
 }
-
+/**
+ * 接收emit传递的选中的数据
+ * @param {*} val 
+ */
+function selectDatas(val) {
+  // 拿到每行数据的id，赋值给tableSelected
+  tableSelected.value = val.map((item) => {
+    // 返回id
+    return item.id
+  })
+}
+/**点击开始测试按钮 */
+function clickTestButton() {
+  // 请求测试接口
+}
+/**点击下载按钮 */
+async function clickDownloadButton() {
+  // 请求下载接口
+  await fetch.downloadTestTemplate()
+}
+/**点击导入按钮 */
+function clickImportButton() {
+  // 请求导入接口
+}
+/**上传文件请求 */
+async function uploadTemplate(param) {
+  const uploadFormData = new FormData()
+  uploadFormData.append('excel', param.file)
+  try {
+    uploadLoading.value = true;
+    await fetch.importTestTemplate(uploadFormData)
+    ElMessage({
+      message: '上传成功',
+      type: 'success'
+    })
+  } catch (error) {
+    ElMessage({
+      message: '上传失败',
+      type: 'error'
+    })
+  } finally {
+    uploadLoading.value = false;
+  }
+}
 </script>
 
 <style></style>

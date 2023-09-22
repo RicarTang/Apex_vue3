@@ -15,6 +15,10 @@ axios.interceptors.request.use(
   (config) => {
     NProgress.start()
     config.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    // 导入接口需要设置请求体为form-data
+    if(config.url === '/testcase/import'){
+      config.headers['Content-Type'] = 'multipart/form-data;'
+    }
     if (localStorage.token) {
       config.headers.Authorization = 'Bearer ' + localStorage.token
     }

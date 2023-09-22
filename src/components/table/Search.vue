@@ -34,7 +34,8 @@
             <el-form-item>
                 <el-button type="primary" :icon="Search" @click="clickSearch">搜索</el-button>
             </el-form-item>
-
+            <!-- 插槽,预留其他按钮 -->
+            <slot></slot>
         </el-form>
     </div>
 </template>
