@@ -1,21 +1,8 @@
 <template>
   <!-- 搜索 -->
-  <div class="header">
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item>
-        <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="danger" :icon="Delete" @click="selectDelete"
-          :disabled="tableSelected.length === 0">删除</el-button>
-      </el-form-item>
-      <el-form-item label="用户名:">
-        <el-input v-model="formInline.username" placeholder="用户名" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" :icon="Search" @click="searchUser">搜索</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <Search @clickAdd="clickAdd" @clickDelete="selectDelete" @clickSearch="searchUser" :formFields="tableSearchFields"
+      :formInline="tableSearchForm" :tableSelected="tableSelected"></Search>
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
   <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
@@ -26,8 +13,10 @@
       :selected="selected" @editData="editData" @deleteData="deleteData" @selectDatas="selectDatas">
     </CommonTable>
   </div>
-  <!-- 分页器 -->
-  <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
+  <div>
+    <!-- 分页器 -->
+    <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
+  </div>
 </template>
 
 <script setup>
@@ -37,9 +26,7 @@ import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
-import moment from 'moment'
-import { boolToStrEnum } from '@/utils/enum'
-import { Plus, Delete, Search } from '@element-plus/icons-vue'
+import { formatTableData } from '@/utils/formatUtil'
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
@@ -58,9 +45,13 @@ const dialogState = ref(false)
 // drawer标题
 const drawerTitle = ref('')
 // 查询表单
-const formInline = ref({
+const tableSearchForm = ref({
   username: ''
 })
+// 表格搜索字段
+const tableSearchFields = ref([
+  { label: '用户名', name: 'username', type: 'input' },
+])
 // drawer表单字段
 const formFields = ref([])
 // 表格多选数据
@@ -114,9 +105,10 @@ onBeforeMount(async () => {
 async function searchUser() {
   tableLoading.value = true
   try {
-    let users = await fetch.queryUsers(formInline.value)
+    // let users = await fetch.queryUsers(tableSearchForm.value.username ? tableSearchForm.value : '')
+    let users = await fetch.queryUsers(tableSearchForm.value)
     // 赋值
-    tableData.value = formatTableData(users.data.result.data)
+    tableData.value = formatTableData(users.data.result.data, ['is_active', 'is_super'])
     total.value = users.data.result.total
   } finally {
     tableLoading.value = false
@@ -188,7 +180,7 @@ function changeDialogState() {
 }
 
 /**点击新增按钮 */
-function clickAdd() {
+function clickAdd(params) {
   // 修改drawer标题
   drawerTitle.value = '新增'
   // 更改状态
@@ -231,7 +223,7 @@ async function fetchUsersData(params) {
   try {
     const users = await fetch.fetchUsers(params)
     // 赋值,formatTableData对接口数据进行格式化
-    tableData.value = formatTableData(users.data.result.data)
+    tableData.value = formatTableData(users.data.result.data, ['is_active', 'is_super'])
     total.value = users.data.result.total
   } catch (error) {
     ElMessage({
@@ -244,22 +236,6 @@ async function fetchUsersData(params) {
   }
 }
 
-/**格式化tableData */
-function formatTableData(data) {
-  const formatData = data.map((item) => {
-    // 格式化日期时间
-    item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
-    item.update_at = moment(item.update_at).format('YYYY-MM-DD HH:mm:ss')
-    // 格式化枚举
-    item.is_active = boolToStrEnum[item.is_active] || '未知'
-    item.is_super = boolToStrEnum[item.is_super] || '未知'
-    // 为每条item添加自己的loading
-    item.loading = false;
-    // 返回每条item组成新的数组
-    return item
-  })
-  return formatData
-}
 /**
  * 接收修改表格数据时的emit
  * @param {*} index
@@ -376,10 +352,4 @@ async function selectDelete() {
 }
 </script>
 
-<style lang="scss" scoped>
-.header {
-  display: flex;
-  margin: 6px 0;
-  padding: 6px 0;
-}
-</style>
+<style lang="scss" scoped></style>

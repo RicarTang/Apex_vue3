@@ -1,9 +1,15 @@
 <template>
-    <Search></Search>
     <div>
-        <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
-            :loading="loading" :selected="selected">
+        <Search :formFields="tableSearchFields" :formInline="tableSearchForm" :tableSelected="tableSelected"></Search>
+    </div>
+    <div class="table-content">
+        <CommonTable :tableData="tableData" :tableController="tableController" :tableLoading="tableLoading"
+            :selected="selected" @editData="editData" @deleteData="deleteData" @selectDatas="selectDatas">
         </CommonTable>
+    </div>
+    <div>
+        <!-- 分页器 -->
+        <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
     </div>
 </template>
   
@@ -13,6 +19,7 @@ import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
+import { formatTableData } from '@/utils/formatUtil'
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
@@ -20,10 +27,20 @@ const state = ref({ page: 1, limit: 10 })
 const tableData = ref([])
 // 数据total
 const total = ref(0)
-// loading状态
-const loading = ref(false)
+// table loading状态
+const tableLoading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
+// 表格多选数据数组
+const tableSelected = ref([])
+// 表格搜索字段
+const tableSearchFields = ref([
+    { label: '套件名称', name: 'suite_title', type: 'input' },
+])
+// 表格搜索 model
+const tableSearchForm = ref({
+    suite_title: ''
+})
 
 // 表头
 const tableController = [
@@ -34,7 +51,10 @@ const tableController = [
     { label: '套件名称/标题', prop: 'suite_title' },
     { type: 'template', label: '操作' },
 ]
-
+onBeforeMount(async () => {
+    // 页面渲染后展示数据
+    await fetchTestsuitesData(state.value)
+})
 /**接收emit传过来的page参数 */
 async function pagerState(params) {
     state.value = params
@@ -46,11 +66,11 @@ async function pagerState(params) {
  * @param {*} params page limit对象
  */
 async function fetchTestsuitesData(params) {
-    loading.value = true;
+    tableLoading.value = true;
     try {
         const testsuites = await fetch.fetchTestsuites(params)
         // 赋值
-        tableData.value = testsuites.data.result.data
+        tableData.value = formatTableData(testsuites.data.result.data)
         total.value = testsuites.data.result.total
     } catch (error) {
         console.log("加载失败")
@@ -59,14 +79,11 @@ async function fetchTestsuitesData(params) {
             type: 'error',
         })
     } finally {
-        loading.value = false;
+        tableLoading.value = false;
     }
 
 }
-onBeforeMount(async () => {
-    // 页面渲染后展示数据
-    await fetchTestsuitesData(state.value)
-})
+
 
 
 </script>

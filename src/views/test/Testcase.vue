@@ -1,6 +1,6 @@
 <template>
   <!-- 搜索 -->
-  <div class="header">
+  <!-- <div class="header">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item>
         <el-button type="primary" :icon="Plus" @click="clickAdd">新增</el-button>
@@ -15,25 +15,22 @@
         <el-button type="primary" :icon="Search" @click="searchCaseTitle">搜索</el-button>
       </el-form-item>
     </el-form>
+  </div> -->
+  <div>
+    <Search :formFields="tableSearchFields" :formInline="tableSearchForm" :tableSelected="tableSelected"></Search>
   </div>
-   <!-- 编辑/新建用户表单抽屉 -->
-   <Drawer
-    @dialogState="dialogStateEmit"
-    @updateData="updateFormData"
-    :dialogState="dialogState"
-    :formData="formData"
-    :formFields="formFields"
-    :loading="buttonLoading"
-    :rules="rules"
-    :title="drawerTitle"
-  ></Drawer>
+  <!-- 编辑/新建用户表单抽屉 -->
+  <!-- <Drawer @dialogState="dialogStateEmit" @updateData="updateFormData" :dialogState="dialogState" :formData="formData"
+    :formFields="formFields" :loading="buttonLoading" :rules="rules" :title="drawerTitle"></Drawer> -->
   <div class="table-testcase-context">
-    <CommonTable @pagerFresh="pagerState" :tableData="tableData" :tableController="tableController" :total="total"
-      :loading="loading" :selected="selected">
+    <CommonTable :tableData="tableData" :tableController="tableController"
+      :tableLoading="tableLoading" :selected="selected">
     </CommonTable>
   </div>
-  <!-- 分页器 -->
-  <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
+  <div>
+    <!-- 分页器 -->
+    <Pagination @pagerFresh="pagerState" :total="total"></Pagination>
+  </div>
 </template>
 
 <script setup>
@@ -41,8 +38,7 @@ import { onBeforeMount, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
-import {boolToStrEnum} from '@/utils/enum'
-import moment from 'moment';
+import { formatTableData } from '@/utils/formatUtil'
 
 // 默认请求参数
 const state = ref({ page: 1, limit: 10 })
@@ -51,13 +47,19 @@ const tableData = ref([])
 // pager total
 const total = ref(0)
 // 表格loading状态
-const loading = ref(false)
+const tableLoading = ref(false)
 // 表格多选框状态
 const selected = ref(true)
+// 表格多选数据数组
+const tableSelected = ref([])
 // 查询表单
-const formInline = ref({
-  caseTitle: ''
+const tableSearchForm = ref({
+  case_title: ''
 })
+// 表格搜索字段
+const tableSearchFields = ref([
+    { label: '用例标题', name: 'case_title', type: 'input' },
+])
 // drawer标题
 const drawerTitle = ref('')
 // 抽屉显示状态
@@ -86,7 +88,7 @@ const tableController = [
   { label: '是否保存响应体到redis', prop: 'response_to_redis' },
   { label: '用例编写者', prop: 'case_editor' },
   { label: '备注', prop: 'remark' },
-  { type: 'template', label: '操作',fixed:'right',width:'205px' },
+  { type: 'template', label: '操作', fixed: 'right', width: '205px' },
 ]
 
 onBeforeMount(async () => {
@@ -104,42 +106,27 @@ async function pagerState(params) {
  * @param {*} params page limit对象
  */
 async function fetchTestcasesData(params) {
-  loading.value = true;
+  tableLoading.value = true;
   try {
     const testcases = await fetch.fetchTestcases(params)
     // 赋值
-    tableData.value = formatTableData(testcases.data.result.data)
+    tableData.value = formatTableData(testcases.data.result.data,['case_is_execute','request_to_redis','response_to_redis'])
     total.value = testcases.data.result.total
   } catch (error) {
-    console.log("加载失败",error)
+    console.log("加载失败", error)
     ElMessage({
       message: '数据加载失败',
       type: 'error',
     })
   } finally {
-    loading.value = false;
+    tableLoading.value = false;
   }
 
-}
-/**格式化tableData */
-function formatTableData(data) {
-  const formatData = data.map((item) => {
-    // 格式化日期时间
-    item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss');
-    item.update_at = moment(item.update_at).format('YYYY-MM-DD HH:mm:ss');
-    // 格式化枚举
-    item.case_is_execute = boolToStrEnum[item.case_is_execute] || '未知';
-    item.request_to_redis = boolToStrEnum[item.request_to_redis] || '未知';
-    item.response_to_redis = boolToStrEnum[item.response_to_redis] || '未知';
-    // 返回每条item组成新的数组
-    return item;
-  });
-  return formatData
 }
 /**
  * 更改抽屉显示状态
  */
- function changeDialogState() {
+function changeDialogState() {
   dialogState.value = !dialogState.value
 }
 /**点击新增按钮 */
