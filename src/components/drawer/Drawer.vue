@@ -51,7 +51,7 @@ const drawerRuleRef = ref(null)
 // button loading状态
 // const buttonLoading = ref(props.loading)
 
-const emit = defineEmits(['dialogState', 'updateData'])
+const emit = defineEmits(['cancelForm', 'updateData'])
 const props = defineProps({
   // 标题
   title: {
@@ -114,7 +114,8 @@ function handleClose(done) {
 }
 /**关闭drawer后的回调函数 */
 function cancelForm() {
-  emit('dialogState', false)
+  emit('cancelForm', false)
+  console.log("关闭drawer")
 }
 </script>
 

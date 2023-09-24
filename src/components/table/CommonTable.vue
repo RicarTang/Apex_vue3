@@ -13,7 +13,7 @@
           v-for="(t, index) in tableController"
           :key="index"
           :label="t.label"
-          :prop="t.prop"
+          :prop="t.name"
           :width="t.width ? t.width : ''"
           :fixed="t.fixed"
           sortable
