@@ -3,7 +3,13 @@
     <!-- 此处 可以 拓展 （elplus table 的特殊 表格props属性 ） -->
     <!-- :data="tableData" 绑定表格数据 -->
     <div class="table-box">
-      <el-table :data="tableData" v-loading="tableLoading" max-height="40rem" border @selection-change="handleSelectionChange">
+      <el-table
+        :data="tableData"
+        v-loading="tableLoading"
+        max-height="40rem"
+        border
+        @selection-change="handleSelectionChange"
+      >
         <!-- 多选框 -->
         <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
         <!-- 接受 传值 渲染 表头 -->
@@ -31,7 +37,9 @@
               <!-- 删除按钮添加气泡确认框 -->
               <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.$index, scope.row)">
                 <template #reference>
-                  <el-button size="small" :icon="Delete" :loading="scope.row.loading" type="danger">删除</el-button>
+                  <el-button size="small" :icon="Delete" :loading="scope.row.loading" type="danger"
+                    >删除</el-button
+                  >
                 </template>
               </el-popconfirm>
             </slot>
@@ -46,7 +54,7 @@ import { ref } from 'vue'
 import { Delete, Edit } from '@element-plus/icons-vue'
 
 const deleteLoading = ref(false)
-const emit = defineEmits(['editData', 'deleteData','selectDatas'])
+const emit = defineEmits(['editData', 'deleteData', 'selectDatas'])
 // 接收父组件参数 所有 props 传值
 const props = defineProps({
   // 表格数据
@@ -73,7 +81,7 @@ const props = defineProps({
   tableLoading: {
     type: Boolean,
     default: false
-  },
+  }
 })
 
 /**
@@ -97,7 +105,7 @@ const handleDelete = (index, row) => {
  * 表格多选事件
  * @param {*} val 选中的数据组成的数组
  */
-function handleSelectionChange(val){
+function handleSelectionChange(val) {
   emit('selectDatas', val)
 }
 </script>

@@ -72,8 +72,8 @@
     >
     </CommonTable>
   </div>
+  <!-- 分页器 -->
   <div>
-    <!-- 分页器 -->
     <Pagination @pagerFresh="pagerState" :total="pagerReactive.total"></Pagination>
   </div>
 </template>
