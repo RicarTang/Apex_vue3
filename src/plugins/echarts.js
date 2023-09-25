@@ -33,8 +33,3 @@ echarts.use([
 
 
 export default echarts
-// // 接下来的使用就跟之前一样，初始化图表，设置配置项
-// var myChart = echarts.init(document.getElementById('main'));
-// myChart.setOption({
-//   // ...
-// });
