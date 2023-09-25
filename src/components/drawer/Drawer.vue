@@ -1,5 +1,5 @@
 <template>
-  <el-drawer :model-value="props.dialogState" :title="props.title" :before-close="handleClose">
+  <el-drawer :model-value="props.drawerState" :title="props.title" :before-close="handleClose">
     <div class="drawer__content">
       <div class="drawer__main">
         <el-form
@@ -48,8 +48,6 @@
 import { ref } from 'vue'
 // form表单ref
 const drawerRuleRef = ref(null)
-// button loading状态
-// const buttonLoading = ref(props.loading)
 
 const emit = defineEmits(['cancelForm', 'updateData'])
 const props = defineProps({
@@ -59,7 +57,7 @@ const props = defineProps({
     default: ''
   },
   // 抽屉显示状态
-  dialogState: {
+  drawerState: {
     type: Boolean,
     default: false
   },
@@ -115,7 +113,7 @@ function handleClose(done) {
 /**关闭drawer后的回调函数 */
 function cancelForm() {
   emit('cancelForm', false)
-  console.log("关闭drawer")
+  console.log('关闭drawer')
 }
 </script>
 

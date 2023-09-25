@@ -155,6 +155,54 @@ export default {
             data: data
         })
     },
+    /**
+     * 新增测试用例
+     * @param {*} data  请求body
+     * @returns 
+     */
+    async addTestcase(data) {
+        return await axios({
+            method: 'post',
+            url: '/testcase/add',
+            data: data
+        })
+    },
+    /**
+     * 更新测试用例
+     * @param {*} case_id 测试用例id
+     * @param {*} data 请求body
+     * @returns 
+     */
+    async updateTestcase(case_id, data) {
+        return await axios({
+            method: 'put',
+            url: `/testcase/${case_id}`,
+            data: data
+        })
+    },
+    /**
+     * 删除测试用例
+     * @param {*} case_id 测试用例id
+     * @returns 
+     */
+    async deleteTestcase(case_id) {
+        return await axios({
+            method: 'delete',
+            url: `/testcase/${case_id}`,
+        })
+    },
+    /**
+     * 查询测试用例
+     * @param {*} params 请求参数
+     * @returns 
+     */
+    async queryTestcases(params) {
+        return await axios({
+            method: 'get',
+            url: '/testcase/query',
+            params: params
+        })
+    },
 
 
 }

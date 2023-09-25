@@ -9,6 +9,7 @@
       @clickDelete="selectDelete"
       @clickSearch="searchTestcase"
     >
+      <!-- 插槽内容 -->
       <template #default>
         <!-- 启动测试按钮 -->
         <el-form-item>
@@ -52,10 +53,10 @@
   <Drawer
     @cancelForm="cancelForm"
     @updateData="updateFormData"
-    :dialogState="drawerReactive.dialogState"
+    :drawerState="drawerReactive.drawerState"
     :formData="drawerReactive.formData"
     :formFields="drawerReactive.drawerFormFields"
-    :loading="drawerReactive.buttonLoading"
+    :confirmLoading="drawerReactive.confirmLoading"
     :rules="rules"
     :title="drawerReactive.drawerTitle"
   ></Drawer>
@@ -118,9 +119,9 @@ const drawerReactive = reactive({
   // 抽屉标题
   drawerTitle: '',
   // 抽屉显示状态
-  dialogState: false,
+  drawerState: false,
   // 抽屉按钮loading状态
-  buttonLoading: false,
+  confirmLoading: false,
   // 抽屉表单字段label
   drawerFormFields: [],
   // 抽屉表单数据
@@ -219,18 +220,18 @@ const rules = {
       required: true,
       message: '用例预期网络状态码不能为空',
       trigger: 'blur'
-    },
-    {
-      max: 10,
-      message: '用例预期网络状态码不能大于10位字符',
-      trigger: 'change'
     }
+    // {
+    //   max: 10,
+    //   message: '用例预期网络状态码不能大于10位字符',
+    //   trigger: 'change'
+    // }
   ]
 }
 
 onBeforeMount(async () => {
   // 页面渲染后展示数据
-  await fetchTestcasesData(pagerReactive.state)
+  fetchTestcasesData(pagerReactive.state)
 })
 /**接收emit传过来的page参数 */
 async function pagerState(params) {
@@ -246,7 +247,7 @@ async function fetchTestcasesData(params) {
   tableReactive.tableLoading = true
   try {
     const testcases = await fetch.fetchTestcases(params)
-    // 赋值
+    // 格式化后赋值
     tableReactive.tableData = formatTableData(testcases.data.result.data, [
       'case_is_execute',
       'request_to_redis',
@@ -266,15 +267,15 @@ async function fetchTestcasesData(params) {
 /**
  * 更改抽屉显示状态
  */
-function changeDialogState() {
-  drawerReactive.dialogState = !drawerReactive.dialogState
+function changeDrawerState() {
+  drawerReactive.drawerState = !drawerReactive.drawerState
 }
 /**点击新增按钮 */
 function clickAdd() {
   // 修改drawer标题
   drawerReactive.drawerTitle = '新增'
   // 更改状态
-  changeDialogState()
+  changeDrawerState()
   // drawer表单显示字段
   drawerReactive.drawerFormFields = [
     { label: '用例编号', name: 'case_no', type: 'input' },
@@ -363,7 +364,7 @@ async function selectDelete() {
           message: '删除成功'
         })
         // 刷新table
-        await fetchTestcasesData(pagerReactive.state)
+        fetchTestcasesData(pagerReactive.state)
       } catch (error) {
         ElMessage({
           message: '删除失败',
@@ -383,8 +384,10 @@ async function selectDelete() {
 async function searchTestcase() {
   tableReactive.tableLoading = true
   try {
-    // let users = await fetch.queryUsers(tableSearchForm.value.username ? tableSearchForm.value : '')
-    let testcases = await fetch.queryUsers(searchReactive.tableSearchForm)
+    let testcases = await fetch.queryTestcases(
+      searchReactive.tableSearchForm.case_title ? searchReactive.tableSearchForm : ''
+    )
+    // let testcases = await fetch.queryTestcases(searchReactive.tableSearchForm)
     // 赋值
     tableReactive.tableData = formatTableData(testcases.data.result.data, [
       'case_is_execute',
@@ -419,9 +422,70 @@ async function uploadTemplate(param) {
 /**取消drawer表单修改(emit) */
 function cancelForm(params) {
   // 修改显示状态
-  drawerReactive.dialogState = params
+  drawerReactive.drawerState = params
   // 重置drawer表单
   drawerReactive.formData = {}
+}
+
+/**
+ * 新增测试用例
+ * @param {*} data 创建用户请求体
+ */
+async function addTestcase(data) {
+  drawerReactive.confirmLoading = true
+  try {
+    await fetch.addTestcase(data)
+    // 新增成功弹窗
+    ElMessage({
+      message: '新增成功',
+      type: 'success'
+    })
+    // 新增后刷新table
+    fetchTestcasesData()
+  } catch (error) {
+    // 失败弹窗
+    ElMessage({
+      message: '新增失败',
+      type: 'error'
+    })
+    console.log(error)
+  } finally {
+    // 无论是否新增成功返回后关闭drawer，取消按钮loading状态
+    drawerReactive.confirmLoading = false
+    drawerReactive.drawerState = false
+  }
+}
+
+/**编辑测试用例
+ *
+ * @param {*} case_id 用例id
+ * @param {*} data  请求体
+ */
+async function editTestcase(case_id, data) {
+  drawerReactive.confirmLoading = true
+  try {
+    await fetch.updateTestcase(case_id, data)
+    // 修改成功弹窗
+    ElMessage({
+      message: '编辑成功',
+      type: 'success'
+    })
+    // 编辑后刷新table
+    fetchTestcasesData()
+  } catch (error) {
+    // 失败弹窗
+    ElMessage({
+      message: '编辑失败',
+      type: 'error'
+    })
+    console.log(error)
+  } finally {
+    // 无论是否编辑成功返回后关闭drawer，取消按钮loading状态
+    drawerReactive.confirmLoading = false
+    drawerReactive.drawerState = false
+    // 重置drawer表单数据
+    drawerReactive.formData = {}
+  }
 }
 
 /**接收drawer组件传递的formData,选择性的请求接口 */
@@ -444,7 +508,7 @@ function editData(index, row) {
   // drawer title
   drawerReactive.drawerTitle = '编辑'
   // 打开drawer组件
-  changeDialogState()
+  changeDrawerState()
   // drawer组件表单字段
   drawerReactive.drawerFormFields = [
     { label: '用例编号', name: 'case_no', type: 'input' },
@@ -511,6 +575,8 @@ async function deleteData(index, row) {
       message: '成功删除',
       type: 'success'
     })
+    // 删除成功刷新table
+    fetchTestcasesData()
   } catch (error) {
     ElMessage({
       message: '删除失败',

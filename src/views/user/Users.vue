@@ -14,7 +14,7 @@
   <Drawer
     @cancelForm="cancelForm"
     @updateData="updateFormData"
-    :dialogState="drawerReactive.dialogState"
+    :drawerState="drawerReactive.drawerState"
     :formData="drawerReactive.formData"
     :formFields="drawerReactive.formFields"
     :confirmLoading="drawerReactive.confirmLoading"
@@ -75,7 +75,7 @@ const drawerReactive = reactive({
   // button loading状态
   confirmLoading: false,
   // 抽屉显示状态
-  dialogState: false,
+  drawerState: false,
   // drawer标题
   drawerTitle: '',
   // drawer表单字段
@@ -127,14 +127,16 @@ const rules = {
 }
 onBeforeMount(async () => {
   // 页面渲染后展示表格数据
-  await fetchUsersData(pagerReactive.state)
+  fetchUsersData(pagerReactive.state)
 })
 /**搜索用户 */
 async function searchUser() {
   tableReactive.tableLoading = true
   try {
-    // let users = await fetch.queryUsers(tableSearchForm.value.username ? tableSearchForm.value : '')
-    let users = await fetch.queryUsers(searchReactive.tableSearchForm)
+    let users = await fetch.queryUsers(
+      searchReactive.tableSearchForm.username ? searchReactive.tableSearchForm : ''
+    )
+    // let users = await fetch.queryUsers(searchReactive.tableSearchForm)
     // 赋值
     tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
     pagerReactive.total = users.data.result.total
@@ -156,7 +158,7 @@ async function addUser(data) {
       type: 'success'
     })
     // 新增后刷新table
-    await fetchUsersData()
+    fetchUsersData()
   } catch (error) {
     // 失败弹窗
     ElMessage({
@@ -167,7 +169,7 @@ async function addUser(data) {
   } finally {
     // 新增用户成功返回后关闭drawer，取消按钮loading状态
     drawerReactive.confirmLoading = false
-    drawerReactive.dialogState = false
+    drawerReactive.drawerState = false
   }
 }
 /**编辑用户
@@ -185,7 +187,7 @@ async function editUser(user_id, data) {
       type: 'success'
     })
     // 编辑后刷新table
-    await fetchUsersData()
+    fetchUsersData()
     // 重置drawer表单数据
     drawerReactive.formData = {}
   } catch (error) {
@@ -198,15 +200,15 @@ async function editUser(user_id, data) {
   } finally {
     // 编辑用户成功返回后关闭drawer，取消按钮loading状态
     drawerReactive.confirmLoading = false
-    drawerReactive.dialogState = false
+    drawerReactive.drawerState = false
   }
 }
 
 /**
  * 更改抽屉显示状态
  */
-function changeDialogState() {
-  drawerReactive.dialogState = !drawerReactive.dialogState
+function changeDrawerState() {
+  drawerReactive.drawerState = !drawerReactive.drawerState
 }
 
 /**点击新增按钮 */
@@ -214,7 +216,7 @@ function clickAdd() {
   // 修改drawer标题
   drawerReactive.drawerTitle = '新增'
   // 更改状态
-  changeDialogState()
+  changeDrawerState()
   // drawer表单显示字段
   drawerReactive.formFields = [
     { label: '用户名', name: 'username', type: 'input' },
@@ -230,7 +232,7 @@ async function pagerState(params) {
 /**取消drawer表单(emit) */
 function cancelForm(params) {
   // 修改显示状态
-  drawerReactive.dialogState = params
+  drawerReactive.drawerState = params
   // 重置drawer表单数据
   drawerReactive.formData = {}
 }
@@ -277,7 +279,7 @@ function editData(index, row) {
   // drawer title
   drawerReactive.drawerTitle = '编辑'
   // 打开drawer组件
-  changeDialogState()
+  changeDrawerState()
   // drawer组件表单字段
   drawerReactive.formFields = [
     { label: '用户名', name: 'username', type: 'input' },
@@ -322,6 +324,8 @@ async function deleteData(index, row) {
       message: '成功删除',
       type: 'success'
     })
+    // 删除成功刷新table
+    fetchUsersData()
   } catch (error) {
     ElMessage({
       message: '删除失败',
@@ -362,7 +366,7 @@ async function selectDelete() {
           message: '删除成功'
         })
         // 刷新table
-        await fetchUsersData(pagerReactive.state)
+        fetchUsersData(pagerReactive.state)
       } catch (error) {
         ElMessage({
           message: '删除失败',
