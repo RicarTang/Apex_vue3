@@ -21,6 +21,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/layout',
+      name: 'layoutRoute',
+      component: () => import('@/views/layout/LayoutComponent.vue'),
+      meta: {
+        title: '布局', // 设置页面标题
+      },
+    },
+    {
       path: '/',
       name: 'homeRoute',
       component: () => import('@/views/home/Home.vue'),
