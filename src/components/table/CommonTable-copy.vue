@@ -3,26 +3,26 @@
     <!-- 此处 可以 拓展 （elplus table 的特殊 表格props属性 ） -->
     <!-- :data="tableData" 绑定表格数据 -->
     <div class="table-box">
-      <el-table
-        :data="tableData"
-        v-loading="tableLoading"
-        max-height="40rem"
-        border
-        @selection-change="handleSelectionChange"
+      <a-table
+        :data-source="tableData"
+        :loading="tableLoading"
+        :bordered="true"
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: handleSelectionChange
+        }"
       >
         <!-- 多选框 -->
-        <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
-        <!-- 接受 传值 渲染 表头 -->
-        <!-- 表头数据的 单独控制tableController -->
-        <el-table-column
-          :align="center ? 'center' : ''"
+        <a-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
+        <!-- 接受传值渲染表头 -->
+        <!-- 表头数据的单独控制tableController -->
+        <a-table-column
           v-for="(t, index) in tableController"
+          :title="t.label"
           :key="index"
-          :label="t.label"
-          :prop="t.name"
+          :dataIndex="t.name"
           :width="t.width ? t.width : ''"
           :fixed="t.fixed"
-          sortable
         >
           <!-- #default="scope" 作用域插槽 使用子组件内部数据 操作列 -->
           <template #default="scope" v-if="t.type === 'template'">
@@ -44,8 +44,8 @@
               </el-popconfirm>
             </slot>
           </template>
-        </el-table-column>
-      </el-table>
+        </a-table-column>
+      </a-table>
     </div>
   </div>
 </template>

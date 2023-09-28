@@ -8,10 +8,7 @@ import { ElMessage } from 'element-plus';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      redirect: { name: 'workspaceRoute' }
-    },
+    // 登录路由
     {
       path: '/login',
       name: 'loginRoute',
@@ -20,67 +17,104 @@ const router = createRouter({
         title: '登录', // 设置页面标题
       },
     },
+    // 测试路由
     {
       path: '/layout',
       name: 'layoutRoute',
-      component: () => import('@/views/layout/LayoutComponent.vue'),
+      component: () => import('@/views/layout/HomeLayout.vue'),
       meta: {
         title: '布局', // 设置页面标题
       },
     },
+    // 首页路由
     {
       path: '/',
       name: 'homeRoute',
-      component: () => import('@/views/home/Home.vue'),
+      // component: () => import('@/views/home/Home.vue'),
+      component: () => import('@/views/layout/HomeLayout.vue'),
+      redirect: { name: 'workspaceRoute' },
       meta: {
         title: '主页', // 设置页面标题
         requiresAuth: true,// 访问路由需要认证
       },
       children: [
+        // dashboard
         {
-          path: 'users',
-          name: 'usersRoute',
-          component: () => import('@/views/user/Users.vue'),
+          path: 'dashboard',
+          name: 'dashboardRoute',
+          meta: {
+            title: 'Dashboard', // 设置页面标题
+            requiresAuth: true,// 访问路由需要认证
+          },
+          children: [
+            {
+              path: 'workspace',
+              name: 'workspaceRoute',
+              component: () => import('@/views/dashborad/Workspace.vue'),
+              meta: {
+                title: '工作台', // 设置页面标题
+                requiresAuth: true,// 访问路由需要认证
+              },
+            }
+          ]
+        },
+        // 用户
+        {
+          path: 'user',
+          name: 'userRoute',
           meta: {
             title: '用户',
             requiresAuth: true,// 访问路由需要认证
           },
+          children: [
+            {
+              path: 'manager',
+              name: 'userManagerRoute',
+              component: () => import('@/views/user/Users.vue'),
+              meta: {
+                title: '用户管理',
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+            {
+              path: 'permission',
+              name: 'userPermissionRoute',
+              component: () => import('@/views/user/Permission.vue'),
+              meta: {
+                title: '权限管理',
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+          ]
         },
+        // 接口测试
         {
-          path: 'permission',
-          name: 'permissionRoute',
-          component: () => import('@/views/user/Permission.vue'),
+          path: 'apiTest',
+          name: 'apiTestRoute',
           meta: {
-            title: '权限管理',
+            title: '接口测试', // 设置页面标题
             requiresAuth: true,// 访问路由需要认证
           },
-        },
-        {
-          path: 'workspace',
-          name: 'workspaceRoute',
-          component: () => import('@/views/dashborad/Workspace.vue'),
-          meta: {
-            title: '工作台', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
-        },
-        {
-          path: 'testcases',
-          name: 'testcasesRoute',
-          component: () => import('@/views/test/Testcase.vue'),
-          meta: {
-            title: '测试用例', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
-        },
-        {
-          path: 'testsuites',
-          name: 'testsuitesRoute',
-          component: () => import('@/views/test/Testsuite.vue'),
-          meta: {
-            title: '测试套件', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
+          children: [
+            {
+              path: 'testCase',
+              name: 'testCaseRoute',
+              component: () => import('@/views/test/Testcase.vue'),
+              meta: {
+                title: '测试用例', // 设置页面标题
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+            {
+              path: 'testSuite',
+              name: 'testSuiteRoute',
+              component: () => import('@/views/test/Testsuite.vue'),
+              meta: {
+                title: '测试套件', // 设置页面标题
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+          ]
         },
       ]
     },
