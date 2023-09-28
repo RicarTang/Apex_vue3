@@ -19,11 +19,11 @@ const router = createRouter({
     },
     // 测试路由
     {
-      path: '/layout',
-      name: 'layoutRoute',
-      component: () => import('@/views/layout/HomeLayout.vue'),
+      path: '/antTableDemo',
+      name: 'antTableDemo',
+      component: () => import('@/components/table/AntTableDemo.vue'),
       meta: {
-        title: '布局', // 设置页面标题
+        title: 'demo', // 设置页面标题
       },
     },
     // 首页路由
