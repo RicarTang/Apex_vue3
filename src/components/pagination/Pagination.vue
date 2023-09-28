@@ -35,13 +35,13 @@ const queryParams = ref({ page: 1, limit: 10 })
 
 // 分页器处理函数
 // 单页数据条数改变
-function handleSizeChange(ev) {
-  queryParams.value.limit = ev
+function handleSizeChange(current,size) {
+  queryParams.value.limit = size
   emit('pagerFresh', JSON.parse(JSON.stringify(queryParams.value)))
 }
 // 页数改变
-function handleCurrentChange(ev) {
-  queryParams.value.page = ev
+function handleCurrentChange(page,pageSize) {
+  queryParams.value.page = page
   emit('pagerFresh', JSON.parse(JSON.stringify(queryParams.value)))
 }
 </script>
