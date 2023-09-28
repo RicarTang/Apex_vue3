@@ -1,9 +1,14 @@
 <template>
   <!-- 分页器 -->
   <div class="pager-box" v-if="pager">
-    <el-pagination v-model:current-page="queryParams.page" v-model:page-size="queryParams.limit" background
-      :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="total"
-      @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    <a-pagination
+      v-model:current="queryParams.page"
+      show-quick-jumper
+      :total="total"
+      :defaultPageSize="queryParams.limit"
+      @change="handleCurrentChange"
+      @showSizeChange="handleSizeChange"
+    />
   </div>
 </template>
   
@@ -22,7 +27,7 @@ const props = defineProps({
   pager: {
     type: Boolean,
     default: true
-  },
+  }
 })
 
 // 分页器 默认数据
@@ -31,12 +36,12 @@ const queryParams = ref({ page: 1, limit: 10 })
 // 分页器处理函数
 // 单页数据条数改变
 function handleSizeChange(ev) {
-  queryParams.value.limit = ev;
+  queryParams.value.limit = ev
   emit('pagerFresh', JSON.parse(JSON.stringify(queryParams.value)))
 }
 // 页数改变
 function handleCurrentChange(ev) {
-  queryParams.value.page = ev;
+  queryParams.value.page = ev
   emit('pagerFresh', JSON.parse(JSON.stringify(queryParams.value)))
 }
 </script>
@@ -51,6 +56,11 @@ function handleCurrentChange(ev) {
   justify-content: center;
   // background-color: #fff;
   border-radius: 8px;
+}
+// ant 分页器布局
+.ant-pagination{
+  display: flex;
+  align-items: center;
 }
 </style>
   
