@@ -18,7 +18,11 @@
           >
             <!-- 根据 field 的类型来渲染不同类型的输入框 -->
             <template v-if="field.type === 'input'">
-              <el-input v-model="props.formData[field.name]"></el-input>
+              <el-input
+                v-model="props.formData[field.name]"
+                type="textarea"
+                autosize
+              ></el-input>
             </template>
             <template v-else-if="field.type === 'select'">
               <el-select v-model="field.default">
