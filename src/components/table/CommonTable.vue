@@ -7,7 +7,7 @@
         :data="tableData"
         v-loading="tableLoading"
         max-height="40rem"
-        :header-cell-style="{ backgroundColor: '#ddd',color:'#505d72' }"
+        :header-cell-style="{ backgroundColor: '#ddd', color: '#505d72',padding:'12px 0' }"
         @selection-change="handleSelectionChange"
       >
         <!-- 表格内容为空时插槽,修改数据为空时的content -->
@@ -122,7 +122,6 @@ function handleSelectionChange(val) {
   height: 100%;
   width: 100%;
   // background-color: #fff;
-
   .table-box {
     display: flex;
     width: 100%;
