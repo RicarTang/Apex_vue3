@@ -2,11 +2,20 @@
   <div class="login">
     <div class="login-form">
       <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules">
+        <div class="logo">
+          <img src="/public/assets/logo/favicon-32x32.png" alt="Logo" />
+          <h1 class="title">测试平台</h1>
+        </div>
         <el-form-item label="用户名:" prop="username">
-          <el-input v-model="form.username" />
+          <el-input v-model="form.username" :prefix-icon="UserOutlined" />
         </el-form-item>
         <el-form-item label="密码:" prop="password">
-          <el-input v-model="form.password" type="password" show-password />
+          <el-input
+            v-model="form.password"
+            type="password"
+            :prefix-icon="LockOutlined"
+            show-password
+          />
         </el-form-item>
         <el-form-item class="submit">
           <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()"
@@ -23,7 +32,8 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-//
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+// refs
 const ruleFormRef = ref(null)
 
 // 实例化router
@@ -104,13 +114,13 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .login {
   display: flex;
   /**设置登录页背景 */
   height: 100%;
   width: 100%;
-  background-image: url('/public/assets/background/background-login.jpg');
+  background-image: url('/public/assets/background/bg.svg');
   background-position: 75% 35%;
 
   .login-form {
@@ -120,18 +130,35 @@ onUnmounted(() => {
     align-items: center;
     width: 28rem;
     height: 20rem;
-    background-color: #227c9c;
+    background: linear-gradient(to bottom right,#e7ecf2, #f2f2f2); /* 背景渐变 */
+    backdrop-filter: blur(10px); /* 添加10像素的高斯模糊效果 */
+    box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.3); /* 添加阴影 */
     /* 居中表单盒子 */
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(40%, -50%);
+    transform: translate(-50%, -50%);
     /* 设置圆角的大小 */
     border-radius: 10px;
-
-    .el-form-item__label {
-      color: #fff;
+    .logo {
+      display: flex;
+      justify-content: center; /*水平居中 */
+      align-items: center; /*垂直居中 */
+      img {
+        width: 32px;
+        height: 32px;
+      }
+      .title {
+        font-family: 'Times New Roman', Times, serif;
+        margin-left: 10px;
+        text-align: center;
+        color: #666666;
+      }
     }
+    /**::v-deep渗透子组件样式 */
+    // ::v-deep .el-form-item__label {
+    //   color: #fff;
+    // }
 
     .submit {
       /**调整按钮位置 */

@@ -7,7 +7,6 @@
         :data="tableData"
         v-loading="tableLoading"
         max-height="40rem"
-        border
         @selection-change="handleSelectionChange"
       >
         <!-- 多选框 -->
@@ -125,7 +124,7 @@ function handleSelectionChange(val) {
     // height: 80%;
 
     .el-table {
-      border-radius: 8px;
+      border-radius: 10px;
     }
   }
 }

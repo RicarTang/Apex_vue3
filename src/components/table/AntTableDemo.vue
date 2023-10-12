@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <a-table sticky :data-source="data" :row-selection="rowSelection" :scroll="{ x: 1500 }" bordered>
+    <a-table sticky :data-source="data" :row-selection="rowSelection" :scroll="{ x: 1500 }" >
       <a-table-column
         :align="center"
         :title="t.title"
