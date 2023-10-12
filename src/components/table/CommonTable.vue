@@ -7,7 +7,7 @@
         :data="tableData"
         v-loading="tableLoading"
         max-height="40rem"
-        :header-cell-style="{ backgroundColor: '#ddd' }"
+        :header-cell-style="{ backgroundColor: '#ddd',color:'#505d72' }"
         @selection-change="handleSelectionChange"
       >
         <!-- 表格内容为空时插槽,修改数据为空时的content -->
