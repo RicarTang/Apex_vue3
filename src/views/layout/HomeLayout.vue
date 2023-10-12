@@ -52,7 +52,7 @@
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        Ant Design ©2018 Created by Ant UED
+        api TestFramework ©2023 Created
       </a-layout-footer>
     </a-layout>
   </a-layout>

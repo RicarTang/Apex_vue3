@@ -9,6 +9,10 @@
         max-height="40rem"
         @selection-change="handleSelectionChange"
       >
+        <!-- 表格内容为空时插槽,修改数据为空时的content -->
+        <template #empty>
+          <el-empty></el-empty>
+        </template>
         <!-- 多选框 -->
         <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
         <!-- 接受 传值 渲染 表头 -->
