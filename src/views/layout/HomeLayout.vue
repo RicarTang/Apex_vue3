@@ -96,6 +96,7 @@ function clickItem({ keyPath }) {
   padding: 0px 8px;
   .title{
     color:#fff;
+    white-space: nowrap; /**不换行 */
   }
 }
 
