@@ -1,7 +1,10 @@
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-sider v-model:collapsed="collapsed" collapsible>
-      <div class="logo" />
+      <div class="logo" >
+        <img src="/public/assets/logo/favicon-32x32.png" alt="Logo">
+        <h2 class="title" v-if="!collapsed">TF测试平台</h2>
+      </div>
       <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline" @click="clickItem">
         <a-sub-menu key="dashboard">
           <template #title>
@@ -85,9 +88,15 @@ function clickItem({ keyPath }) {
 
 <style lang="scss" scoped>
 .logo {
+  display: flex;
+  justify-content: center; /*水平居中 */
+  align-items: center; /*垂直居中 */
   height: 32px;
   margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
+  padding: 0px 8px;
+  .title{
+    color:#fff;
+  }
 }
 
 .site-layout .site-layout-background {
