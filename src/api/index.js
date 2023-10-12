@@ -16,6 +16,16 @@ export default {
         })
     },
     /**
+     * 获取当前用户
+     * @returns 
+     */
+    async getCurrentUser() {
+        return await axios({
+            method: 'get',
+            url: '/user/me',
+        })
+    },
+    /**
      * 拉取所有用户数据
      * @param {*} params 请求参数
      * @returns 

@@ -40,7 +40,7 @@
     <a-layout>
       <a-layout-header  style="background: #fff; padding: 0">
         <!-- header组件 -->
-        <Header></Header>
+        <Header :currentUser="currentUser"></Header>
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <a-breadcrumb style="margin: 16px 0">
@@ -63,6 +63,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Header from '@/views/layout/header/Header.vue'
 import { UserOutlined, DashboardOutlined, ExperimentOutlined } from '@ant-design/icons-vue'
+import fetch from '@/api/index'
 
 const collapsed = ref(false)
 const selectedKeys = ref([])
@@ -70,11 +71,14 @@ const selectedKeys = ref([])
 // route
 const route = useRoute()
 const router = useRouter()
+const currentUser = ref("")
 // mounted
 onMounted(() => {
   // 拿取当前路由
   const pathArray = route.path.split('/').filter((item) => item !== '')
   selectedKeys.value = pathArray
+  // 拿取用户信息
+  getCurrentUser()
 })
 /**
  * 点击menu item实现路由跳转
@@ -83,6 +87,11 @@ onMounted(() => {
 function clickItem({ keyPath }) {
   const path = '/' + keyPath.join('/')
   router.push(path)
+}
+/**得到当前用户 */
+async function getCurrentUser(){
+   const user = await fetch.getCurrentUser()
+   currentUser.value = user.data.result.username
 }
 </script>
 

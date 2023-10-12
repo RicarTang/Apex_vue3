@@ -3,7 +3,8 @@
     <div class="avatar-col">
       <el-dropdown>
         <el-col :span="24">
-          <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <!-- <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" /> -->
+          <a-avatar :size="40">{{props.currentUser}}</a-avatar>
         </el-col>
         <template #dropdown>
           <el-dropdown-menu>
@@ -21,14 +22,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-// 导入组件通信插件
+import { ref,defineProps } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router'
 import { SwitchButton } from '@element-plus/icons-vue'
 
 const router = useRouter()
-
+const props = defineProps({
+  // 获取当前用户
+  currentUser: {
+    type: String,
+    default:"USER",
+  },
+})
 const logout = async () => {
   await fetch.logout()
   ElMessage({
@@ -44,10 +50,14 @@ const logout = async () => {
 .header-container {
   /*继承父元素所有属性 */
   display: flex;
+  height: 100%;
   align-items: center;
+  justify-content: flex-end; /* 将子元素推送到容器的末尾（右侧） */
   padding: 0px;
   .avatar-col {
-    margin-left: auto;
+    display: flex;
+    // margin-left: auto;/* 将元素推送到容器的末尾（右侧） */
+    margin-right: 5px;
   }
 }
 </style>
