@@ -1,15 +1,15 @@
 <template>
   <div class="login">
     <div class="login-form">
-      <el-form ref="ruleFormRef" :model="form" :label-width="0" :rules="rules">
+      <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules">
         <div class="logo">
           <img src="/public/assets/logo/favicon-32x32.png" alt="Logo" />
           <h1 class="title">TF测试平台</h1>
         </div>
-        <el-form-item prop="username">
-          <el-input v-model="form.username" :prefix-icon="UserOutlined" clearable :style="{width:'18rem'}" />
+        <el-form-item label="用户名:" prop="username">
+          <el-input v-model="form.username" :prefix-icon="UserOutlined" />
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item label="密码:" prop="password">
           <el-input
             v-model="form.password"
             type="password"
@@ -136,19 +136,18 @@ onUnmounted(() => {
     align-items: center;
     width: 28rem;
     height: 20rem;
-    // background: linear-gradient(to bottom right,#e7ecf2, #f2f2f2); /* 背景渐变 */
-    // backdrop-filter: blur(10px); /* 添加10像素的高斯模糊效果 */
-    // box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+    background: linear-gradient(to bottom right,#e7ecf2, #f2f2f2); /* 背景渐变 */
+    backdrop-filter: blur(10px); /* 添加10像素的高斯模糊效果 */
+    box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.3); /* 添加阴影 */
     /* 居中表单盒子 */
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     /* 设置圆角的大小 */
     border-radius: 10px;
     .logo {
       display: flex;
-      margin-bottom: 30px;
       justify-content: center; /*水平居中 */
       align-items: center; /*垂直居中 */
       img {
@@ -170,9 +169,12 @@ onUnmounted(() => {
     .submit {
       /**调整按钮位置 */
       .el-button {
-        width: 100%;
+        width: 9rem;
         margin: 2.5rem 0 0 0;
-        border-radius: 8px;
+      }
+
+      .el-form-item__content {
+        margin-left: 100px !important;
       }
     }
   }
