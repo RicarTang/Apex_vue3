@@ -4,7 +4,7 @@
       <el-form ref="ruleFormRef" :model="form" label-width="120px" :rules="rules">
         <div class="logo">
           <img src="/public/assets/logo/favicon-32x32.png" alt="Logo" />
-          <h1 class="title">测试平台</h1>
+          <h1 class="title">TF测试平台</h1>
         </div>
         <el-form-item label="用户名:" prop="username">
           <el-input v-model="form.username" :prefix-icon="UserOutlined" />
@@ -51,6 +51,11 @@ const rules = {
       required: true,
       message: '用户名不能为空',
       trigger: 'blur'
+    },
+    {
+      max: 20,
+      message: '用户名长度应小于20字符!',
+      trigger: 'change'
     }
   ],
   password: [
@@ -93,7 +98,8 @@ async function onSubmit() {
 }
 /**回车键登录 */
 function keyDown(e) {
-  if (e.keyCode == 13 || e.keyCode == 100) {
+  if (e.keyCode === 13) {
+    console.log(e.keyCode)
     onSubmit()
   }
 }

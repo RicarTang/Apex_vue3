@@ -31,7 +31,7 @@ const router = createRouter({
       path: '/',
       name: 'homeRoute',
       // component: () => import('@/views/home/Home.vue'),
-      component: () => import('@/views/layout/HomeLayout.vue'),
+      component: () => import('@/components/layout/HomeLayout.vue'),
       redirect: { name: 'workspaceRoute' },
       meta: {
         title: '主页', // 设置页面标题
@@ -111,6 +111,35 @@ const router = createRouter({
               component: () => import('@/views/test/Testsuite.vue'),
               meta: {
                 title: '测试套件', // 设置页面标题
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+            {
+              path: 'testReport',
+              name: 'testReportRoute',
+              component: () => import('@/views/test/Testreport.vue'),
+              meta: {
+                title: '测试报告', // 设置页面标题
+                requiresAuth: true,// 访问路由需要认证
+              },
+            },
+          ]
+        },
+        // 配置
+        {
+          path: 'setting',
+          name: 'settingRoute',
+          meta: {
+            title: '配置', // 设置页面标题
+            requiresAuth: true,// 访问路由需要认证
+          },
+          children: [
+            {
+              path: 'testEnv',
+              name: 'testEnvRoute',
+              component: () => import('@/views/setting/Testenv.vue'),
+              meta: {
+                title: '测试环境', // 设置页面标题
                 requiresAuth: true,// 访问路由需要认证
               },
             },
