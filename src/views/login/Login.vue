@@ -7,7 +7,12 @@
           <h1 class="title">TF测试平台</h1>
         </div>
         <el-form-item prop="username">
-          <el-input v-model="form.username" :prefix-icon="UserOutlined" clearable :style="{width:'18rem'}" />
+          <el-input
+            v-model="form.username"
+            :prefix-icon="UserOutlined"
+            clearable
+            :style="{ width: '18rem' }"
+          />
         </el-form-item>
         <el-form-item prop="password">
           <el-input

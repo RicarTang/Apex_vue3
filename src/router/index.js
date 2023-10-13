@@ -17,15 +17,6 @@ const router = createRouter({
         title: '登录', // 设置页面标题
       },
     },
-    // 测试路由
-    {
-      path: '/antTableDemo',
-      name: 'antTableDemo',
-      component: () => import('@/components/table/AntTableDemo.vue'),
-      meta: {
-        title: 'demo', // 设置页面标题
-      },
-    },
     // 首页路由
     {
       path: '/',
