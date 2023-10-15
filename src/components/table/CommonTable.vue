@@ -36,14 +36,16 @@
                 :icon="Edit"
                 type="warning"
                 @click="handleEdit(scope.$index, scope.row)"
-                >编辑</el-button
-              >
+              >编辑</el-button>
               <!-- 删除按钮添加气泡确认框 -->
               <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.$index, scope.row)">
                 <template #reference>
-                  <el-button size="small" :icon="Delete" :loading="scope.row.loading" type="danger"
-                    >删除</el-button
-                  >
+                  <el-button
+                    size="small"
+                    :icon="Delete"
+                    :loading="scope.row.loading"
+                    type="danger"
+                  >删除</el-button>
                 </template>
               </el-popconfirm>
             </slot>
@@ -126,7 +128,6 @@ function handleSelectionChange(val) {
     display: flex;
     width: 100%;
     // height: 80%;
-
     .el-table {
       border-radius: 10px;
     }

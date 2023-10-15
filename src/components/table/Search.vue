@@ -13,8 +13,7 @@
           :icon="Delete"
           @click="clickDeleteButton"
           :disabled="tableSelected.length === 0"
-          >删除</el-button
-        >
+        >删除</el-button>
       </el-form-item>
       <el-form-item
         v-for="(field, index) in props.formFields"
@@ -28,7 +27,11 @@
             v-model="props.formInline[field.name]"
             :placeholder="props.formInline[field.placeholder]"
             clearable
-          ></el-input>
+          >
+            <template #append>
+              <el-button class="search-btn" :icon="Search" @click="clickSearch" :disabled="!props.formInline[field.name]" />
+            </template>
+          </el-input>
         </template>
         <template v-else-if="field.type === 'select'">
           <el-select v-model="field.default">
@@ -45,12 +48,12 @@
                     <slot :name="t.label" :row="scope.row">
                         <el-button type="primary" :icon="Search" @click="searchUser(scope.$index,)">搜索</el-button>
                     </slot>
-                </template> -->
+        </template>-->
       </el-form-item>
       <!-- 搜索按钮 -->
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" :icon="Search" @click="clickSearch">搜索</el-button>
-      </el-form-item>
+      </el-form-item> -->
       <!-- 插槽,预留其他按钮 -->
       <slot></slot>
     </el-form>
@@ -68,11 +71,12 @@ const props = defineProps({
   tableSelected: {
     type: Array
   },
-  // form model
+  // form model双向绑定
   formInline: {
     type: Object,
     default: {}
   },
+  // 搜索字段
   formFields: {
     type: Array,
     default: []
@@ -101,5 +105,8 @@ function clickSearch() {
   display: flex;
   margin: 6px 0;
   padding: 6px 0;
+  // .search-btn{
+  //   background-color: #FAFAFA;
+  // }
 }
 </style>

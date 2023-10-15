@@ -23,9 +23,7 @@
           />
         </el-form-item>
         <el-form-item class="submit">
-          <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()"
-            >登录</el-button
-          >
+          <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()">登录</el-button>
         </el-form-item>
       </el-form>
     </div>

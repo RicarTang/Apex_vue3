@@ -7,8 +7,20 @@
       :tableSelected="tableReactive.tableSelected"
       @clickAdd="clickAdd"
       @clickDelete="selectDelete"
-      @clickSearch="searchTestcase"
-    ></Search>
+      @clickSearch="searchTestsuite"
+    >
+      <!-- 插槽内容 -->
+      <template #default>
+        <!-- 启动测试按钮 -->
+        <el-form-item>
+          <el-button
+            type="success"
+            @click="clickTestButton"
+            :disabled="tableReactive.tableSelected.length === 0"
+          >执行测试</el-button>
+        </el-form-item>
+      </template>
+    </Search>
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
   <Drawer
@@ -30,8 +42,7 @@
       @editData="editData"
       @deleteData="deleteData"
       @selectDatas="selectDatas"
-    >
-    </CommonTable>
+    ></CommonTable>
   </div>
   <!-- 分页器 -->
   <div>
@@ -95,7 +106,7 @@ const tableController = [
   { label: '更新时间', name: 'update_at' },
   { label: '套件编号', name: 'suite_no' },
   { label: '套件名称/标题', name: 'suite_title' },
-  { type: 'template', label: '操作' }
+  { type: 'template', label: '操作', width: '205px' }
 ]
 onBeforeMount(async () => {
   // 页面渲染后展示数据
@@ -146,6 +157,17 @@ function clickAdd() {
     { label: '套件名称/标题', name: 'suite_title', type: 'input' }
   ]
 }
+/**
+ * 接收emit传递的选中的数据
+ * @param {*} val
+ */
+ function selectDatas(val) {
+  // 拿到每行数据的id，赋值给tableSelected
+  tableReactive.tableSelected = val.map((item) => {
+    // 返回id
+    return item.id
+  })
+}
 /**取消drawer表单修改(emit) */
 function cancelForm(params) {
   // 修改显示状态
@@ -156,7 +178,7 @@ function cancelForm(params) {
 /**
  * 多选删除
  */
- async function selectDelete() {
+async function selectDelete() {
   // 弹窗确认
   ElMessageBox.confirm('是否删除选中数据?', '警告', {
     confirmButtonText: '确定',
@@ -187,6 +209,13 @@ function cancelForm(params) {
         message: '取消删除'
       })
     })
+}
+/**运行测试套件回调函数 */
+function clickTestButton() {
+  ElMessage({
+    type: 'warning',
+    message: '还没实现后端接口'
+  })
 }
 </script>
   

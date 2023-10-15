@@ -17,8 +17,7 @@
             type="success"
             @click="clickTestButton"
             :disabled="tableReactive.tableSelected.length === 0"
-            >执行测试</el-button
-          >
+          >执行测试</el-button>
         </el-form-item>
         <!-- 下载模板按钮 -->
         <el-form-item>
@@ -39,9 +38,7 @@
                 name="excel"
                 :show-file-list="false"
               >
-                <el-button type="primary" :loading="searchReactive.uploadLoading"
-                  >导入用例</el-button
-                >
+                <el-button type="primary" :loading="searchReactive.uploadLoading">导入用例</el-button>
               </el-upload>
             </el-tooltip>
           </el-badge>
@@ -69,8 +66,7 @@
       @selectDatas="selectDatas"
       @editData="editData"
       @deleteData="deleteData"
-    >
-    </CommonTable>
+    ></CommonTable>
   </div>
   <!-- 分页器 -->
   <div>
@@ -339,6 +335,11 @@ function selectDatas(val) {
 /**点击开始测试按钮 */
 function clickTestButton() {
   // 请求测试接口
+  /**运行测试套件回调函数 */
+  ElMessage({
+    type: 'warning',
+    message: '还没实现后端接口'
+  })
 }
 /**点击下载按钮 */
 async function clickDownloadButton() {
