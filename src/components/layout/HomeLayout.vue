@@ -49,6 +49,8 @@
             </span>
           </template>
           <a-menu-item key="testEnv">测试环境</a-menu-item>
+          <a-menu-item key="testAdd">测试地址</a-menu-item>
+          <a-menu-item key="globalVariable">全局变量</a-menu-item>
         </a-sub-menu>
       </a-menu>
     </a-layout-sider>
