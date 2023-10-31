@@ -17,7 +17,8 @@
             type="success"
             @click="clickTestButton"
             :disabled="tableReactive.tableSelected.length === 0"
-          >执行测试</el-button>
+            >执行测试</el-button
+          >
         </el-form-item>
         <!-- 下载模板按钮 -->
         <el-form-item>
@@ -38,7 +39,9 @@
                 name="excel"
                 :show-file-list="false"
               >
-                <el-button type="primary" :loading="searchReactive.uploadLoading">导入用例</el-button>
+                <el-button type="primary" :loading="searchReactive.uploadLoading"
+                  >导入用例</el-button
+                >
               </el-upload>
             </el-tooltip>
           </el-badge>
@@ -66,7 +69,17 @@
       @selectDatas="selectDatas"
       @editData="editData"
       @deleteData="deleteData"
-    ></CommonTable>
+    >
+      <!-- 自定义作用域插槽，新增执行按钮;slotProps接收作用域插槽传递的数据 -->
+      <template #controls="slotProps">
+        <el-button
+          size="small"
+          :icon="CaretRightOutlined"
+          type="success"
+          @click="clickTestButton(slotProps.row)"
+        />
+      </template>
+    </CommonTable>
   </div>
   <!-- 分页器 -->
   <div>
@@ -80,6 +93,7 @@ import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
 import { formatTableData } from '@/utils/formatUtil'
+import { CaretRightOutlined } from '@ant-design/icons-vue'
 
 // 表格
 const tableReactive = reactive({
@@ -333,13 +347,14 @@ function selectDatas(val) {
   })
 }
 /**点击开始测试按钮 */
-function clickTestButton() {
+function clickTestButton(row) {
   // 请求测试接口
   /**运行测试套件回调函数 */
   ElMessage({
     type: 'warning',
     message: '还没实现后端接口'
   })
+  console.log(row)
 }
 /**点击下载按钮 */
 async function clickDownloadButton() {

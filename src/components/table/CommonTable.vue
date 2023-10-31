@@ -7,7 +7,7 @@
         :data="tableData"
         v-loading="tableLoading"
         max-height="40rem"
-        :header-cell-style="{ backgroundColor: '#ddd', color: '#505d72',padding:'12px 0' }"
+        :header-cell-style="{ backgroundColor: '#ddd', color: '#505d72', padding: '12px 0' }"
         @selection-change="handleSelectionChange"
       >
         <!-- 表格内容为空时插槽,修改数据为空时的content -->
@@ -31,12 +31,14 @@
           <!-- #default="scope" 作用域插槽 使用子组件内部数据 操作列 -->
           <template #default="scope" v-if="t.type === 'template'">
             <slot :name="t.label" :row="scope.row">
+              <!-- 预留插槽 -->
+              <slot name="controls" :row="scope.row"></slot>
               <el-button
                 size="small"
                 :icon="Edit"
                 type="warning"
                 @click="handleEdit(scope.$index, scope.row)"
-              >编辑</el-button>
+              />
               <!-- 删除按钮添加气泡确认框 -->
               <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.$index, scope.row)">
                 <template #reference>
@@ -45,7 +47,7 @@
                     :icon="Delete"
                     :loading="scope.row.loading"
                     type="danger"
-                  >删除</el-button>
+                  />
                 </template>
               </el-popconfirm>
             </slot>

@@ -17,7 +17,8 @@
             type="success"
             @click="clickTestButton"
             :disabled="tableReactive.tableSelected.length === 0"
-          >执行测试</el-button>
+            >执行测试</el-button
+          >
         </el-form-item>
       </template>
     </Search>
@@ -42,7 +43,17 @@
       @editData="editData"
       @deleteData="deleteData"
       @selectDatas="selectDatas"
-    ></CommonTable>
+    >
+      <!-- 自定义作用域插槽，新增执行按钮;slotProps接收作用域插槽传递的数据 -->
+      <template #controls="slotProps">
+        <el-button
+          size="small"
+          :icon="CaretRightOutlined"
+          type="success"
+          @click="clickTestButton(slotProps.row)"
+        />
+      </template>
+    </CommonTable>
   </div>
   <!-- 分页器 -->
   <div>
@@ -57,6 +68,7 @@ import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
 import { formatTableData } from '@/utils/formatUtil'
+import { CaretRightOutlined } from '@ant-design/icons-vue'
 
 // 搜索
 const searchReactive = reactive({
@@ -161,7 +173,7 @@ function clickAdd() {
  * 接收emit传递的选中的数据
  * @param {*} val
  */
- function selectDatas(val) {
+function selectDatas(val) {
   // 拿到每行数据的id，赋值给tableSelected
   tableReactive.tableSelected = val.map((item) => {
     // 返回id
@@ -211,11 +223,12 @@ async function selectDelete() {
     })
 }
 /**运行测试套件回调函数 */
-function clickTestButton() {
+function clickTestButton(row) {
   ElMessage({
     type: 'warning',
     message: '还没实现后端接口'
   })
+  console.log(row)
 }
 </script>
   
