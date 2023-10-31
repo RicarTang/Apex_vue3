@@ -83,7 +83,16 @@
   </div>
   <!-- 分页器 -->
   <div>
-    <Pagination @pagerFresh="pagerState" :total="pagerReactive.total"></Pagination>
+    <Pagination @pagerFresh="pagerState" :total="pagerReactive.total" />
+  </div>
+  <!-- 模态框 -->
+  <div>
+    <modal-box
+      @handleCancel="cancelModal"
+      :open="modalReactive.open"
+      :title="modalReactive.title"
+      :events="modalReactive.events"
+    />
   </div>
 </template>
 
@@ -92,6 +101,7 @@ import { onBeforeMount, reactive, ref } from 'vue'
 import fetch from '@/api/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
+import ModalBox from '@/components/dialog/ModalBox.vue'
 import { formatTableData } from '@/utils/formatUtil'
 import { CaretRightOutlined } from '@ant-design/icons-vue'
 
@@ -136,6 +146,15 @@ const drawerReactive = reactive({
   drawerFormFields: [],
   // 抽屉表单数据
   formData: {}
+})
+// 模态框
+const modalReactive = reactive({
+  // 是否打开
+  open: false,
+  // 模态框标题
+  title: '',
+  // 时间轴事件
+  events: []
 })
 
 // 表头
@@ -355,6 +374,13 @@ function clickTestButton(row) {
     message: '还没实现后端接口'
   })
   console.log(row)
+  modalReactive.open = true
+  modalReactive.events = [
+    { content: '事件 1', color: 'green' },
+    { content: '事件 2', color: 'red' },
+    { content: '事件 3', color: 'blue' },
+    { content: '事件 4', color: 'gray' }
+  ]
 }
 /**点击下载按钮 */
 async function clickDownloadButton() {
@@ -602,6 +628,12 @@ async function deleteData(index, row) {
   } finally {
     row.loading = false
   }
+}
+/**
+ * 点击modal cancel或者右上角关闭按钮回调
+ */
+function cancelModal(status) {
+  modalReactive.open = status
 }
 </script>
 
