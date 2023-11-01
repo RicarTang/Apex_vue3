@@ -7,7 +7,7 @@
         <trigger-component :currentUser="currentUser" :collapsed="collapsed"></trigger-component>
       </template>
       <div class="logo">
-        <img src="/public/assets/logo/favicon-32x32.png" alt="Logo" />
+        <img src="/assets/logo/favicon-32x32.png" alt="Logo" />
         <h2 class="title" v-if="!collapsed">TF测试平台</h2>
       </div>
       <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline" @click="clickItem">

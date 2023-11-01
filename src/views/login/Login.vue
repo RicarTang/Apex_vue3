@@ -3,7 +3,7 @@
     <div class="login-form">
       <el-form ref="ruleFormRef" :model="form" :label-width="0" :rules="rules">
         <div class="logo">
-          <img src="/public/assets/logo/favicon-32x32.png" alt="Logo" />
+          <img src="/assets/logo/favicon-32x32.png" alt="Logo" />
           <h1 class="title">TF测试平台</h1>
         </div>
         <el-form-item prop="username">
@@ -129,7 +129,7 @@ onUnmounted(() => {
   /**设置登录页背景 */
   height: 100%;
   width: 100%;
-  background-image: url('/public/assets/background/bg.svg');
+  background-image: url('/assets/background/bg.svg');
   background-position: 75% 35%;
 
   .login-form {

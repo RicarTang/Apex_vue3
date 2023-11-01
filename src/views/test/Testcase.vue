@@ -88,9 +88,10 @@
   <!-- 模态框 -->
   <div>
     <modal-box
-      @handleCancel="cancelModal"
+      @handleFinish="cancelModal"
       :open="modalReactive.open"
       :title="modalReactive.title"
+      :items="modalReactive.items"
       :events="modalReactive.events"
     />
   </div>
@@ -153,6 +154,8 @@ const modalReactive = reactive({
   open: false,
   // 模态框标题
   title: '',
+  // 步骤条item
+  items: [],
   // 时间轴事件
   events: []
 })
@@ -375,8 +378,25 @@ function clickTestButton(row) {
   })
   console.log(row)
   modalReactive.open = true
+  modalReactive.items = [
+    {
+      title: '',
+      description:'接口请求中'
+    },
+    {
+      title: '',
+      description:'生成报告中',
+    },
+    {
+      title: '',
+      description:'测试结束'
+    }
+  ]
   modalReactive.events = [
     { content: '事件 1', color: 'green' },
+    { content: '事件 2', color: 'red' },
+    { content: '事件 3', color: 'blue' },
+    { content: '事件 4', color: 'gray' },
     { content: '事件 2', color: 'red' },
     { content: '事件 3', color: 'blue' },
     { content: '事件 4', color: 'gray' }
