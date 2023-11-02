@@ -35,12 +35,15 @@ axios.interceptors.response.use(
     NProgress.done()
     // success返回false时
     if (!response.data.success) {
-      console.log(response)
-      // elmessage 提示
-      ElMessage({
-        message: response.data.message,
-        type: 'warning',
-      })
+      if (response.headers['content-type'] === 'application/json') {
+        console.log(response)
+        // elmessage 提示
+        ElMessage({
+          message: response.data.message,
+          type: 'warning',
+        })
+      }
+
     }
     // 判断接口，拿取token
     if (response.config.url === '/user/login') {
