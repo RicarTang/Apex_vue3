@@ -16,7 +16,7 @@ axios.interceptors.request.use(
     NProgress.start()
     config.headers['Content-Type'] = 'application/json;charset=UTF-8'
     // 导入接口需要设置请求体为form-data
-    if(config.url === '/testcase/import'){
+    if (config.url === '/testcase/import') {
       config.headers['Content-Type'] = 'multipart/form-data;'
     }
     if (localStorage.token) {
@@ -33,6 +33,15 @@ axios.interceptors.response.use(
   (response) => {
     // 进度条
     NProgress.done()
+    // success返回false时
+    if (!response.data.success) {
+      console.log(response)
+      // elmessage 提示
+      ElMessage({
+        message: response.data.message,
+        type: 'warning',
+      })
+    }
     // 判断接口，拿取token
     if (response.config.url === '/user/login') {
       const token = response.data.result.access_token
@@ -46,6 +55,8 @@ axios.interceptors.response.use(
       // 存储token至localStorage
       localStorage.setItem('token', token)
     }
+
+
     return Promise.resolve(response)
   },
   (error) => {
