@@ -16,6 +16,14 @@
         </template>
         <!-- 多选框 -->
         <el-table-column :align="center ? 'center' : ''" type="selection" v-if="selected" />
+        <!-- 展开行,可嵌套内容 -->
+        <el-table-column :align="center ? 'center' : ''" type="expand" v-if="showContent">
+          <!-- 展开内容 -->
+          <template #default="scope">
+            <!-- 预留插槽给父组件插入展开内容 -->
+            <slot name="content" :row="scope.row"></slot>
+          </template>
+        </el-table-column>
         <!-- 接受 传值 渲染 表头 -->
         <!-- 表头数据的 单独控制tableController -->
         <el-table-column
@@ -30,8 +38,10 @@
         >
           <!-- #default="scope" 作用域插槽 使用子组件内部数据 操作列 -->
           <template #default="scope" v-if="t.type === 'template'">
-            <slot :name="t.label" :row="scope.row">
-              <!-- 预留插槽 -->
+            <!-- 操作栏 -->
+            <!-- 具名插槽，必要时可以在父组件替代默认内容 -->
+            <slot name="defaultControls" :row="scope.row">
+              <!-- 预留的具名插槽，用于添加按钮 -->
               <slot name="controls" :row="scope.row"></slot>
               <el-button
                 size="small"
@@ -58,7 +68,6 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
 import { Delete, Edit } from '@element-plus/icons-vue'
 
 const emit = defineEmits(['editData', 'deleteData', 'selectDatas'])
@@ -86,6 +95,11 @@ const props = defineProps({
   },
   // 表格loading
   tableLoading: {
+    type: Boolean,
+    default: false
+  },
+  // 是否显示展开行
+  showContent: {
     type: Boolean,
     default: false
   }

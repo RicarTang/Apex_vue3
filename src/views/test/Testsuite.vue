@@ -37,9 +37,10 @@
   <div class="table-content">
     <CommonTable
       :tableData="tableReactive.tableData"
-      :tableController="tableController"
+      :tableController="tableReactive.tableController"
       :tableLoading="tableReactive.tableLoading"
       :selected="tableReactive.selected"
+      :showContent="tableReactive.showContent"
       @editData="editData"
       @deleteData="deleteData"
       @selectDatas="selectDatas"
@@ -52,6 +53,24 @@
           type="success"
           @click="clickTestButton(slotProps.row)"
         />
+      </template>
+      <!-- 展开行内容，使用标签展示套件包含的测试用例标题 -->
+      <template #content="slotProps">
+        <a-space :size="8" style="padding: 0 0 10px 30px" wrap>
+          <el-tag
+            v-for="tag in slotProps.row.data"
+            :key="tag.id"
+            class="mx-1"
+            closable
+            :disable-transitions="false"
+            @close="handleCaseClose(tag)"
+          >
+            {{ tag.case_title }}
+          </el-tag>
+          <el-button class="button-new-tag ml-1" size="small" @click="handleAddCase">
+            + 新增测试用例
+          </el-button>
+        </a-space>
       </template>
     </CommonTable>
   </div>
@@ -87,8 +106,19 @@ const tableReactive = reactive({
   tableLoading: false,
   // 表格是否启用多选框
   selected: true,
+  // 表格显示展开行
+  showContent: true,
   // 表格多选数据数组
-  tableSelected: []
+  tableSelected: [],
+  // 表头
+  tableController: [
+    { label: 'id', name: 'id' },
+    { label: '创建时间', name: 'created_at' },
+    { label: '更新时间', name: 'update_at' },
+    { label: '套件编号', name: 'suite_no' },
+    { label: '套件名称/标题', name: 'suite_title' },
+    { type: 'template', label: '操作', width: '205px' }
+  ]
 })
 // 抽屉
 const drawerReactive = reactive({
@@ -111,15 +141,6 @@ const pagerReactive = reactive({
   total: 0
 })
 
-// 表头
-const tableController = [
-  { label: 'id', name: 'id' },
-  { label: '创建时间', name: 'created_at' },
-  { label: '更新时间', name: 'update_at' },
-  { label: '套件编号', name: 'suite_no' },
-  { label: '套件名称/标题', name: 'suite_title' },
-  { type: 'template', label: '操作', width: '205px' }
-]
 onBeforeMount(async () => {
   // 页面渲染后展示数据
   await fetchTestsuitesData(pagerReactive.state)
@@ -229,6 +250,21 @@ function clickTestButton(row) {
     message: '还没实现后端接口'
   })
   console.log(row)
+}
+/**测试套件添加用例 */
+function handleAddCase() {
+  ElMessage({
+    type: 'warning',
+    message: '还没实现后端接口'
+  })
+}
+/**删除测试套件用例 */
+function handleCaseClose(tag) {
+  ElMessage({
+    type: 'warning',
+    message: '还没实现后端接口'
+  })
+  console.log(tag);
 }
 </script>
   
