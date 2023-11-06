@@ -58,7 +58,7 @@
       <template #content="slotProps">
         <a-space :size="8" style="padding: 0 0 10px 30px" wrap>
           <el-tag
-            v-for="tag in slotProps.row.data"
+            v-for="tag in slotProps.row.testcases"
             :key="tag.id"
             class="mx-1"
             closable
