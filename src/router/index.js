@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/auth/index';
 import moment from 'moment';
 import { ElMessage } from 'element-plus';
 

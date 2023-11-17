@@ -2,7 +2,7 @@ import axios from 'axios'
 import NProgress from 'nprogress'
 import { ElMessage } from 'element-plus'
 import jwt_decode from 'jwt-decode'//解析token
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/auth/index';
 import router from '@/router/index'  // axios拦截器只能导入router实例进行跳转
 
 // 设置请求头和请求路径
