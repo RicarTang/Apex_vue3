@@ -1,32 +1,39 @@
 <template>
   <div class="login">
-    <div class="login-form">
-      <el-form ref="ruleFormRef" :model="form" :label-width="0" :rules="rules">
-        <div class="logo">
-          <img src="/assets/logo/favicon-32x32.png" alt="Logo" />
-          <h1 class="title">TF测试平台</h1>
-        </div>
-        <el-form-item prop="username">
-          <el-input
-            v-model="form.username"
-            :prefix-icon="UserOutlined"
-            clearable
-            :style="{ width: '18rem' }"
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            :prefix-icon="LockOutlined"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item class="submit">
-          <el-button round type="primary" @click="onSubmit" @keydown.enter="keyDown()">登录</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <a-form class="login-form" ref="formRef" :model="form" :rules="rules" layout="vertical">
+      <div class="logo">
+        <img src="/assets/logo/favicon-32x32.png" alt="Logo" />
+        <h1 class="title">TF测试平台</h1>
+      </div>
+      <a-form-item name="username">
+        <a-input v-model:value="form.username" allow-clear>
+          <template #prefix>
+            <user-outlined />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item name="password">
+        <a-input-password v-model:value="form.password" allow-clear>
+          <template #prefix>
+            <lock-outlined />
+          </template>
+        </a-input-password>
+      </a-form-item>
+      <!-- 登录按钮 -->
+      <a-row class="login-row">
+        <a-col :span="24" class="login-col">
+          <a-button
+            :loading="loading"
+            :style="{ width: '100%' }"
+            shape="round"
+            type="primary"
+            @click="onSubmit"
+            @keydown.enter="keyDown()"
+            >登录</a-button
+          >
+        </a-col>
+      </a-row>
+    </a-form>
   </div>
 </template>
   
@@ -37,10 +44,13 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 // refs
-const ruleFormRef = ref(null)
+const formRef = ref()
 
 // 实例化router
 const router = useRouter()
+
+// loading
+const loading = ref(false)
 
 // 登录表单
 const form = ref({
@@ -78,26 +88,27 @@ const rules = {
 /**
  * 登录
  */
-async function onSubmit() {
-  if (!ruleFormRef) {
-    return //判断formEl是否为空，为空
-  }
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
+function onSubmit() {
+  formRef.value
+    .validate()
+    .then(async () => {
+      loading.value = true
       //如果校验成功 请求数据
-      try {
-        const res = await fetch.fetchLogin(form.value)
-        ElMessage({
-          message: '登录成功',
-          type: 'success'
-        })
-        // 路由跳转
-        router.replace('/')
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  })
+      const res = await fetch.fetchLogin(form.value)
+      ElMessage({
+        message: '登录成功',
+        type: 'success'
+      })
+      // 路由跳转
+      router.replace('/')
+    })
+    .catch((error) => {
+      console.log(error)
+      loading.value = false
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 /**回车键登录 */
 function keyDown(e) {
@@ -133,11 +144,11 @@ onUnmounted(() => {
   background-position: 75% 35%;
 
   .login-form {
-    display: flex;
+    // display: flex;
     /* 表单内容居中 */
-    justify-content: center;
-    align-items: center;
-    width: 28rem;
+    // justify-content: center;
+    // align-items: center;
+    width: 20rem;
     height: 20rem;
     // background: linear-gradient(to bottom right,#e7ecf2, #f2f2f2); /* 背景渐变 */
     // backdrop-filter: blur(10px); /* 添加10像素的高斯模糊效果 */
@@ -165,19 +176,17 @@ onUnmounted(() => {
         color: #666666;
       }
     }
+    .login-row {
+      margin-top: 5rem;
+      // 按钮居中
+      .login-col {
+        text-align: center;
+      }
+    }
     /**::v-deep渗透子组件样式 */
     // ::v-deep .el-form-item__label {
     //   color: #fff;
     // }
-
-    .submit {
-      /**调整按钮位置 */
-      .el-button {
-        width: 100%;
-        margin: 2.5rem 0 0 0;
-        border-radius: 8px;
-      }
-    }
   }
 }
 </style>

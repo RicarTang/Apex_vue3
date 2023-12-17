@@ -1,57 +1,48 @@
 <template>
-  <el-drawer :model-value="props.drawerState" :title="props.title" :before-close="handleClose">
-    <div class="drawer__content">
-      <div class="drawer__main">
-        <el-form
-          ref="drawerRuleRef"
-          :model="props.formData"
-          :rules="props.rules"
-          label-position="right"
-          label-width="auto"
-        >
+  <a-drawer :open="props.drawerState" :title="props.title" @close="handleClose" width="800">
+    <a-form ref="drawerRuleRef" :model="props.formData" :rules="props.rules">
+      <!-- 使用row和col布局 -->
+      <a-row gutter="35">
+        <a-col v-for="(field, index) in props.formFields" :key="index" span="12">
           <!-- 使用 v-for 渲染表单字段 (prop属性必须要写，关系到表单规则验证)-->
-          <el-form-item
-            v-for="(field, index) in props.formFields"
-            :label="field.label"
-            :key="index"
-            :prop="field.name"
-          >
+          <a-form-item :label="field.label" :name="field.name">
             <!-- 根据 field 的类型来渲染不同类型的输入框 -->
             <template v-if="field.type === 'input'">
-              <el-input
-                v-model="props.formData[field.name]"
-                type="textarea"
-                autosize
-              ></el-input>
+              <a-input
+                class="auto-width-input"
+                v-model:value="props.formData[field.name]"
+                type="input"
+              ></a-input>
             </template>
             <template v-else-if="field.type === 'select'">
-              <el-select v-model="field.default">
-                <el-option
-                  v-for="(option, optionIndex) in field.options"
-                  :key="optionIndex"
-                  :label="option.label"
-                  :value="option.value"
-                ></el-option>
-              </el-select>
+              <a-select
+                v-model:value="field.default"
+                :options="field.options"
+                @change="handleChange"
+              >
+              </a-select>
             </template>
             <!-- 可以根据需要添加其他字段类型的渲染 -->
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
-    <div class="drawer__footer">
-      <el-button @click="cancelForm">取消</el-button>
-      <el-button type="primary" :loading="confirmLoading" @click="submit">{{
-        confirmLoading ? '提交中 ...' : '提交'
-      }}</el-button>
-    </div>
-  </el-drawer>
+          </a-form-item>
+        </a-col>
+      </a-row>
+    </a-form>
+    <!-- 右上角区域插槽 -->
+    <template #extra>
+      <a-space>
+        <a-button @click="cancelForm">取消</a-button>
+        <a-button type="primary" @click="submit">{{
+          confirmLoading ? '提交中 ...' : '提交'
+        }}</a-button>
+      </a-space>
+    </template>
+  </a-drawer>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 // form表单ref
-const drawerRuleRef = ref(null)
+const drawerRuleRef = ref();
 
 const emit = defineEmits(['cancelForm', 'updateData'])
 const props = defineProps({
@@ -88,16 +79,22 @@ const props = defineProps({
 })
 /**提交表单数据 */
 function submit() {
-  if (!drawerRuleRef) {
-    return //判断formEl是否为空，为空
-  }
-  drawerRuleRef.value.validate(async (valid) => {
-    if (valid) {
-      //如果校验成功 传递数据
-      // 传递表单值
-      emit('updateData', props.formData)
-    }
-  })
+  // if (!drawerRuleRef) {
+  //   return //判断formEl是否为空，为空
+  // }
+  drawerRuleRef.value
+    .validate()
+    .then((valid) => {
+      if (valid) {
+        //如果校验成功 传递数据
+        // 传递表单值
+        console.log("formData数据",props.formData)
+        emit('updateData', props.formData)
+      }
+    })
+    .catch((error) => {
+      console.log("表单验证错误",error)
+    })
 }
 /**
  * 点击drawer关闭按钮触发事件
@@ -121,25 +118,5 @@ function cancelForm() {
 }
 </script>
 
-<style lang="scss">
-.el-drawer__body {
-  display: flex;
-  /* 设置主轴方向为垂直（上下） */
-  flex-direction: column;
-}
-
-.drawer__content {
-  display: flex;
-
-  /**设置水平居中 */
-  //   justify-content: center;
-  .drawer__main {
-    display: flex;
-  }
-}
-.drawer__footer {
-  display: flex;
-  margin-top: auto;
-  justify-content: flex-end;
-}
+<style lang="scss" scoped>
 </style>
