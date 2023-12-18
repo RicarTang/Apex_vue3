@@ -106,7 +106,7 @@
 
 <script setup>
 import { onBeforeMount, reactive, h } from 'vue'
-import fetch from '@/api/index'
+import fetchTestcase from '@/api/testcase/index'
 import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import ModalBox from '@/components/dialog/ModalBox.vue'
@@ -290,7 +290,7 @@ async function pagerState(params) {
 async function fetchTestcasesData(params) {
   tableReactive.tableLoading = true
   try {
-    const testcases = await fetch.fetchTestcases(params)
+    const testcases = await fetchTestcase.getAllTestcase(params)
     // 格式化后赋值
     tableReactive.tableData = formatTableData(testcases.data.result.data, [
       'case_is_execute',
@@ -411,7 +411,7 @@ function clickTestButton(row) {
 /**点击下载按钮 */
 async function clickDownloadButton() {
   // 请求下载接口
-  await fetch.downloadTestTemplate()
+  await fetchTestcase.downloadTestTemplate()
 }
 /**
  * 多选删除
@@ -424,7 +424,7 @@ async function selectDelete() {
     async onOk() {
       try {
         // 请求删除多条数据接口
-        await fetch.deleteTestcases({ users_id: tableReactive.tableSelected })
+        await fetchTestcase.deleteManyTestcase({ users_id: tableReactive.tableSelected })
         message.success('删除成功')
         // 刷新table
         fetchTestcasesData(pagerReactive.state)
@@ -443,7 +443,7 @@ async function searchTestcase() {
   tableReactive.tableLoading = true
   try {
     if (searchReactive.tableSearchForm.case_title) {
-      const testcases = await fetch.queryTestcases(searchReactive.tableSearchForm)
+      const testcases = await fetchTestcase.queryTestcases(searchReactive.tableSearchForm)
       // 赋值
       tableReactive.tableData = formatTableData(testcases.data.result.data, [
         'case_is_execute',
@@ -465,7 +465,7 @@ async function uploadTemplate(param) {
   uploadFormData.append('excel', param.file)
   try {
     searchReactive.uploadLoading = true
-    await fetch.importTestTemplate(uploadFormData)
+    await fetchTestcase.importTestTemplate(uploadFormData)
     message.success('上传成功')
   } catch (error) {
     message.error('上传失败')
@@ -488,7 +488,7 @@ function cancelForm(params) {
 async function addTestcase(data) {
   drawerReactive.confirmLoading = true
   try {
-    await fetch.addTestcase(data)
+    await fetchTestcase.addTestcase(data)
     // 新增成功弹窗
     message.success('新增成功')
     // 新增后刷新table
@@ -512,7 +512,7 @@ async function addTestcase(data) {
 async function editTestcase(case_id, data) {
   drawerReactive.confirmLoading = true
   try {
-    await fetch.updateTestcase(case_id, data)
+    await fetchTestcase.updateTestcase(case_id, data)
     // 修改成功弹窗
     message.success('编辑成功')
     // 编辑后刷新table
@@ -612,7 +612,7 @@ async function deleteData(index, row) {
   row.loading = true
   // 调用delete接口,传入user_id
   try {
-    await fetch.deleteTestcase(row.id)
+    await fetchTestcase.deleteTestcase(row.id)
     message.success('成功删除')
     // 删除成功刷新table
     fetchTestcasesData()

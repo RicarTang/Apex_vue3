@@ -39,7 +39,7 @@
   
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
-import fetch from '@/api/index'
+import fetchUser from '@/api/user/index'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
@@ -93,7 +93,7 @@ function onSubmit() {
     .then(async () => {
       loading.value = true
       //如果校验成功 请求数据
-      const res = await fetch.fetchLogin(form.value)
+      const res = await fetchUser.login(form.value)
       message.success('登录成功')
       // 路由跳转
       router.replace('/')

@@ -41,8 +41,8 @@
 </template>
 
 <script setup>
-import { onBeforeMount, reactive, ref } from 'vue'
-import fetch from '@/api/index'
+import { onBeforeMount, reactive } from 'vue'
+import fetchUser from '@/api/user/index'
 import { ElMessage } from 'element-plus'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
@@ -134,10 +134,10 @@ async function searchUser() {
   tableReactive.tableLoading = true
   try {
     if (searchReactive.tableSearchForm.username) {
-      // const users = await fetch.queryUsers(
+      // const users = await fetchUser.queryUsers(
       //   searchReactive.tableSearchForm.username ? searchReactive.tableSearchForm : ''
       // )
-      const users = await fetch.queryUsers(searchReactive.tableSearchForm)
+      const users = await fetchUser.queryUsers(searchReactive.tableSearchForm)
       // 赋值
       tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
       pagerReactive.total = users.data.result.total
@@ -156,7 +156,7 @@ async function searchUser() {
 async function addUser(data) {
   drawerReactive.confirmLoading = true
   try {
-    await fetch.addUser(data)
+    await fetchUser.addUser(data)
     // 新增成功弹窗
     ElMessage({
       message: '新增用户成功',
@@ -185,7 +185,7 @@ async function addUser(data) {
 async function editUser(user_id, data) {
   drawerReactive.confirmLoading = true
   try {
-    await fetch.updateUser(user_id, data)
+    await fetchUser.updateUser(user_id, data)
     // 修改成功弹窗
     ElMessage({
       message: '编辑用户成功',
@@ -260,7 +260,7 @@ async function updateFormData(params) {
 async function fetchUsersData(params) {
   tableReactive.tableLoading = true
   try {
-    const users = await fetch.fetchUsers(params)
+    const users = await fetchUser.getAllUser(params)
     // 赋值,formatTableData对接口数据进行格式化
     tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
     pagerReactive.total = users.data.result.total
@@ -324,7 +324,7 @@ async function deleteData(index, row) {
   row.loading = true
   // 调用delete接口,传入user_id
   try {
-    await fetch.deleteUser(row.id)
+    await fetchUser.deleteUser(row.id)
     ElMessage({
       message: '成功删除',
       type: 'success'
@@ -365,7 +365,7 @@ async function selectDelete() {
     .then(async () => {
       try {
         // 请求删除多条数据接口
-        await fetch.deleteUsers({ users_id: tableReactive.tableSelected })
+        await fetchUser.deleteManyUser({ users_id: tableReactive.tableSelected })
         ElMessage({
           type: 'success',
           message: '删除成功'

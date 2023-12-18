@@ -16,7 +16,7 @@
           <a-form-item>
             <a-button
               type="primary"
-              @click="clickTestButton"
+              @click="executeManyTest"
               :disabled="tableReactive.tableSelected.length === 0"
               :icon="h(PlayCircleFilled)"
               >执行测试</a-button
@@ -54,7 +54,7 @@
           size="small"
           :icon="CaretRightOutlined"
           type="success"
-          @click="clickTestButton(slotProps.row)"
+          @click="executeOneTest(slotProps.row)"
         />
       </template>
       <!-- 展开行内容，使用标签展示套件包含的测试用例标题 -->
@@ -85,7 +85,7 @@
   
 <script setup>
 import { onBeforeMount, reactive, h } from 'vue'
-import fetch from '@/api/index'
+import fetchTestsuite from '@/api/testsuite/index'
 import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
@@ -161,7 +161,7 @@ async function pagerState(params) {
 async function fetchTestsuitesData(params) {
   tableReactive.tableLoading = true
   try {
-    const testsuites = await fetch.fetchTestsuites(params)
+    const testsuites = await fetchTestsuite.getAllTestsuite(params)
     // 赋值
     tableReactive.tableData = formatTableData(testsuites.data.result.data)
     pagerReactive.total = testsuites.data.result.total
@@ -218,8 +218,8 @@ async function selectDelete() {
     content: '是否删除选中数据?',
     async onOk() {
       try {
-        // 请求删除多条数据接口
-        await fetch.deleteTestsuites({ users_id: tableReactive.tableSelected })
+        // 请求删除多条数据接口(未实现)
+        await fetchTestsuite.deleteManyTestsuite({ users_id: tableReactive.tableSelected })
         message.success('删除成功')
         // 刷新table
         fetchTestsuitesData(pagerReactive.state)
@@ -233,8 +233,13 @@ async function selectDelete() {
     }
   })
 }
-/**运行测试套件回调函数 */
-function clickTestButton(row) {
+/**运行一个测试套件 */
+function executeOneTest(row) {
+  message.warning('还没实现后端接口')
+  console.log(row)
+}
+/**运行多个测试套件 */
+function executeManyTest(row) {
   message.warning('还没实现后端接口')
   console.log(row)
 }
@@ -252,7 +257,7 @@ async function searchTestsuite() {
   tableReactive.tableLoading = true
   try {
     if (searchReactive.tableSearchForm.suite_title) {
-      const suite = await fetch.querySuite(searchReactive.tableSearchForm)
+      const suite = await fetchTestsuite.querySuite(searchReactive.tableSearchForm)  // 未实现
       // 赋值
       // tableReactive.tableData = formatTableData(suite.data.result.data, ['is_active', 'is_super'])
       pagerReactive.total = suite.data.result.total

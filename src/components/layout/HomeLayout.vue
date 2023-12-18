@@ -86,7 +86,7 @@ import {
   SettingOutlined,
   ApiFilled
 } from '@ant-design/icons-vue'
-import fetch from '@/api/index'
+import fetchUser from '@/api/user/index'
 
 // 菜单展开状态
 const collapsed = ref(false)
@@ -115,7 +115,7 @@ function clickItem({ keyPath }) {
 }
 /**得到当前用户 */
 async function getCurrentUser() {
-  const user = await fetch.getCurrentUser()
+  const user = await fetchUser.getCurrentUser()
   currentUser.value = user.data.result.username
 }
 </script>
