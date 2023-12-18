@@ -60,6 +60,8 @@
                   />
                 </template>
               </el-popconfirm>
+              <!-- 预留的具名插槽，用于添加按钮 -->
+              <slot name="controls-suffix" :row="scope.row"></slot>
             </slot>
           </template>
         </el-table-column>

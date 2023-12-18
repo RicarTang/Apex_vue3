@@ -13,5 +13,16 @@ export default {
             params: params
         })
     },
+    /**
+     * 执行单个测试套件
+     * @param {*} data 请求body
+     */
+    async executeOneSuite(data) {
+        return await axios({
+            method: 'post',
+            url: '/testsuite/run',
+            data: data
+        })
+    },
 
 }

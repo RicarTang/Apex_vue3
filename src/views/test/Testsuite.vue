@@ -57,6 +57,15 @@
           @click="executeOneTest(slotProps.row)"
         />
       </template>
+      <template #controls-suffix="slotProps">
+        <el-button
+          v-show="slotProps.row.task_id !== null"
+          size="small"
+          :icon="FolderOpenFilled"
+          type="success"
+          @click="openAllureReport(slotProps.row)"
+        />
+      </template>
       <!-- 展开行内容，使用标签展示套件包含的测试用例标题 -->
       <template #content="slotProps">
         <a-space :size="8" style="padding: 0 0 10px 30px" wrap>
@@ -90,7 +99,7 @@ import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
 import { formatTableData } from '@/utils/formatUtil'
-import { CaretRightOutlined, PlayCircleFilled } from '@ant-design/icons-vue'
+import { CaretRightOutlined, PlayCircleFilled, FolderOpenFilled } from '@ant-design/icons-vue'
 
 // 搜索
 const searchReactive = reactive({
@@ -234,9 +243,14 @@ async function selectDelete() {
   })
 }
 /**运行一个测试套件 */
-function executeOneTest(row) {
-  message.warning('还没实现后端接口')
-  console.log(row)
+async function executeOneTest(row) {
+  try {
+    await fetchTestsuite.executeOneSuite({ suite_id: row.id })
+    message.success('执行套件成功,测试task将在后台运行')
+  } catch (error) {
+    console.log('执行套件失败：', error)
+    message.error('执行套件失败')
+  }
 }
 /**运行多个测试套件 */
 function executeManyTest(row) {
@@ -257,7 +271,7 @@ async function searchTestsuite() {
   tableReactive.tableLoading = true
   try {
     if (searchReactive.tableSearchForm.suite_title) {
-      const suite = await fetchTestsuite.querySuite(searchReactive.tableSearchForm)  // 未实现
+      const suite = await fetchTestsuite.querySuite(searchReactive.tableSearchForm) // 未实现
       // 赋值
       // tableReactive.tableData = formatTableData(suite.data.result.data, ['is_active', 'is_super'])
       pagerReactive.total = suite.data.result.total
@@ -268,6 +282,12 @@ async function searchTestsuite() {
   } finally {
     tableReactive.tableLoading = false
   }
+}
+/**打开allure测试报告 */
+function openAllureReport(row) {
+  console.log(row)
+  // 在新的浏览器标签中打开新的路由
+  window.open(import.meta.env.VITE_API_HOST+`/report/${row.task_id}`, '_blank');
 }
 </script>
   

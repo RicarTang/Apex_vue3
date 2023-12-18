@@ -43,7 +43,7 @@
 <script setup>
 import { onBeforeMount, reactive } from 'vue'
 import fetchUser from '@/api/user/index'
-import { ElMessage } from 'element-plus'
+import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
@@ -158,18 +158,12 @@ async function addUser(data) {
   try {
     await fetchUser.addUser(data)
     // 新增成功弹窗
-    ElMessage({
-      message: '新增用户成功',
-      type: 'success'
-    })
+    message.success('新增用户成功')
     // 新增后刷新table
     fetchUsersData()
   } catch (error) {
     // 失败弹窗
-    ElMessage({
-      message: '新增用户失败',
-      type: 'error'
-    })
+    message.error('新增用户失败')
     console.log(error)
   } finally {
     // 新增用户成功返回后关闭drawer，取消按钮loading状态
@@ -187,18 +181,12 @@ async function editUser(user_id, data) {
   try {
     await fetchUser.updateUser(user_id, data)
     // 修改成功弹窗
-    ElMessage({
-      message: '编辑用户成功',
-      type: 'success'
-    })
+    message.success('编辑用户成功')
     // 编辑后刷新table
     fetchUsersData()
   } catch (error) {
     // 失败弹窗
-    ElMessage({
-      message: '编辑用户失败',
-      type: 'error'
-    })
+    message.error('编辑用户失败')
     console.log(error)
   } finally {
     // 编辑用户成功返回后关闭drawer，取消按钮loading状态
@@ -265,10 +253,7 @@ async function fetchUsersData(params) {
     tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
     pagerReactive.total = users.data.result.total
   } catch (error) {
-    ElMessage({
-      message: '数据加载失败',
-      type: 'error'
-    })
+    message.error('数据加载失败')
     console.log(error)
   } finally {
     tableReactive.tableLoading = false
@@ -325,17 +310,11 @@ async function deleteData(index, row) {
   // 调用delete接口,传入user_id
   try {
     await fetchUser.deleteUser(row.id)
-    ElMessage({
-      message: '成功删除',
-      type: 'success'
-    })
+    message.success('成功删除')
     // 删除成功刷新table
     fetchUsersData()
   } catch (error) {
-    ElMessage({
-      message: '删除失败',
-      type: 'error'
-    })
+    message.error('删除失败')
     console.log(error)
   } finally {
     row.loading = false
@@ -357,35 +336,25 @@ function selectDatas(val) {
  */
 async function selectDelete() {
   // 弹窗确认
-  ElMessageBox.confirm('是否删除选中数据?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-    .then(async () => {
+  Modal.confirm({
+    title: '警告',
+    content: '是否删除选中数据?',
+    async onOk() {
       try {
         // 请求删除多条数据接口
         await fetchUser.deleteManyUser({ users_id: tableReactive.tableSelected })
-        ElMessage({
-          type: 'success',
-          message: '删除成功'
-        })
+        message.success('删除成功')
         // 刷新table
         fetchUsersData(pagerReactive.state)
       } catch (error) {
-        ElMessage({
-          message: '删除失败',
-          type: 'error'
-        })
+        message.error('删除失败')
         console.log(error)
       }
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消删除'
-      })
-    })
+    },
+    onCancel() {
+      message.info('取消删除')
+    }
+  })
 }
 </script>
 

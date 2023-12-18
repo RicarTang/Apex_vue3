@@ -94,7 +94,7 @@ function onSubmit() {
       loading.value = true
       //如果校验成功 请求数据
       const res = await fetchUser.login(form.value)
-      message.success('登录成功')
+      message.success('登录成功🎉🎉🎉')
       // 路由跳转
       router.replace('/')
     })
