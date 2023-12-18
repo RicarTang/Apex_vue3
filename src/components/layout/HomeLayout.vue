@@ -33,7 +33,7 @@
         <a-sub-menu key="apiTest">
           <template #title>
             <span>
-              <experiment-outlined />
+              <api-filled/>
               <span>接口测试</span>
             </span>
           </template>
@@ -83,8 +83,8 @@ import TriggerComponent from './aside/TriggerComponent.vue'
 import {
   UserOutlined,
   DashboardOutlined,
-  ExperimentOutlined,
-  SettingOutlined
+  SettingOutlined,
+  ApiFilled
 } from '@ant-design/icons-vue'
 import fetch from '@/api/index'
 

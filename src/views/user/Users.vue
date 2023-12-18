@@ -133,13 +133,18 @@ onBeforeMount(async () => {
 async function searchUser() {
   tableReactive.tableLoading = true
   try {
-    let users = await fetch.queryUsers(
-      searchReactive.tableSearchForm.username ? searchReactive.tableSearchForm : ''
-    )
-    // let users = await fetch.queryUsers(searchReactive.tableSearchForm)
-    // 赋值
-    tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
-    pagerReactive.total = users.data.result.total
+    if (searchReactive.tableSearchForm.username) {
+      // const users = await fetch.queryUsers(
+      //   searchReactive.tableSearchForm.username ? searchReactive.tableSearchForm : ''
+      // )
+      const users = await fetch.queryUsers(searchReactive.tableSearchForm)
+      // 赋值
+      tableReactive.tableData = formatTableData(users.data.result.data, ['is_active', 'is_super'])
+      pagerReactive.total = users.data.result.total
+    } else {
+      // 搜索框为空拉取整个列表
+      fetchUsersData(pagerReactive.state)
+    }
   } finally {
     tableReactive.tableLoading = false
   }
@@ -188,8 +193,6 @@ async function editUser(user_id, data) {
     })
     // 编辑后刷新table
     fetchUsersData()
-    // 重置drawer表单数据
-    drawerReactive.formData = {}
   } catch (error) {
     // 失败弹窗
     ElMessage({
@@ -201,6 +204,8 @@ async function editUser(user_id, data) {
     // 编辑用户成功返回后关闭drawer，取消按钮loading状态
     drawerReactive.confirmLoading = false
     drawerReactive.drawerState = false
+    // 重置drawer表单数据
+    drawerReactive.formData = {}
   }
 }
 

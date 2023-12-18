@@ -12,14 +12,17 @@
       <!-- 插槽内容 -->
       <template #default>
         <!-- 启动测试按钮 -->
-        <el-form-item>
-          <el-button
-            type="success"
-            @click="clickTestButton"
-            :disabled="tableReactive.tableSelected.length === 0"
-            >执行测试</el-button
-          >
-        </el-form-item>
+        <a-col>
+          <a-form-item>
+            <a-button
+              type="primary"
+              @click="clickTestButton"
+              :disabled="tableReactive.tableSelected.length === 0"
+              :icon="h(PlayCircleFilled)"
+              >执行测试</a-button
+            >
+          </a-form-item>
+        </a-col>
       </template>
     </Search>
   </div>
@@ -81,13 +84,13 @@
 </template>
   
 <script setup>
-import { onBeforeMount, reactive } from 'vue'
+import { onBeforeMount, reactive, h } from 'vue'
 import fetch from '@/api/index'
 import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
 import { formatTableData } from '@/utils/formatUtil'
-import { CaretRightOutlined } from '@ant-design/icons-vue'
+import { CaretRightOutlined, PlayCircleFilled } from '@ant-design/icons-vue'
 
 // 搜索
 const searchReactive = reactive({
@@ -243,6 +246,23 @@ function handleAddCase() {
 function handleCaseClose(tag) {
   message.warning('还没实现后端接口')
   console.log(tag)
+}
+/**搜索测试套件(待完善) */
+async function searchTestsuite() {
+  tableReactive.tableLoading = true
+  try {
+    if (searchReactive.tableSearchForm.suite_title) {
+      const suite = await fetch.querySuite(searchReactive.tableSearchForm)
+      // 赋值
+      // tableReactive.tableData = formatTableData(suite.data.result.data, ['is_active', 'is_super'])
+      pagerReactive.total = suite.data.result.total
+    } else {
+      // 搜索框为空拉取整个列表
+      fetchTestsuitesData(pagerReactive.state)
+    }
+  } finally {
+    tableReactive.tableLoading = false
+  }
 }
 </script>
   

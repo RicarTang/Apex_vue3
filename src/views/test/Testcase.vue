@@ -12,40 +12,47 @@
       <!-- 插槽内容 -->
       <template #default>
         <!-- 启动测试按钮 -->
-        <el-form-item>
-          <el-button
-            type="success"
-            @click="clickTestButton"
-            :disabled="tableReactive.tableSelected.length === 0"
-            >执行测试</el-button
-          >
-        </el-form-item>
+        <a-col>
+          <a-form-item>
+            <a-button
+              type="primary"
+              @click="clickTestButton"
+              :disabled="tableReactive.tableSelected.length === 0"
+            >
+              <PlayCircleFilled></PlayCircleFilled>
+              执行测试</a-button
+            >
+          </a-form-item>
+        </a-col>
         <!-- 下载模板按钮 -->
-        <el-form-item>
-          <el-badge is-dot>
-            <el-tooltip content="只有模板才能支持导入测试用例！" placement="top" effect="light">
-              <el-button type="info" @click="clickDownloadButton">下载模版</el-button>
-            </el-tooltip>
-          </el-badge>
-        </el-form-item>
-        <!-- 导入按钮 -->
-        <el-form-item>
-          <el-badge is-dot>
-            <el-tooltip content="请导入正确格式的测试用例模板！" placement="top" effect="light">
-              <el-upload
-                ref="upload"
-                :limit="1"
-                :http-request="uploadTemplate"
-                name="excel"
-                :show-file-list="false"
-              >
-                <el-button type="primary" :loading="searchReactive.uploadLoading"
-                  >导入用例</el-button
+        <a-col>
+          <a-form-item>
+            <a-badge dot status="warning">
+              <a-tooltip placement="top">
+                <template #title>只有模板才能支持导入测试用例！</template>
+                <a-button type="dashed" :icon="h(DownloadOutlined)" @click="clickDownloadButton"
+                  >下载模版</a-button
                 >
-              </el-upload>
-            </el-tooltip>
-          </el-badge>
-        </el-form-item>
+              </a-tooltip>
+            </a-badge>
+          </a-form-item>
+        </a-col>
+        <!-- 导入按钮 -->
+        <a-col>
+          <a-form-item>
+            <a-badge dot status="warning">
+              <a-tooltip placement="top">
+                <template #title>请导入正确格式的测试用例模板！</template>
+                <a-upload :custom-request="uploadTemplate" name="excel" :show-upload-list="false">
+                  <a-button type="dashed" :loading="searchReactive.uploadLoading">
+                    <upload-outlined></upload-outlined>
+                    导入用例</a-button
+                  >
+                </a-upload>
+              </a-tooltip>
+            </a-badge>
+          </a-form-item>
+        </a-col>
       </template>
     </Search>
   </div>
@@ -98,13 +105,18 @@
 </template>
 
 <script setup>
-import { onBeforeMount, reactive, ref } from 'vue'
+import { onBeforeMount, reactive, h } from 'vue'
 import fetch from '@/api/index'
 import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import ModalBox from '@/components/dialog/ModalBox.vue'
 import { formatTableData } from '@/utils/formatUtil'
-import { CaretRightOutlined } from '@ant-design/icons-vue'
+import {
+  CaretRightOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  PlayCircleFilled
+} from '@ant-design/icons-vue'
 
 // 表格
 const tableReactive = reactive({
@@ -430,17 +442,19 @@ async function selectDelete() {
 async function searchTestcase() {
   tableReactive.tableLoading = true
   try {
-    let testcases = await fetch.queryTestcases(
-      searchReactive.tableSearchForm.case_title ? searchReactive.tableSearchForm : ''
-    )
-    // let testcases = await fetch.queryTestcases(searchReactive.tableSearchForm)
-    // 赋值
-    tableReactive.tableData = formatTableData(testcases.data.result.data, [
-      'case_is_execute',
-      'request_to_redis',
-      'response_to_redis'
-    ])
-    pagerReactive.total = testcases.data.result.total
+    if (searchReactive.tableSearchForm.case_title) {
+      const testcases = await fetch.queryTestcases(searchReactive.tableSearchForm)
+      // 赋值
+      tableReactive.tableData = formatTableData(testcases.data.result.data, [
+        'case_is_execute',
+        'request_to_redis',
+        'response_to_redis'
+      ])
+      pagerReactive.total = testcases.data.result.total
+    } else {
+      // 搜索框为空拉取整个列表
+      fetchTestcasesData(pagerReactive.state)
+    }
   } finally {
     tableReactive.tableLoading = false
   }

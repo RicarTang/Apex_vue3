@@ -25,7 +25,6 @@
               <a-select
                 v-model:value="field.default"
                 :options="field.options"
-                @change="handleChange"
               >
               </a-select>
             </template>
