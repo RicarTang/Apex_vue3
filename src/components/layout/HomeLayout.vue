@@ -33,7 +33,7 @@
         <a-sub-menu key="apiTest">
           <template #title>
             <span>
-              <api-filled/>
+              <api-filled />
               <span>接口测试</span>
             </span>
           </template>
@@ -69,7 +69,8 @@
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        api TestFramework ©2023 Tang个人出品 <a href="https://beian.miit.gov.cn/" target="_blank">湘ICP备2023022918号</a>
+        api TestFramework ©2023 Tang个人出品
+        <a href="https://beian.miit.gov.cn/" target="_blank">湘ICP备2023022918号</a>
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -80,12 +81,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Header from './header/Header.vue'
 import TriggerComponent from './aside/TriggerComponent.vue'
-import {
-  UserOutlined,
-  DashboardOutlined,
-  SettingOutlined,
-  ApiFilled
-} from '@ant-design/icons-vue'
+import { UserOutlined, DashboardOutlined, SettingOutlined, ApiFilled } from '@ant-design/icons-vue'
 import fetchUser from '@/api/user/index'
 
 // 菜单展开状态
@@ -113,10 +109,33 @@ function clickItem({ keyPath }) {
   const path = '/' + keyPath.join('/')
   router.push(path)
 }
+
 /**得到当前用户 */
+let intervalId
+let retryCount = 0
+const maxRetries = 5 // 设置最大重试次数
 async function getCurrentUser() {
-  const user = await fetchUser.getCurrentUser()
-  currentUser.value = user.data.result.username
+  try {
+    const user = await fetchUser.getCurrentUser()
+    currentUser.value = user.data.result.username
+    // 成功获取用户数据时，清除定时器并设置当前用户
+    clearInterval(intervalId)
+  } catch (error) {
+    console.log('获取当前用户失败')
+    retryCount++
+    // 重试5次
+    if (retryCount >= maxRetries) {
+      console.log(`达到最大重试次数(${maxRetries})，停止重试。`)
+      clearInterval(intervalId)
+    } else {
+      clearInterval(intervalId) // 清除旧的定时器
+      // 每两秒执行一次
+      intervalId = setInterval(async () => {
+        // 失败重调
+        await getCurrentUser()
+      }, 2000)
+    }
+  }
 }
 </script>
 

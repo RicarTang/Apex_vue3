@@ -41,7 +41,7 @@
 import { SwitchButton } from '@element-plus/icons-vue'
 import { LeftOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
-import fetch from '@/api/index'
+import fetchUser from '@/api/user/index'
 
 // router
 const router = useRouter()
@@ -59,7 +59,7 @@ const props = defineProps({
 })
 /**退出登录 */
 async function logout() {
-  await fetch.logout()
+  await fetchUser.logout()
   ElMessage({
     message: '退出登录',
     type: 'success'
