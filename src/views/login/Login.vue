@@ -41,11 +41,10 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import fetch from '@/api/index'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { notification, message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 // refs
 const formRef = ref()
-
 // 实例化router
 const router = useRouter()
 
@@ -95,10 +94,7 @@ function onSubmit() {
       loading.value = true
       //如果校验成功 请求数据
       const res = await fetch.fetchLogin(form.value)
-      ElMessage({
-        message: '登录成功',
-        type: 'success'
-      })
+      message.success('登录成功')
       // 路由跳转
       router.replace('/')
     })
@@ -120,10 +116,9 @@ function keyDown(e) {
 
 onMounted(() => {
   // 渲染玩显示消息通知
-  ElNotification({
-    title: '欢迎登录！',
-    message: '管理员账号：admin;密码：123456',
-    duration: 5000
+  notification.info({
+    message: '欢迎登录！',
+    description: '管理员账号：admin;密码：123456'
   })
   //绑定监听事件
   window.addEventListener('keydown', keyDown)

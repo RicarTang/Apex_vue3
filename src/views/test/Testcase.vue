@@ -100,7 +100,7 @@
 <script setup>
 import { onBeforeMount, reactive, ref } from 'vue'
 import fetch from '@/api/index'
-import { ElMessage } from 'element-plus'
+import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import ModalBox from '@/components/dialog/ModalBox.vue'
 import { formatTableData } from '@/utils/formatUtil'
@@ -288,10 +288,7 @@ async function fetchTestcasesData(params) {
     pagerReactive.total = testcases.data.result.total
   } catch (error) {
     console.log('加载失败', error)
-    ElMessage({
-      message: '数据加载失败',
-      type: 'error'
-    })
+    message.error('数据加载失败')
   } finally {
     tableReactive.tableLoading = false
   }
@@ -354,7 +351,7 @@ function clickAdd() {
       default: 0
     },
     { label: '用例编写者', name: 'case_editor', type: 'input' },
-    { label: '备注', name: 'remark', type: 'input' }
+    { label: '备注', name: 'remark', type: 'textarea' }
   ]
 }
 /**
@@ -372,24 +369,21 @@ function selectDatas(val) {
 function clickTestButton(row) {
   // 请求测试接口
   /**运行测试套件回调函数 */
-  ElMessage({
-    type: 'warning',
-    message: '还没实现后端接口'
-  })
+  message.warning('还没实现后端接口')
   console.log(row)
   modalReactive.open = true
   modalReactive.items = [
     {
       title: '',
-      description:'接口请求中'
+      description: '接口请求中'
     },
     {
       title: '',
-      description:'生成报告中',
+      description: '生成报告中'
     },
     {
       title: '',
-      description:'测试结束'
+      description: '测试结束'
     }
   ]
   modalReactive.events = [
@@ -412,35 +406,25 @@ async function clickDownloadButton() {
  */
 async function selectDelete() {
   // 弹窗确认
-  ElMessageBox.confirm('是否删除选中数据?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-    .then(async () => {
+  Modal.confirm({
+    title: '警告',
+    content: '是否删除选中数据?',
+    async onOk() {
       try {
         // 请求删除多条数据接口
         await fetch.deleteTestcases({ users_id: tableReactive.tableSelected })
-        ElMessage({
-          type: 'success',
-          message: '删除成功'
-        })
+        message.success('删除成功')
         // 刷新table
         fetchTestcasesData(pagerReactive.state)
       } catch (error) {
-        ElMessage({
-          message: '删除失败',
-          type: 'error'
-        })
+        message.error('删除失败')
         console.log(error)
       }
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消删除'
-      })
-    })
+    },
+    onCancel() {
+      message.info('取消删除')
+    }
+  })
 }
 /**搜索测试用例 */
 async function searchTestcase() {
@@ -468,15 +452,9 @@ async function uploadTemplate(param) {
   try {
     searchReactive.uploadLoading = true
     await fetch.importTestTemplate(uploadFormData)
-    ElMessage({
-      message: '上传成功',
-      type: 'success'
-    })
+    message.success('上传成功')
   } catch (error) {
-    ElMessage({
-      message: '上传失败',
-      type: 'error'
-    })
+    message.error('上传失败')
   } finally {
     searchReactive.uploadLoading = false
   }
@@ -498,18 +476,12 @@ async function addTestcase(data) {
   try {
     await fetch.addTestcase(data)
     // 新增成功弹窗
-    ElMessage({
-      message: '新增成功',
-      type: 'success'
-    })
+    message.success('新增成功')
     // 新增后刷新table
     fetchTestcasesData()
   } catch (error) {
     // 失败弹窗
-    ElMessage({
-      message: '新增失败',
-      type: 'error'
-    })
+    message.error('新增失败')
     console.log(error)
   } finally {
     // 无论是否新增成功返回后关闭drawer，取消按钮loading状态
@@ -528,18 +500,12 @@ async function editTestcase(case_id, data) {
   try {
     await fetch.updateTestcase(case_id, data)
     // 修改成功弹窗
-    ElMessage({
-      message: '编辑成功',
-      type: 'success'
-    })
+    message.success('编辑成功')
     // 编辑后刷新table
     fetchTestcasesData()
   } catch (error) {
     // 失败弹窗
-    ElMessage({
-      message: '编辑失败',
-      type: 'error'
-    })
+    message.error('编辑失败')
     console.log(error)
   } finally {
     // 无论是否编辑成功返回后关闭drawer，取消按钮loading状态
@@ -617,7 +583,7 @@ function editData(index, row) {
       default: row.response_to_redis
     },
     { label: '用例编写者', name: 'case_editor', type: 'input' },
-    { label: '备注', name: 'remark', type: 'input' }
+    { label: '备注', name: 'remark', type: 'textarea' }
   ]
   // 传递字段值
   drawerReactive.formData = JSON.parse(JSON.stringify(row)) // 代理对象转为普通对象，解决修改时表格数据变动
@@ -633,17 +599,11 @@ async function deleteData(index, row) {
   // 调用delete接口,传入user_id
   try {
     await fetch.deleteTestcase(row.id)
-    ElMessage({
-      message: '成功删除',
-      type: 'success'
-    })
+    message.success('成功删除')
     // 删除成功刷新table
     fetchTestcasesData()
   } catch (error) {
-    ElMessage({
-      message: '删除失败',
-      type: 'error'
-    })
+    message.error('删除失败')
     console.log(error)
   } finally {
     row.loading = false

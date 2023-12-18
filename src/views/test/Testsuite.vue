@@ -83,7 +83,7 @@
 <script setup>
 import { onBeforeMount, reactive } from 'vue'
 import fetch from '@/api/index'
-import { ElMessage } from 'element-plus'
+import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Search from '@/components/table/Search.vue'
 import { formatTableData } from '@/utils/formatUtil'
@@ -163,11 +163,8 @@ async function fetchTestsuitesData(params) {
     tableReactive.tableData = formatTableData(testsuites.data.result.data)
     pagerReactive.total = testsuites.data.result.total
   } catch (error) {
-    console.log('加载失败')
-    ElMessage({
-      message: '加载失败',
-      type: 'error'
-    })
+    console.log('加载测试套件失败')
+    message.error('加载测试套件失败')
   } finally {
     tableReactive.tableLoading = false
   }
@@ -213,58 +210,39 @@ function cancelForm(params) {
  */
 async function selectDelete() {
   // 弹窗确认
-  ElMessageBox.confirm('是否删除选中数据?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-    .then(async () => {
+  Modal.confirm({
+    title: '警告',
+    content: '是否删除选中数据?',
+    async onOk() {
       try {
         // 请求删除多条数据接口
         await fetch.deleteTestsuites({ users_id: tableReactive.tableSelected })
-        ElMessage({
-          type: 'success',
-          message: '删除成功'
-        })
+        message.success('删除成功')
         // 刷新table
         fetchTestsuitesData(pagerReactive.state)
       } catch (error) {
-        ElMessage({
-          message: '删除失败',
-          type: 'error'
-        })
+        message.error('删除失败')
         console.log(error)
       }
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消删除'
-      })
-    })
+    },
+    onCancel() {
+      message.info('取消删除')
+    }
+  })
 }
 /**运行测试套件回调函数 */
 function clickTestButton(row) {
-  ElMessage({
-    type: 'warning',
-    message: '还没实现后端接口'
-  })
+  message.warning('还没实现后端接口')
   console.log(row)
 }
 /**测试套件添加用例 */
 function handleAddCase() {
-  ElMessage({
-    type: 'warning',
-    message: '还没实现后端接口'
-  })
+  message.warning('还没实现后端接口')
 }
 /**删除测试套件用例 */
 function handleCaseClose(tag) {
-  ElMessage({
-    type: 'warning',
-    message: '还没实现后端接口'
-  })
-  console.log(tag);
+  message.warning('还没实现后端接口')
+  console.log(tag)
 }
 </script>
   

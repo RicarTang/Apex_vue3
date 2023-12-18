@@ -3,12 +3,20 @@
     <a-form ref="drawerRuleRef" :model="props.formData" :rules="props.rules" layout="vertical">
       <!-- 使用row和col布局 -->
       <a-row gutter="35">
-        <a-col v-for="(field, index) in props.formFields" :key="index" :span="12">
+        <a-col
+          v-for="(field, index) in props.formFields"
+          :key="index"
+          :span="field.type === 'textarea' ? 24 : 12"
+        >
           <!-- 使用 v-for 渲染表单字段 (prop属性必须要写，关系到表单规则验证)-->
           <a-form-item :label="field.label" :name="field.name">
             <!-- 根据 field 的类型来渲染不同类型的输入框 -->
             <template v-if="field.type === 'input'">
-              <a-input v-model:value="props.formData[field.name]" type="input" size="large"></a-input>
+              <a-input
+                v-model:value="props.formData[field.name]"
+                type="input"
+                size="large"
+              ></a-input>
             </template>
             <template v-else-if="field.type === 'textarea'">
               <a-textarea v-model:value="props.formData[field.name]"></a-textarea>

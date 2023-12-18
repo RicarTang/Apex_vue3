@@ -221,7 +221,7 @@ function clickAdd() {
   drawerReactive.formFields = [
     { label: '用户名', name: 'username', type: 'input' },
     { label: '密码', name: 'password', type: 'input' },
-    { label: '简介', name: 'descriptions', type: 'input' }
+    { label: '简介', name: 'descriptions', type: 'textarea' }
   ]
 }
 /**接收emit传过来的page参数 */
@@ -284,7 +284,6 @@ function editData(index, row) {
   drawerReactive.formFields = [
     { label: '用户名', name: 'username', type: 'input' },
     { label: '密码', name: 'password', type: 'input' },
-    { label: '简介', name: 'descriptions', type: 'input' },
     {
       label: '是否活动用户',
       name: 'is_active',
@@ -304,7 +303,8 @@ function editData(index, row) {
         { label: '否', value: 0 }
       ],
       default: row.is_super
-    }
+    },
+    { label: '简介', name: 'descriptions', type: 'textarea' }
   ]
   // 传递字段值
   drawerReactive.formData = JSON.parse(JSON.stringify(row)) // 代理对象转为普通对象，解决修改时表格数据变动
