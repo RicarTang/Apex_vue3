@@ -6,10 +6,10 @@ export const useAuthStore = defineStore('auth', {
     },
     // 也可以定义为
     // state: () => ({ count: 0 })
-    getters: { //通过getters对状态state进行获取
-        getAuthenticated: (state) => state.isAuthenticated,
-        getUser: (state) => state.user
-    },
+    // getters: { //通过getters对状态state进行获取
+    //     getAuthenticated: (state) => state.isAuthenticated,
+    //     getUser: (state) => state.user
+    // },
     actions: {
         setAuth(isAuth) {//修改当前登录的状态
             if (isAuth) {

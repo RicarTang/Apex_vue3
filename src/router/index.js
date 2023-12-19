@@ -22,7 +22,7 @@ const router = createRouter({
       path: '/',
       name: 'homeRoute',
       // component: () => import('@/views/home/Home.vue'),
-      component: () => import('@/components/layout/HomeLayout.vue'),
+      component: () => import('@/components/layout/index.vue'),
       redirect: { name: 'workspaceRoute' },
       meta: {
         title: '主页', // 设置页面标题
@@ -45,6 +45,7 @@ const router = createRouter({
               meta: {
                 title: '工作台', // 设置页面标题
                 requiresAuth: true,// 访问路由需要认证
+                affix: true // 常驻tasView
               },
             }
           ]
@@ -157,7 +158,7 @@ router.beforeEach(async (to, from, next) => {
     // 判断有无存储token
     if (localStorage.token) {
       // 判断token是否过期
-      if (moment(moment().valueOf()).isBefore(moment.unix(store.getUser.exp))) {
+      if (moment(moment().valueOf()).isBefore(moment.unix(store.user.exp))) {
         // 已登录，继续导航到目标路由
         next();
       } else {

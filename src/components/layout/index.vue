@@ -58,6 +58,7 @@
       <!-- layout header -->
       <a-layout-header style="background: #fff; padding: 0">
         <Header :currentUser="currentUser"></Header>
+        <BreadCrumb></BreadCrumb>
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <!-- <a-breadcrumb style="margin: 16px 0">
@@ -65,7 +66,14 @@
           <a-breadcrumb-item>Bill</a-breadcrumb-item>
         </a-breadcrumb> -->
         <div class="layout-content">
-          <router-view></router-view>
+          <!-- <keep-alive >
+            <router-view :key="route.name" />
+          </keep-alive> -->
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
@@ -80,9 +88,14 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Header from './header/Header.vue'
+import BreadCrumb from '../breadcrumb/index.vue'
 import TriggerComponent from './aside/TriggerComponent.vue'
 import { UserOutlined, DashboardOutlined, SettingOutlined, ApiFilled } from '@ant-design/icons-vue'
 import fetchUser from '@/api/user/index'
+import { tagsStore } from '@/stores/tagView/index'
+
+// tag store
+const tagStore = tagsStore()
 
 // 菜单展开状态
 const collapsed = ref(false)
@@ -111,31 +124,19 @@ function clickItem({ keyPath }) {
 }
 
 /**得到当前用户 */
-let intervalId
-let retryCount = 0
-const maxRetries = 5 // 设置最大重试次数
 async function getCurrentUser() {
   try {
     const user = await fetchUser.getCurrentUser()
     currentUser.value = user.data.result.username
-    // 成功获取用户数据时，清除定时器并设置当前用户
-    clearInterval(intervalId)
   } catch (error) {
     console.log('获取当前用户失败')
-    retryCount++
-    // 重试5次
-    if (retryCount >= maxRetries) {
-      console.log(`达到最大重试次数(${maxRetries})，停止重试。`)
-      clearInterval(intervalId)
-    } else {
-      clearInterval(intervalId) // 清除旧的定时器
-      // 每两秒执行一次
-      intervalId = setInterval(async () => {
-        // 失败重调
-        await getCurrentUser()
-      }, 2000)
-    }
   }
+}
+/**
+ * 控制keepalive的页面
+ */
+function cachedViews() {
+  return tagStore.cachedViews
 }
 </script>
 
