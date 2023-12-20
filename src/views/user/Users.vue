@@ -8,7 +8,16 @@
       :formFields="searchReactive.tableSearchFields"
       :formInline="searchReactive.tableSearchForm"
       :tableSelected="tableReactive.tableSelected"
-    ></Search>
+    >
+      <!-- 插槽内容 -->
+      <template #default>
+        <a-col>
+          <a-form-item>
+            <a-button type="primary" @click="testRoute"> 路由跳转</a-button>
+          </a-form-item>
+        </a-col>
+      </template>
+    </Search>
   </div>
   <!-- 编辑/新建用户表单抽屉 -->
   <Drawer
@@ -41,13 +50,15 @@
 </template>
 
 <script setup>
-import { onBeforeMount, reactive } from 'vue'
+import { onActivated, onBeforeMount, reactive } from 'vue'
 import fetchUser from '@/api/user/index'
 import { message, Modal } from 'ant-design-vue'
 import CommonTable from '@/components/table/CommonTable.vue'
 import Pagination from '@/components/pagination/Pagination.vue'
 import Drawer from '@/components/drawer/Drawer.vue'
 import { formatTableData } from '@/utils/formatUtil'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 // 搜索
 const searchReactive = reactive({
@@ -356,6 +367,13 @@ async function selectDelete() {
     }
   })
 }
+function testRoute() {
+  console.log('点击了快点交罚款 ')
+  router.push({ name: 'userManagerInfo', params: { id: '1' } })
+}
+onActivated(()=>{
+  console.log("用户组件被激活")
+})
 </script>
 
 <style lang="scss" scoped></style>

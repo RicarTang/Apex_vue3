@@ -27,7 +27,7 @@
               <span>用户</span>
             </span>
           </template>
-          <a-menu-item key="manager"> 用户管理 </a-menu-item>
+          <a-menu-item key="manager/list"> 用户管理 </a-menu-item>
           <a-menu-item key="permission"> 权限管理 </a-menu-item>
         </a-sub-menu>
         <a-sub-menu key="apiTest">
@@ -56,23 +56,19 @@
     </a-layout-sider>
     <a-layout>
       <!-- layout header -->
-      <a-layout-header style="background: #fff; padding: 0">
-        <Header :currentUser="currentUser"></Header>
-        <BreadCrumb></BreadCrumb>
+      <a-layout-header class="layout-header" style="background: #fff; padding: 0">
+        <!-- <main-header></main-header> -->
+        <bread-crumb></bread-crumb>
+        <tags-view />
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
-        <!-- <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item>User</a-breadcrumb-item>
-          <a-breadcrumb-item>Bill</a-breadcrumb-item>
-        </a-breadcrumb> -->
         <div class="layout-content">
-          <!-- <keep-alive >
-            <router-view :key="route.name" />
-          </keep-alive> -->
           <router-view v-slot="{ Component }">
+            <!-- <transition name="fade" mode="out-in"> -->
             <keep-alive>
               <component :is="Component" />
             </keep-alive>
+            <!-- </transition> -->
           </router-view>
         </div>
       </a-layout-content>
@@ -87,8 +83,9 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Header from './header/Header.vue'
-import BreadCrumb from '../breadcrumb/index.vue'
+import MainHeader from './header/Header.vue'  
+import BreadCrumb from '@/components/breadcrumb/index.vue'
+import TagsView from '@/components/tagsView/index.vue'
 import TriggerComponent from './aside/TriggerComponent.vue'
 import { UserOutlined, DashboardOutlined, SettingOutlined, ApiFilled } from '@ant-design/icons-vue'
 import fetchUser from '@/api/user/index'
@@ -141,6 +138,9 @@ function cachedViews() {
 </script>
 
 <style lang="scss" scoped>
+.layout-header{
+  height: 80px;
+}
 .logo {
   display: flex;
   justify-content: center; /*水平居中 */
@@ -153,7 +153,6 @@ function cachedViews() {
     white-space: nowrap; /**不换行 */
   }
 }
-
 .site-layout .site-layout-background {
   background: #fff;
 }

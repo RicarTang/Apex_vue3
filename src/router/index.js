@@ -55,18 +55,38 @@ const router = createRouter({
           path: 'user',
           name: 'userRoute',
           meta: {
-            title: '用户',
+            // title: '用户',
             requiresAuth: true,// 访问路由需要认证
           },
           children: [
             {
               path: 'manager',
               name: 'userManagerRoute',
-              component: () => import('@/views/user/Users.vue'),
               meta: {
                 title: '用户管理',
                 requiresAuth: true,// 访问路由需要认证
               },
+              redirect: { name: 'userManagerList' },
+              children: [
+                {
+                  path: 'list',
+                  name: 'userManagerList',
+                  component: () => import('@/views/user/Users.vue'),
+                  meta: {
+                    title: '用户列表',
+                    requiresAuth: true,// 访问路由需要认证
+                  },
+                },
+                {
+                  path: 'info/:id',
+                  name: 'userManagerInfo',
+                  component: () => import('@/views/user/Permission.vue'),
+                  meta: {
+                    title: '用户详情',
+                    requiresAuth: true,// 访问路由需要认证
+                  },
+                },
+              ]
             },
             {
               path: 'permission',
