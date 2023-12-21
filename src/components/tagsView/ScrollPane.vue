@@ -91,27 +91,22 @@ function handleMouseLeave() {
 </script>
   
 <style lang="scss" scoped>
-// .scroll-warp{
-//   height: 34px;
-//   width: 100%;
-//   background: #fff;
-//   border-bottom: 1px solid #d8dce5;
-//   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
-// }
 .scroll-container {
   white-space: nowrap;
   position: relative;
   overflow: hidden;
   width: 100%;
-  height: 100vh;
-  ::v-deep {
-    .el-scrollbar__bar {
-      bottom: 0px;
-    }
-    .el-scrollbar__view {
-      height: 33px;
-      margin: -14px 0;
-    }
+  // 隐藏scrollbar垂直滚动条
+  :deep(.el-scrollbar__bar.is-vertical) {
+    display: none;
   }
+  :deep(.el-scrollbar__bar) {
+    bottom: 0px;
+  }
+  // 调整scrollbar位置
+  :deep(.el-scrollbar__view) {
+    height: 33px;
+    margin: -14px 0;
+  };
 }
 </style>

@@ -168,8 +168,6 @@ const router = createRouter({
 // 添加导航守卫
 router.beforeEach(async (to, from, next) => {
   console.log(`导航至${to.path}`)
-  // 加载进度条
-  NProgress.start()
   // 修改标题
   window.document.title = to.meta.title
   // 如果路由需要进行身份验证
@@ -197,9 +195,7 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-router.afterEach(() => {
-  // 结束加载进度条
-  NProgress.done()
-})
+// router.afterEach(() => {
+// })
 
 export default router

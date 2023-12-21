@@ -63,13 +63,13 @@
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <div class="layout-content">
-          <router-view v-slot="{ Component }">
-            <!-- <transition name="fade" mode="out-in"> -->
-            <keep-alive>
-              <component :is="Component" />
+          <!-- <transition name="fade-transform" mode="out-in"> -->
+          <router-view v-slot="{ Component, route }">
+            <keep-alive :include="tagStore.cachedViews">
+              <component :is="Component" :key="route.path"/>
             </keep-alive>
-            <!-- </transition> -->
           </router-view>
+          <!-- </transition> -->
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
@@ -83,7 +83,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import MainHeader from './header/Header.vue'  
+import MainHeader from './header/Header.vue'
 import BreadCrumb from '@/components/breadcrumb/index.vue'
 import TagsView from '@/components/tagsView/index.vue'
 import TriggerComponent from './aside/TriggerComponent.vue'
@@ -138,7 +138,7 @@ function cachedViews() {
 </script>
 
 <style lang="scss" scoped>
-.layout-header{
+.layout-header {
   height: 80px;
 }
 .logo {

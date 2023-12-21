@@ -3,10 +3,9 @@
     <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
       <router-link
         v-for="tag in tagStore.visitedViews"
-        ref="tag"
+        ref="tagRef"
         :key="tag.path"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
-        @click="navigate"
         class="tags-view-item"
         :class="isActive(tag) ? 'active' : ''"
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
@@ -60,6 +59,7 @@ watch(
   () => {
     addTags()
     // moveToCurrentTag()
+    console.log("store views：",tagStore.cachedViews);
   },
   { immediate: true }
 )
@@ -120,7 +120,6 @@ function initTags() {
 function addTags() {
   const { name } = route
   if (name) {
-    console.log('添加了标签')
     tagStore.add_visited_view(route)
     tagStore.add_cached_view(route)
   }
@@ -131,6 +130,7 @@ function addTags() {
  */
 function moveToCurrentTag() {
   const tags = tagRef.value
+  console.log(tags)
   nextTick(() => {
     for (const tag of tags) {
       if (tag.to.path === route.path) {
@@ -148,12 +148,11 @@ function moveToCurrentTag() {
  * 刷新选择的tag
  */
 function refreshSelectedTag(view) {
-  this.$store.dispatch('tagsView/delCachedView', view).then(() => {
-    const { fullPath } = view
-    this.$nextTick(() => {
-      this.$router.replace({
-        path: '/redirect' + fullPath
-      })
+  tagStore.del_cached_view(view)
+  const { fullPath } = view
+  nextTick(() => {
+    router.replace({
+      path: fullPath
     })
   })
 }
@@ -161,31 +160,32 @@ function refreshSelectedTag(view) {
  * 关闭选中tag
  */
 function closeSelectedTag(view) {
-  this.$store.dispatch('tagsView/delView', view).then(({ visitedViews }) => {
-    if (this.isActive(view)) {
-      this.toLastView(visitedViews, view)
-    }
-  })
+  tagStore.del_visited_view(view)
+  tagStore.del_cached_view(view)
+  if (isActive(view)) {
+    toLastView(tagStore.visitedViews, view)
+  }
 }
 /**
  * 关闭其他标签
  */
 function closeOthersTags() {
-  this.$router.push(this.selectedTag)
-  this.$store.dispatch('tagsView/delOthersViews', this.selectedTag).then(() => {
-    this.moveToCurrentTag()
-  })
+  router.push(selectedTag.value)
+  tagStore.del_others_visited_views(selectedTag.value)
+  tagStore.del_others_cached_views(selectedTag.value)
+  moveToCurrentTag()
 }
 /**
  * 关闭所有标签
  */
 function closeAllTags(view) {
-  this.$store.dispatch('tagsView/delAllViews').then(({ visitedViews }) => {
-    if (affixTags.value.some((tag) => tag.path === view.path)) {
-      return
-    }
-    this.toLastView(visitedViews, view)
-  })
+  tagStore.del_all_visited_views()
+  tagStore.del_all_cached_views()
+
+  if (affixTags.value.some((tag) => tag.path === view.path)) {
+    return
+  }
+  toLastView(tagStore.visitedViews, view)
 }
 /**
  * 选中最后tag
@@ -193,15 +193,14 @@ function closeAllTags(view) {
 function toLastView(visitedViews, view) {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView) {
-    this.$router.push(latestView.fullPath)
+    router.push(latestView.fullPath)
   } else {
-    // now the default is to redirect to the home page if there is no tags-view,
-    // you can adjust it according to your needs.
-    if (view.name === 'Dashboard') {
+    // 没有就重定向默认tag
+    if (view.name === 'workspaceRoute') {
       // to reload home page
-      this.$router.replace({ path: '/redirect' + view.fullPath })
+      router.replace({ path: view.fullPath })
     } else {
-      this.$router.push('/')
+      router.push('/')
     }
   }
 }
@@ -209,7 +208,7 @@ function toLastView(visitedViews, view) {
  * 打开右键菜单
  */
 function openMenu(tag, e) {
-  console.log("右键",e.clientY);
+  console.log('右键', e.clientY)
   const menuMinWidth = 105
   const offsetLeft = e.currentTarget.getBoundingClientRect().left // container margin left
   const offsetWidth = e.currentTarget.offsetWidth // container width
@@ -279,6 +278,31 @@ function handleScroll() {
         }
       }
     }
+    .el-icon-close {
+      position: relative;
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      // vertical-align: 2px;
+      border-radius: 50%;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+      transform-origin: 100% 50%;
+      &:before {
+        content: 'x';
+        display: inline-block;
+        // vertical-align: -3px;
+        position: absolute;
+        transform: scale(0.8) translate(-50%, -50%); /* 使元素在中心，缩放0.8倍 */
+        // 微调元素位置
+        top: 5%;
+        right: 5%;
+      }
+      &:hover {
+        background-color: #b4bccc;
+        color: #fff;
+      }
+    }
   }
   .contextmenu {
     margin: 0;
@@ -303,28 +327,31 @@ function handleScroll() {
   }
 }
 </style>
-<style lang="scss">
+<!-- <style lang="scss">
 //reset element css of el-icon-close
-.tags-view-wrapper {
-  .tags-view-item {
-    .el-icon-close {
-      width: 16px;
-      height: 16px;
-      vertical-align: 2px;
-      border-radius: 50%;
-      text-align: center;
-      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-      transform-origin: 100% 50%;
-      &:before {
-        transform: scale(0.6);
-        display: inline-block;
-        vertical-align: -3px;
-      }
-      &:hover {
-        background-color: #b4bccc;
-        color: #fff;
+.tags-view-container {
+  .tags-view-wrapper {
+    .tags-view-item {
+      .el-icon-close {
+        width: 16px;
+        height: 16px;
+        vertical-align: 2px;
+        border-radius: 50%;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        transform-origin: 100% 50%;
+        &:before {
+          content: '';
+          transform: scale(0.6);
+          display: inline-block;
+          vertical-align: -3px;
+        }
+        &:hover {
+          background-color: #b4bccc;
+          color: #fff;
+        }
       }
     }
   }
 }
-</style>
+</style> -->
