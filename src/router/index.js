@@ -1,201 +1,175 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-import { useAuthStore } from '@/stores/auth/index';
-import moment from 'moment';
-import { ElMessage } from 'element-plus';
+import { createWebHistory, createRouter } from 'vue-router'
+/* Layout */
+import Layout from '@/layout'
+
+/**
+ * Note: 路由配置项
+ *
+ * hidden: true                     // 当设置 true 的时候该路由不会再侧边栏出现 如401，login等页面，或者如一些编辑页面/edit/1
+ * alwaysShow: true                 // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+ *                                  // 只有一个时，会将那个子路由当做根路由显示在侧边栏--如引导页面
+ *                                  // 若你想不管路由下面的 children 声明的个数都显示你的根路由
+ *                                  // 你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，一直显示根路由
+ * redirect: noRedirect             // 当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
+ * name:'router-name'               // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
+ * query: '{"id": 1, "name": "ry"}' // 访问路由的默认传递参数
+ * roles: ['admin', 'common']       // 访问路由的角色权限
+ * permissions: ['a:a:a', 'b:b:b']  // 访问路由的菜单权限
+ * meta : {
+    noCache: true                   // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
+    title: 'title'                  // 设置该路由在侧边栏和面包屑中展示的名字
+    icon: 'svg-name'                // 设置该路由的图标，对应路径src/assets/icons/svg
+    breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
+    activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
+  }
+ */
+
+// 公共路由
+export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login'),
+    hidden: true
+  },
+  {
+    path: '/register',
+    component: () => import('@/views/register'),
+    hidden: true
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import('@/views/error/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error/401'),
+    hidden: true
+  },
+  {
+    path: '',
+    component: Layout,
+    redirect: '/index',
+    children: [
+      {
+        path: '/index',
+        component: () => import('@/views/index'),
+        name: 'Index',
+        meta: { title: '首页', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'profile',
+        component: () => import('@/views/system/user/profile/index'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user' }
+      }
+    ]
+  }
+]
+
+// 动态路由，基于用户权限动态去加载
+export const dynamicRoutes = [
+  {
+    path: '/system/user-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:user:edit'],
+    children: [
+      {
+        path: 'role/:userId(\\d+)',
+        component: () => import('@/views/system/user/authRole'),
+        name: 'AuthRole',
+        meta: { title: '分配角色', activeMenu: '/system/user' }
+      }
+    ]
+  },
+  {
+    path: '/system/role-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:role:edit'],
+    children: [
+      {
+        path: 'user/:roleId(\\d+)',
+        component: () => import('@/views/system/role/authUser'),
+        name: 'AuthUser',
+        meta: { title: '分配用户', activeMenu: '/system/role' }
+      }
+    ]
+  },
+  {
+    path: '/system/dict-data',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:dict:list'],
+    children: [
+      {
+        path: 'index/:dictId(\\d+)',
+        component: () => import('@/views/system/dict/data'),
+        name: 'Data',
+        meta: { title: '字典数据', activeMenu: '/system/dict' }
+      }
+    ]
+  },
+  {
+    path: '/monitor/job-log',
+    component: Layout,
+    hidden: true,
+    permissions: ['monitor:job:list'],
+    children: [
+      {
+        path: 'index/:jobId(\\d+)',
+        component: () => import('@/views/monitor/job/log'),
+        name: 'JobLog',
+        meta: { title: '调度日志', activeMenu: '/monitor/job' }
+      }
+    ]
+  },
+  {
+    path: '/tool/gen-edit',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:gen:edit'],
+    children: [
+      {
+        path: 'index/:tableId(\\d+)',
+        component: () => import('@/views/tool/gen/editTable'),
+        name: 'GenEdit',
+        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+      }
+    ]
+  }
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    // 登录路由
-    {
-      path: '/login',
-      name: 'loginRoute',
-      component: () => import('@/views/login/Login.vue'),
-      meta: {
-        title: '登录', // 设置页面标题
-      },
-    },
-    // 首页路由
-    {
-      path: '/',
-      name: 'homeRoute',
-      // component: () => import('@/views/home/Home.vue'),
-      component: () => import('@/components/layout/index.vue'),
-      redirect: { name: 'workspaceRoute' },
-      meta: {
-        title: '主页', // 设置页面标题
-        requiresAuth: true,// 访问路由需要认证
-      },
-      children: [
-        // dashboard
-        {
-          path: 'dashboard',
-          name: 'dashboardRoute',
-          meta: {
-            title: 'Dashboard', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
-          children: [
-            {
-              path: 'workspace',
-              name: 'workspaceRoute',
-              component: () => import('@/views/dashborad/Workspace.vue'),
-              meta: {
-                title: '工作台', // 设置页面标题
-                requiresAuth: true,// 访问路由需要认证
-                affix: true // 常驻tasView
-              },
-            }
-          ]
-        },
-        // 用户
-        {
-          path: 'user',
-          name: 'userRoute',
-          meta: {
-            // title: '用户',
-            requiresAuth: true,// 访问路由需要认证
-          },
-          children: [
-            {
-              path: 'manager',
-              name: 'userManagerRoute',
-              meta: {
-                title: '用户管理',
-                requiresAuth: true,// 访问路由需要认证
-              },
-              redirect: { name: 'userManagerList' },
-              children: [
-                {
-                  path: 'list',
-                  name: 'userManagerList',
-                  component: () => import('@/views/user/Users.vue'),
-                  meta: {
-                    title: '用户列表',
-                    requiresAuth: true,// 访问路由需要认证
-                  },
-                },
-                {
-                  path: 'info/:id',
-                  name: 'userManagerInfo',
-                  component: () => import('@/views/user/Permission.vue'),
-                  meta: {
-                    title: '用户详情',
-                    requiresAuth: true,// 访问路由需要认证
-                  },
-                },
-              ]
-            },
-            {
-              path: 'permission',
-              name: 'userPermissionRoute',
-              component: () => import('@/views/user/Permission.vue'),
-              meta: {
-                title: '权限管理',
-                requiresAuth: true,// 访问路由需要认证
-              },
-            },
-          ]
-        },
-        // 接口测试
-        {
-          path: 'apiTest',
-          name: 'apiTestRoute',
-          meta: {
-            title: '接口测试', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
-          children: [
-            {
-              path: 'testCase',
-              name: 'testCaseRoute',
-              component: () => import('@/views/test/Testcase.vue'),
-              meta: {
-                title: '测试用例', // 设置页面标题
-                requiresAuth: true,// 访问路由需要认证
-              },
-            },
-            {
-              path: 'testSuite',
-              name: 'testSuiteRoute',
-              component: () => import('@/views/test/Testsuite.vue'),
-              meta: {
-                title: '测试套件', // 设置页面标题
-                requiresAuth: true,// 访问路由需要认证
-              },
-            },
-            {
-              path: 'testReport',
-              name: 'testReportRoute',
-              component: () => import('@/views/test/Testreport.vue'),
-              meta: {
-                title: '测试报告', // 设置页面标题
-                requiresAuth: true,// 访问路由需要认证
-              },
-            },
-          ]
-        },
-        // 配置
-        {
-          path: 'setting',
-          name: 'settingRoute',
-          meta: {
-            title: '配置', // 设置页面标题
-            requiresAuth: true,// 访问路由需要认证
-          },
-          children: [
-            {
-              path: 'testEnv',
-              name: 'testEnvRoute',
-              component: () => import('@/views/setting/Testenv.vue'),
-              meta: {
-                title: '测试环境', // 设置页面标题
-                requiresAuth: true,// 访问路由需要认证
-              },
-            },
-          ]
-        },
-      ]
-    },
-
-
-
-  ]
-})
-
-// 添加导航守卫
-router.beforeEach(async (to, from, next) => {
-  console.log(`导航至${to.path}`)
-  // 修改标题
-  window.document.title = to.meta.title
-  // 如果路由需要进行身份验证
-  if (to.meta.requiresAuth) {
-    const store = useAuthStore() // 局部使用store
-    // 判断有无存储token
-    if (localStorage.token) {
-      // 判断token是否过期
-      if (moment(moment().valueOf()).isBefore(moment.unix(store.user.exp))) {
-        // 已登录，继续导航到目标路由
-        next();
-      } else {
-        // 登陆token过期，跳转login
-        next({ name: 'loginRoute' })
-        ElMessage.warning('登陆过期，请重新登陆！')
-      }
+  history: createWebHistory(),
+  routes: constantRoutes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
     } else {
-      // 未登录，跳转到登录页
-      next({ name: 'loginRoute' });
-      ElMessage.warning('未登录，请先登录！')
+      return { top: 0 }
     }
-  } else {
-    // 路由不需要进行身份验证，继续导航到目标路由
-    next();
-  }
-})
+  },
+});
 
-// router.afterEach(() => {
-// })
-
-export default router
+export default router;

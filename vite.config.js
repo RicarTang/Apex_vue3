@@ -1,67 +1,58 @@
-import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver, AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
-import IconsResolver from 'unplugin-icons/resolver'
-import Icons from 'unplugin-icons/vite'
-import Inspect from 'vite-plugin-inspect'
-import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig, loadEnv } from 'vite'
+import path from 'path'
+import createVitePlugins from './vite/plugins'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    AutoImport({
-      // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等
-      imports: ['vue'],
-      // 自动导入 Element Plus 相关函数，如：ElMessage, ElMessageBox... (带样式)
-      resolvers: [
-        // elm
-        ElementPlusResolver(),
-        // 自动导入图标组件
-        IconsResolver({
-          prefix: 'Icon',
-        }),
-      ],
-    }),
-    Components({
-      resolvers: [
-        // 自动导入 Element Plus 组件
-        ElementPlusResolver(),
-        // ant
-        AntDesignVueResolver({
-          importStyle: false, // css in js
-        }),
-        // 自动注册图标组件
-        IconsResolver({
-          enabledCollections: ['ep'],
-        }),
-      ],
-    }),
-    // 自动导入图标组件
-    Icons({
-      autoInstall: true,
-    }),
-    // 检查
-    Inspect(),
-    // 自动开启分析页面
-    visualizer({
-      gzipSize: true,
-      brotliSize: true,
-      emitFile: false,
-      filename: "test.html", //分析图生成的文件名
-      open: true //如果存在本地服务端口，将在打包后自动展示
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ mode, command }) => {
+  const env = loadEnv(mode, process.cwd())
+  const { VITE_APP_ENV } = env
+  return {
+    // 部署生产环境和开发环境下的URL。
+    // 默认情况下，vite 会假设你的应用是被部署在一个域名的根路径上
+    // 例如 https://www.ruoyi.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.ruoyi.vip/admin/，则设置 baseUrl 为 /admin/。
+    base: VITE_APP_ENV === 'production' ? '/' : '/',
+    plugins: createVitePlugins(env, command === 'build'),
+    resolve: {
+      // https://cn.vitejs.dev/config/#resolve-alias
+      alias: {
+        // 设置路径
+        '~': path.resolve(__dirname, './'),
+        // 设置别名
+        '@': path.resolve(__dirname, './src')
+      },
+      // https://cn.vitejs.dev/config/#resolve-extensions
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
+    },
+    // vite 相关配置
+    server: {
+      port: 80,
+      host: true,
+      open: false,
+      proxy: {
+        // https://cn.vitejs.dev/config/#server-proxy
+        '/dev-api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/dev-api/, '')
+        }
+      }
+    },
+    //fix:error:stdin>:7356:1: warning: "@charset" must be the first rule in the file
+    css: {
+      postcss: {
+        plugins: [
+          {
+            postcssPlugin: 'internal:charset-removal',
+            AtRule: {
+              charset: (atRule) => {
+                if (atRule.name === 'charset') {
+                  atRule.remove();
+                }
+              }
+            }
+          }
+        ]
+      }
     }
-  },
-  define: {
-    'process.env': {}
   }
 })
