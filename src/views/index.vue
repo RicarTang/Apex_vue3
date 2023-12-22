@@ -93,10 +93,18 @@
                   <Card hoverable>
                     <template #title>
                       <h5 style="vertical-align: middle">
-                        最后一次测试情况
+                        最近一次测试情况
                       </h5></template
                     >
-                    <template #extra>!</template>
+                    <template #extra>
+                      <el-tooltip
+                        effect="dark"
+                        content="最近一次测试情况"
+                        placement="top"
+                      >
+                        <el-icon><InfoFilled /></el-icon>
+                      </el-tooltip>
+                    </template>
                     <el-progress
                       type="circle"
                       :percentage="100"
@@ -115,6 +123,15 @@
                     <template #title>
                       <h5 style="vertical-align: middle">时间</h5></template
                     >
+                    <template #extra>
+                      <el-tooltip
+                        effect="dark"
+                        content="最近一次执行通过率"
+                        placement="top"
+                      >
+                        <el-icon><InfoFilled /></el-icon>
+                      </el-tooltip>
+                    </template>
                     <el-progress
                       type="circle"
                       :percentage="100"
@@ -135,6 +152,15 @@
                         近七次通过率(%)
                       </h5></template
                     >
+                    <template #extra>
+                      <el-tooltip
+                        effect="dark"
+                        content="最近7次通过率"
+                        placement="top"
+                      >
+                        <el-icon><InfoFilled /></el-icon>
+                      </el-tooltip>
+                    </template>
                     <el-progress
                       type="circle"
                       :percentage="100"
