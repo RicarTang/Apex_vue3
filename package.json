@@ -11,6 +11,11 @@
     "build:stage": "vite build --mode staging",
     "preview": "vite preview"
   },
+  "pnpm": {
+    "overrides": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:RicarTang/testframework_vue3.git"
