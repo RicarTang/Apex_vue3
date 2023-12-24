@@ -4,7 +4,7 @@ import { parseStrEmpty } from "@/utils/ruoyi";
 // 查询用户列表
 export function listUser(query) {
   return request({
-    url: '/system/user/list',
+    url: '/user/list',
     method: 'get',
     params: query
   })
@@ -13,7 +13,7 @@ export function listUser(query) {
 // 查询用户详细
 export function getUser(userId) {
   return request({
-    url: '/system/user/' + parseStrEmpty(userId),
+    url: `/user/${userId}`,
     method: 'get'
   })
 }
@@ -21,16 +21,16 @@ export function getUser(userId) {
 // 新增用户
 export function addUser(data) {
   return request({
-    url: '/system/user',
+    url: '/user/create',
     method: 'post',
     data: data
   })
 }
 
 // 修改用户
-export function updateUser(data) {
+export function updateUser(userId,data) {
   return request({
-    url: '/system/user',
+    url: `/user/${userId}`,
     method: 'put',
     data: data
   })
@@ -39,7 +39,7 @@ export function updateUser(data) {
 // 删除用户
 export function delUser(userId) {
   return request({
-    url: '/system/user/' + userId,
+    url: `/user/${userId}`,
     method: 'delete'
   })
 }
@@ -58,13 +58,12 @@ export function resetUserPwd(userId, password) {
 }
 
 // 用户状态修改
-export function changeUserStatus(userId, status) {
+export function changeUserStatus(userId, is_active) {
   const data = {
-    userId,
-    status
+    is_active
   }
   return request({
-    url: '/system/user/changeStatus',
+    url: `/user/${userId}`,
     method: 'put',
     data: data
   })

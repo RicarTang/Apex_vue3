@@ -18,12 +18,15 @@ export function parseTime(time, pattern) {
     if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
       time = parseInt(time)
     } else if (typeof time === 'string') {
-      time = time.replace(new RegExp(/-/gm), '/').replace('T', ' ').replace(new RegExp(/\.[\d]{3}/gm), '');
+      // 后端返回时间字符串直接new Date()
+      console.log(time);
+      // time = time.replace(new RegExp(/-/gm), '/').replace('T', ' ').replace(new RegExp(/\.[\d]{3}/gm), '');
     }
     if ((typeof time === 'number') && (time.toString().length === 10)) {
       time = time * 1000
     }
     date = new Date(time)
+    console.log(date);
   }
   const formatObj = {
     y: date.getFullYear(),
