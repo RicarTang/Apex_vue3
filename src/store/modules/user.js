@@ -45,11 +45,12 @@ const useUserStore = defineStore(
         } catch (error) {
           console.log(error);
         }
+        console.log(this.roles);
       },
       // 退出系统
       async logOut() {
         try {
-          await logout();
+          // await logout();
           this.token = ''
           this.roles = []
           this.permissions = []
