@@ -489,7 +489,7 @@ const data = reactive({
     limit: 10,
     userName: undefined,
     is_active: undefined,
-    deptId: undefined,
+    // deptId: undefined,
   },
   rules: {
     userName: [
