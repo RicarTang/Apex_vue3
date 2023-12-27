@@ -58,7 +58,7 @@
               >新增</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <!-- <el-col :span="1.5">
             <el-button
               type="success"
               plain
@@ -67,7 +67,7 @@
               @click="handleUpdate"
               >修改</el-button
             >
-          </el-col>
+          </el-col> -->
           <el-col :span="1.5">
             <el-button
               type="danger"
@@ -78,12 +78,12 @@
               >删除</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <!-- <el-col :span="1.5">
             <el-button type="info" plain icon="Upload" @click="handleImport"
               >导入</el-button
             >
-          </el-col>
-          <el-col :span="1.5">
+          </el-col> -->
+          <!-- <el-col :span="1.5">
             <el-button
               type="warning"
               plain
@@ -91,7 +91,7 @@
               @click="handleExport"
               >导出</el-button
             >
-          </el-col>
+          </el-col> -->
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"
@@ -229,49 +229,6 @@
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input
-                v-model="form.nickName"
-                placeholder="请输入用户昵称"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <el-tree-select
-                v-model="form.deptId"
-                :data="deptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
-                value-key="id"
-                placeholder="请选择归属部门"
-                check-strictly
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input
-                v-model="form.phonenumber"
-                placeholder="请输入手机号码"
-                maxlength="11"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input
-                v-model="form.email"
-                placeholder="请输入邮箱"
-                maxlength="50"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
             <el-form-item
               v-if="form.userId == undefined"
               label="用户名称"
@@ -302,13 +259,14 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
+            <el-form-item label="角色" prop="roleIds">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择">
                 <el-option
-                  v-for="dict in sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
+                  v-for="item in roleOptions"
+                  :key="item.id"
+                  :label="item.description"
+                  :value="item.id"
+                  :disabled="item.status == 1"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -323,34 +281,6 @@
                   >{{ dict.label }}</el-radio
                 >
               </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -435,6 +365,7 @@ import {
   addUser,
   deptTreeSelect,
 } from "@/api/system/user";
+import { listRole } from "@/api/system/role";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -510,6 +441,7 @@ const data = reactive({
         trigger: "blur",
       },
     ],
+    roleIds: [{ required: true, message: "角色不能为空", trigger: "blur" }],
   },
 });
 
@@ -545,12 +477,12 @@ function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
   queryParams.value.deptId = undefined;
-  proxy.$refs.deptTreeRef.setCurrentKey(null);
+  // proxy.$refs.deptTreeRef.setCurrentKey(null);
   handleQuery();
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const userIds = row.userId || ids.value;
+  const userIds = row.id || ids.value;
   proxy.$modal
     .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
     .then(function () {
@@ -603,21 +535,21 @@ function handleCommand(command, row) {
 }
 /** 跳转角色分配 */
 function handleAuthRole(row) {
-  const userId = row.userId;
+  const userId = row.id;
   router.push("/system/user-auth/role/" + userId);
 }
 /** 重置密码按钮操作 */
 function handleResetPwd(row) {
   proxy
-    .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
+    .$prompt('请输入"' + row.username + '"的新密码', "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       closeOnClickModal: false,
-      inputPattern: /^.{5,20}$/,
-      inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+      inputPattern: /^.{6,20}$/,
+      inputErrorMessage: "用户密码长度必须介于 6 和 20 之间",
     })
     .then(({ value }) => {
-      resetUserPwd(row.userId, value).then((response) => {
+      resetUserPwd(row.id, value).then((response) => {
         proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
       });
     })
@@ -668,16 +600,10 @@ function submitFileForm() {
 function reset() {
   form.value = {
     userId: undefined,
-    deptId: undefined,
     userName: undefined,
-    nickName: undefined,
     password: undefined,
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
+    status: "1",
     remark: undefined,
-    postIds: [],
     roleIds: [],
   };
   proxy.resetForm("userRef");
@@ -688,47 +614,57 @@ function cancel() {
   reset();
 }
 /** 新增按钮操作 */
-function handleAdd() {
+async function handleAdd() {
   reset();
-  getUser().then((response) => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
+  try {
+    const res = await listRole();
+    roleOptions.value = res.result.data;
     open.value = true;
     title.value = "添加用户";
     form.value.password = initPassword.value;
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset();
-  const userId = row.userId || ids.value;
-  getUser(userId).then((response) => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
+  const userId = row.id || ids.value;
+  try {
+    const res = await getUser(userId);
+    const roles = await listRole();
+    form.value.userId = userId;
+    form.value.userName = res.result.username;
+    form.value.password = "";
+    form.value.status = String(res.result.is_active);
+    form.value.remark = res.result.descriptions;
+    form.value.roleIds = res.result.roles.map((role) => role.id); // 循环遍历role id组成新数组
+    roleOptions.value = roles.result.data;
     open.value = true;
     title.value = "修改用户";
     form.password = "";
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["userRef"].validate((valid) => {
+  proxy.$refs["userRef"].validate(async (valid) => {
     if (valid) {
       if (form.value.userId != undefined) {
-        updateUser(form.value).then((response) => {
+        try {
+          await updateUser(form.value.userId, form.value);
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
-        });
+        } catch (error) {}
       } else {
-        addUser(form.value).then((response) => {
+        try {
+          await addUser(form.value);
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
-        });
+        } catch (error) {}
       }
     }
   });
