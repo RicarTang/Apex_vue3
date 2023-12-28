@@ -21,7 +21,7 @@
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select
-              v-model="queryParams.is_active"
+              v-model="queryParams.status"
               placeholder="用户状态"
               clearable
               style="width: 240px"
@@ -132,12 +132,12 @@
             label="状态"
             align="center"
             :key="columns[3].key"
-            prop="is_active"
+            prop="status"
             v-if="columns[3].visible"
           >
             <template #default="scope">
               <el-switch
-                v-model="scope.row.is_active"
+                v-model="scope.row.status"
                 :active-value="1"
                 :inactive-value="0"
                 @change="handleStatusChange(scope.row)"
@@ -419,7 +419,7 @@ const data = reactive({
     page: 1,
     limit: 10,
     userName: undefined,
-    is_active: undefined,
+    status: undefined,
     // deptId: undefined,
   },
   rules: {
@@ -507,17 +507,17 @@ function handleExport() {
 /** 用户状态修改  */
 function handleStatusChange(row) {
   console.log(row);
-  let text = row.is_active === 1 ? "启用" : "停用";
+  let text = row.status === 1 ? "启用" : "停用";
   proxy.$modal
     .confirm('确认要"' + text + '""' + row.username + '"用户吗?')
     .then(function () {
-      return changeUserStatus(row.id, row.is_active);
+      return changeUserStatus(row.id, row.status);
     })
     .then(() => {
       proxy.$modal.msgSuccess(text + "成功");
     })
     .catch(function () {
-      row.is_active = row.is_active === 0 ? 1 : 0;
+      row.status = row.status === 0 ? 1 : 0;
     });
 }
 /** 更多操作 */
@@ -636,7 +636,7 @@ async function handleUpdate(row) {
     form.value.userId = userId;
     form.value.userName = res.result.username;
     form.value.password = "";
-    form.value.status = String(res.result.is_active);
+    form.value.status = String(res.result.status);
     form.value.remark = res.result.descriptions;
     form.value.roleIds = res.result.roles.map((role) => role.id); // 循环遍历role id组成新数组
     roleOptions.value = roles.result.data;

@@ -60,7 +60,7 @@ export function resetUserPwd(userId, password) {
 // 用户状态修改
 export function changeUserStatus(userId, is_active) {
   const data = {
-    is_active
+    status: is_active
   }
   return request({
     url: `/user/${userId}`,
