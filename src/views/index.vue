@@ -87,9 +87,9 @@
                 <b>关注中的测试计划 (2个)</b>
               </h3></template
             >
-            <Card hoverable title="test">
+            <Card title="test">
               <el-row :gutter="18">
-                <el-col :span="8">
+                <el-col :span="8" :xs="24">
                   <Card hoverable>
                     <template #title>
                       <h5 style="vertical-align: middle">
@@ -118,7 +118,7 @@
                     </el-progress>
                   </Card>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="8" :xs="24">
                   <Card hoverable>
                     <template #title>
                       <h5 style="vertical-align: middle">时间</h5></template
@@ -145,8 +145,8 @@
                     </el-progress>
                   </Card>
                 </el-col>
-                <el-col :span="8">
-                  <Card hoverable>
+                <el-col :span="8" :xs="24">
+                  <Card hoverable style="height: 100%">
                     <template #title>
                       <h5 style="vertical-align: middle">
                         近七次通过率(%)
@@ -161,20 +161,17 @@
                         <el-icon><InfoFilled /></el-icon>
                       </el-tooltip>
                     </template>
-                    <el-progress
-                      type="circle"
-                      :percentage="100"
-                      status="success"
-                    >
-                      <el-button type="success" circle>
-                        <template #icon>
-                          <Check />
-                        </template>
-                      </el-button>
-                    </el-progress>
+                    <div
+                      ref="recentSevenPassRateRef"
+                      style="height: 100%"
+                    ></div>
                   </Card>
                 </el-col>
               </el-row>
+            </Card>
+            <hr />
+            <Card title="add">
+              <el-row> </el-row>
             </Card>
           </el-card>
         </el-col>
@@ -190,7 +187,7 @@
               </span></template
             >
             <div class="el-table el-table--enable-row-hover el-table--medium">
-              <div ref="caseTotalRef" style="height: 420px" />
+              <div ref="caseTotalRef" style="height: 350px" />
             </div>
           </el-card>
         </el-col>
@@ -207,59 +204,65 @@ import { Card } from "ant-design-vue";
 
 const userStore = useUserStore();
 
-const testTotalRef = ref(null);
+const caseTotalRef = ref(null);
+const recentSevenPassRateRef = ref(null);
 
-// onMounted(() => {
-//   console.log(testTotalRef.value);
-//   const testTotalIntance = echarts.init(testTotalRef.value);
-//   testTotalIntance.setOption({
-//     tooltip: {
-//       trigger: "item",
-//     },
-//     legend: {
-//       top: "5%",
-//       left: "center",
-//     },
-//     series: [
-//       {
-//         name: "Access From",
-//         type: "pie",
-//         radius: ["40%", "70%"],
-//         avoidLabelOverlap: false,
-//         itemStyle: {
-//           borderRadius: 10,
-//           borderColor: "#fff",
-//           borderWidth: 2,
-//         },
-//         label: {
-//           show: false,
-//           position: "center",
-//         },
-//         emphasis: {
-//           label: {
-//             show: true,
-//             fontSize: 40,
-//             fontWeight: "bold",
-//           },
-//         },
-//         labelLine: {
-//           show: false,
-//         },
-//         data: [
-//           { value: 1048, name: "Search Engine" },
-//           { value: 735, name: "Direct" },
-//           { value: 580, name: "Email" },
-//           { value: 484, name: "Union Ads" },
-//           { value: 300, name: "Video Ads" },
-//         ],
-//       },
-//     ],
-//   });
-//   // 响应式变更实例大小
-//   window.addEventListener("resize", () => {
-//     testTotalIntance.resize();
-//   });
-// });
+onMounted(() => {
+  // 组件挂在后执行渲染echarts图
+  caseTotal();
+  recentSevenPassRate();
+});
+
+// 近7次通过率图
+function recentSevenPassRate() {
+  const recentSevenPassRateIntance = echarts.init(recentSevenPassRateRef.value);
+  recentSevenPassRateIntance.setOption({
+    xAxis: {
+      type: "category",
+      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        type: "line",
+        smooth: true,
+      },
+    ],
+  });
+  // 响应式变更实例大小
+  window.addEventListener("resize", () => {
+    recentSevenPassRateIntance.resize();
+  });
+}
+
+// 近7天编写用例数图
+function caseTotal() {
+  const caseTotalIntance = echarts.init(caseTotalRef.value);
+  caseTotalIntance.setOption({
+    xAxis: {
+      type: "category",
+      boundaryGap: false,
+      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        type: "line",
+        areaStyle: {},
+      },
+    ],
+  });
+  // 响应式变更实例大小
+  window.addEventListener("resize", () => {
+    caseTotalIntance.resize();
+  });
+}
 
 function goTarget(url) {
   window.open(url, "__blank");
@@ -320,6 +323,10 @@ function goTarget(url) {
       margin-inline-end: 0;
       padding-inline-start: 40px;
     }
+  }
+  // 卡片body里内容居中
+  :deep(.ant-card-body) {
+    text-align: center;
   }
 }
 </style>

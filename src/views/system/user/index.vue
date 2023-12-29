@@ -166,7 +166,7 @@
               <el-tooltip
                 content="修改"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.username !== 'admin'"
               >
                 <el-button
                   link
@@ -178,7 +178,7 @@
               <el-tooltip
                 content="删除"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.username !== 'admin'"
               >
                 <el-button
                   link
@@ -190,7 +190,7 @@
               <el-tooltip
                 content="重置密码"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.username !== 'admin'"
               >
                 <el-button
                   link
@@ -199,10 +199,10 @@
                   @click="handleResetPwd(scope.row)"
                 ></el-button>
               </el-tooltip>
-              <el-tooltip
+              <!-- <el-tooltip
                 content="分配角色"
                 placement="top"
-                v-if="scope.row.userId !== 1"
+                v-if="scope.row.username !== 'admin'"
               >
                 <el-button
                   link
@@ -210,7 +210,7 @@
                   icon="CircleCheck"
                   @click="handleAuthRole(scope.row)"
                 ></el-button>
-              </el-tooltip>
+              </el-tooltip> -->
             </template>
           </el-table-column>
         </el-table>
