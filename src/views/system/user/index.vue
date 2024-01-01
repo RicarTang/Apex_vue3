@@ -264,7 +264,7 @@
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.id"
-                  :label="item.description"
+                  :label="item.rolename"
                   :value="item.id"
                   :disabled="item.status == 1"
                 ></el-option>
@@ -557,7 +557,7 @@ function handleResetPwd(row) {
 }
 /** 选择条数  */
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.userId);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }

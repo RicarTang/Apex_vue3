@@ -508,7 +508,8 @@ function handleAuthUser(row) {
 /** 查询菜单树结构 */
 function getMenuTreeselect() {
   menuTreeselect().then((response) => {
-    menuOptions.value = response.data;
+    menuOptions.value = response.result;
+
   });
 }
 /** 所有部门节点数据 */
@@ -533,12 +534,12 @@ function reset() {
     roleId: undefined,
     roleName: undefined,
     roleKey: undefined,
-    roleSort: 0,
+    // roleSort: 0,
     status: "0",
     menuIds: [],
-    deptIds: [],
+    // deptIds: [],
     menuCheckStrictly: true,
-    deptCheckStrictly: true,
+    // deptCheckStrictly: true,
     remark: undefined,
   };
   proxy.resetForm("roleRef");
