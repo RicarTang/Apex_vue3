@@ -157,7 +157,7 @@
           <el-tooltip
             content="修改"
             placement="top"
-            v-if="scope.row.rolekey !== 'admin'"
+            v-if="scope.row.roleKey !== 'admin'"
           >
             <el-button
               link
@@ -169,7 +169,7 @@
           <el-tooltip
             content="删除"
             placement="top"
-            v-if="scope.row.rolekey !== 'admin'"
+            v-if="scope.row.roleKey !== 'admin'"
           >
             <el-button
               link
@@ -181,7 +181,7 @@
           <el-tooltip
             content="数据权限"
             placement="top"
-            v-if="scope.row.rolekey !== 'admin'"
+            v-if="scope.row.roleKey !== 'admin'"
           >
             <el-button
               link
@@ -193,7 +193,7 @@
           <el-tooltip
             content="分配用户"
             placement="top"
-            v-if="scope.row.rolekey !== 'admin'"
+            v-if="scope.row.roleKey !== 'admin'"
           >
             <el-button
               link
@@ -266,6 +266,8 @@
             ref="menuRef"
             node-key="id"
             :check-strictly="!form.menuCheckStrictly"
+            :default-checked-keys="form.menuIds"
+            :default-expanded-keys="form.menuIds"
             empty-text="加载中，请稍候"
             :props="{ label: 'label', children: 'children' }"
           ></el-tree>
@@ -548,11 +550,12 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const roleId = row.id || ids.value;
-  // const roleMenu = getRoleMenuTreeselect(roleId);
   getMenuTreeselect();
   getRole(roleId).then((response) => {
     form.value = response.result;
+    form.value.menuCheckStrictly = true;
     open.value = true;
+    
     // nextTick(() => {
     //   roleMenu.then((res) => {
     //     let checkedKeys = res.checkedKeys;
