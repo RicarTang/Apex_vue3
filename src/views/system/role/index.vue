@@ -112,19 +112,19 @@
       <el-table-column label="角色编号" prop="id" align="center" />
       <el-table-column
         label="角色名称"
-        prop="rolename"
+        prop="roleName"
         align="center"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="角色字符"
-        prop="rolekey"
+        prop="roleKey"
         align="center"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="角色详情"
-        prop="description"
+        prop="remark"
         align="center"
         :show-overflow-tooltip="true"
       />
@@ -234,13 +234,6 @@
           </template>
           <el-input v-model="form.roleKey" placeholder="请输入角色字符" />
         </el-form-item>
-        <!-- <el-form-item label="角色顺序" prop="roleSort">
-          <el-input-number
-            v-model="form.roleSort"
-            controls-position="right"
-            :min="0"
-          />
-        </el-form-item> -->
         <!-- <el-form-item label="状态">
                <el-radio-group v-model="form.status">
                   <el-radio
@@ -554,22 +547,22 @@ function handleAdd() {
 /** 修改角色 */
 function handleUpdate(row) {
   reset();
-  const roleId = row.roleId || ids.value;
-  const roleMenu = getRoleMenuTreeselect(roleId);
+  const roleId = row.id || ids.value;
+  // const roleMenu = getRoleMenuTreeselect(roleId);
+  getMenuTreeselect();
   getRole(roleId).then((response) => {
-    form.value = response.data;
-    form.value.roleSort = Number(form.value.roleSort);
+    form.value = response.result;
     open.value = true;
-    nextTick(() => {
-      roleMenu.then((res) => {
-        let checkedKeys = res.checkedKeys;
-        checkedKeys.forEach((v) => {
-          nextTick(() => {
-            menuRef.value.setChecked(v, true, false);
-          });
-        });
-      });
-    });
+    // nextTick(() => {
+    //   roleMenu.then((res) => {
+    //     let checkedKeys = res.checkedKeys;
+    //     checkedKeys.forEach((v) => {
+    //       nextTick(() => {
+    //         menuRef.value.setChecked(v, true, false);
+    //       });
+    //     });
+    //   });
+    // });
     title.value = "修改角色";
   });
 }
@@ -630,9 +623,9 @@ function getMenuAllCheckedKeys() {
 function submitForm() {
   proxy.$refs["roleRef"].validate((valid) => {
     if (valid) {
-      if (form.value.roleId != undefined) {
+      if (form.value.id != undefined) {
         form.value.menuIds = getMenuAllCheckedKeys();
-        updateRole(form.value).then((response) => {
+        updateRole(form.value.id,form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

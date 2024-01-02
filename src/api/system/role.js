@@ -12,7 +12,7 @@ export function listRole(query) {
 // 查询角色详细
 export function getRole(roleId) {
   return request({
-    url: '/system/role/' + roleId,
+    url: '/admin/role/' + roleId,
     method: 'get'
   })
 }
@@ -27,11 +27,17 @@ export function addRole(data) {
 }
 
 // 修改角色
-export function updateRole(data) {
+export function updateRole(roleId, data) {
+  const putData = {
+    roleName: data.roleName,
+    roleKey: data.roleKey,
+    menuIds: data.menuIds,
+    remark: data.remark,
+  }
   return request({
-    url: '/system/role',
+    url: '/admin/role/' + roleId,
     method: 'put',
-    data: data
+    data: putData
   })
 }
 
