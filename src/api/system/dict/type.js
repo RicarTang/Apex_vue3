@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 // 查询字典类型列表
-export function listType(query) {
+export function listDict(query) {
   return request({
-    url: '/system/dict/type/list',
+    url: '/dict/list',
     method: 'get',
     params: query
   })

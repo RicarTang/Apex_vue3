@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询字典数据列表
 export function listData(query) {
   return request({
-    url: '/system/dict/data/list',
+    url: '/dict/list',
     method: 'get',
     params: query
   })

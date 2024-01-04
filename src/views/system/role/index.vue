@@ -127,6 +127,7 @@
         prop="remark"
         align="center"
         :show-overflow-tooltip="true"
+        :formatter="tableDefaultFormatter"
       />
       <el-table-column label="超级权限" prop="is_super" align="center">
         <template #default="scope">
@@ -352,6 +353,7 @@
 </template>
 
 <script setup name="Role">
+import { tableDefaultFormatter } from "@/utils/ruoyi";
 import {
   addRole,
   changeRoleStatus,

@@ -127,6 +127,7 @@
             prop="descriptions"
             v-if="columns[2].visible"
             :show-overflow-tooltip="true"
+            :formatter="tableDefaultFormatter"
           />
           <el-table-column
             label="状态"
@@ -355,6 +356,7 @@
 
 <script setup name="User">
 import { getToken } from "@/utils/auth";
+import { tableDefaultFormatter } from "@/utils/ruoyi";
 import {
   changeUserStatus,
   listUser,
@@ -561,41 +563,41 @@ function handleSelectionChange(selection) {
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
-/** 导入按钮操作 */
-function handleImport() {
-  upload.title = "用户导入";
-  upload.open = true;
-}
-/** 下载模板操作 */
-function importTemplate() {
-  proxy.download(
-    "system/user/importTemplate",
-    {},
-    `user_template_${new Date().getTime()}.xlsx`
-  );
-}
-/**文件上传中处理 */
-const handleFileUploadProgress = (event, file, fileList) => {
-  upload.isUploading = true;
-};
-/** 文件上传成功处理 */
-const handleFileSuccess = (response, file, fileList) => {
-  upload.open = false;
-  upload.isUploading = false;
-  proxy.$refs["uploadRef"].handleRemove(file);
-  proxy.$alert(
-    "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
-      response.msg +
-      "</div>",
-    "导入结果",
-    { dangerouslyUseHTMLString: true }
-  );
-  getList();
-};
-/** 提交上传文件 */
-function submitFileForm() {
-  proxy.$refs["uploadRef"].submit();
-}
+// /** 导入按钮操作 */
+// function handleImport() {
+//   upload.title = "用户导入";
+//   upload.open = true;
+// }
+// /** 下载模板操作 */
+// function importTemplate() {
+//   proxy.download(
+//     "system/user/importTemplate",
+//     {},
+//     `user_template_${new Date().getTime()}.xlsx`
+//   );
+// }
+// /**文件上传中处理 */
+// const handleFileUploadProgress = (event, file, fileList) => {
+//   upload.isUploading = true;
+// };
+// /** 文件上传成功处理 */
+// const handleFileSuccess = (response, file, fileList) => {
+//   upload.open = false;
+//   upload.isUploading = false;
+//   proxy.$refs["uploadRef"].handleRemove(file);
+//   proxy.$alert(
+//     "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
+//       response.msg +
+//       "</div>",
+//     "导入结果",
+//     { dangerouslyUseHTMLString: true }
+//   );
+//   getList();
+// };
+// /** 提交上传文件 */
+// function submitFileForm() {
+//   proxy.$refs["uploadRef"].submit();
+// }
 /** 重置操作表单 */
 function reset() {
   form.value = {

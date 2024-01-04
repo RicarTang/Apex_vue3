@@ -5,6 +5,11 @@
  * Copyright (c) 2019 ruoyi
  */
 
+/**表格默认值格式化 */
+export function tableDefaultFormatter(row, column, cellValue) {
+  return cellValue !== null ? cellValue : "-";
+}
+
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {
@@ -19,14 +24,14 @@ export function parseTime(time, pattern) {
       time = parseInt(time)
     } else if (typeof time === 'string') {
       // 后端返回时间字符串直接new Date()
-      console.log(time);
+      // console.log(time);
       // time = time.replace(new RegExp(/-/gm), '/').replace('T', ' ').replace(new RegExp(/\.[\d]{3}/gm), '');
     }
     if ((typeof time === 'number') && (time.toString().length === 10)) {
       time = time * 1000
     }
     date = new Date(time)
-    console.log(date);
+    // console.log(date);
   }
   const formatObj = {
     y: date.getFullYear(),
@@ -67,7 +72,7 @@ export function addDateRange(params, dateRange, propName) {
     search['begin' + propName] = dateRange[0];
     search['end' + propName] = dateRange[1];
   }
-  console.log(search);
+  // console.log(search);
   return search;
 }
 
