@@ -132,14 +132,14 @@
             label="套件编号"
             align="center"
             :key="columns[0].key"
-            prop="suite_no"
+            prop="suiteNo"
             v-if="columns[0].visible"
           />
           <el-table-column
             label="套件名称"
             align="center"
             :key="columns[1].key"
-            prop="suite_title"
+            prop="suiteTitle"
             v-if="columns[1].visible"
             :show-overflow-tooltip="false"
           />
@@ -156,12 +156,12 @@
             label="创建时间"
             align="center"
             :key="columns[3].key"
-            prop="createTime"
+            prop="createdAt"
             v-if="columns[3].visible"
             width="160"
           >
             <template #default="scope">
-              <span>{{ parseTime(scope.row.created_at) }}</span>
+              <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column

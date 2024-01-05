@@ -145,14 +145,14 @@
             label="用例编号"
             align="center"
             :key="columns[0].key"
-            prop="case_no"
+            prop="caseNo"
             v-if="columns[0].visible"
           />
           <el-table-column
             label="用例标题"
             align="center"
             :key="columns[1].key"
-            prop="case_title"
+            prop="caseTitle"
             v-if="columns[1].visible"
             :show-overflow-tooltip="false"
           />
@@ -160,7 +160,7 @@
             label="用例说明"
             align="center"
             :key="columns[2].key"
-            prop="case_description"
+            prop="caseDescription"
             v-if="columns[2].visible"
             :show-overflow-tooltip="false"
           />
@@ -168,7 +168,7 @@
             label="所属模块"
             align="center"
             :key="columns[3].key"
-            prop="case_module"
+            prop="caseModule"
             v-if="columns[3].visible"
             :show-overflow-tooltip="true"
           />
@@ -176,7 +176,7 @@
             label="所属子模块"
             align="center"
             :key="columns[4].key"
-            prop="case_sub_module"
+            prop="caseSubModule"
             v-if="columns[4].visible"
             :formatter="tableDefaultFormatter"
           />
@@ -188,7 +188,7 @@
           >
             <template #default="scope">
               <el-switch
-                v-model="scope.row.case_is_execute"
+                v-model="scope.row.caseIsExecute"
                 :active-value="1"
                 :inactive-value="0"
                 @change="handleStatusChange(scope.row)"
@@ -199,21 +199,21 @@
             label="api路径地址"
             align="center"
             :key="columns[6].key"
-            prop="api_path"
+            prop="apiPath"
             v-if="columns[6].visible"
           />
           <el-table-column
             label="api请求方法"
             align="center"
             :key="columns[7].key"
-            prop="api_method"
+            prop="apiMethod"
             v-if="columns[7].visible"
           />
           <el-table-column
             label="请求头"
             align="center"
             :key="columns[8].key"
-            prop="request_headers"
+            prop="requestHeaders"
             v-if="columns[8].visible"
             :formatter="tableDefaultFormatter"
           />
@@ -221,14 +221,14 @@
             label="请求参数类型"
             align="center"
             :key="columns[9].key"
-            prop="request_param_type"
+            prop="requestParamType"
             v-if="columns[9].visible"
           />
           <el-table-column
             label="请求参数"
             align="center"
             :key="columns[10].key"
-            prop="request_param"
+            prop="requestParam"
             v-if="columns[10].visible"
             :show-overflow-tooltip="true"
           />
@@ -236,14 +236,14 @@
             label="预期状态码"
             align="center"
             :key="columns[11].key"
-            prop="expect_code"
+            prop="expectCode"
             v-if="columns[11].visible"
           />
           <el-table-column
             label="预期结果"
             align="center"
             :key="columns[12].key"
-            prop="expect_result"
+            prop="expectResult"
             v-if="columns[12].visible"
             :formatter="tableDefaultFormatter"
           />
@@ -251,7 +251,7 @@
             label="预期返回数据"
             align="center"
             :key="columns[13].key"
-            prop="expect_data"
+            prop="expectData"
             v-if="columns[13].visible"
             :formatter="tableDefaultFormatter"
           />
@@ -259,21 +259,21 @@
             label="是否保存请求体至redis"
             align="center"
             :key="columns[14].key"
-            prop="request_to_redis"
+            prop="requestToRedis"
             v-if="columns[14].visible"
           />
           <el-table-column
             label="是否保存响应体至redis"
             align="center"
             :key="columns[15].key"
-            prop="response_to_redis"
+            prop="responseToRedis"
             v-if="columns[15].visible"
           />
           <el-table-column
             label="编写者"
             align="center"
             :key="columns[16].key"
-            prop="case_editor"
+            prop="caseEditor"
             v-if="columns[16].visible"
           />
           <el-table-column
@@ -288,12 +288,12 @@
             label="创建时间"
             align="center"
             :key="columns[18].key"
-            prop="createTime"
+            prop="createdAt"
             v-if="columns[18].visible"
             width="160"
           >
             <template #default="scope">
-              <span>{{ parseTime(scope.row.created_at) }}</span>
+              <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column

@@ -131,7 +131,7 @@
       />
       <el-table-column label="超级权限" prop="is_super" align="center">
         <template #default="scope">
-          <span>{{ scope.row.is_super === 1 ? "是" : "否" }}</span>
+          <span>{{ scope.row.isSuper === 1 ? "是" : "否" }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column label="状态" align="center" width="100">
@@ -144,9 +144,9 @@
                ></el-switch>
             </template>
          </el-table-column> -->
-      <el-table-column label="创建时间" align="center" prop="createTime">
+      <el-table-column label="创建时间" align="center" prop="createdAt">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.created_at) }}</span>
+          <span>{{ parseTime(scope.row.createdAt) }}</span>
         </template>
       </el-table-column>
       <el-table-column

@@ -72,24 +72,6 @@
               >删除</el-button
             >
           </el-col>
-          <!-- <el-col :span="1.5">
-            <el-button
-              type="info"
-              plain
-              icon="Upload"
-              @click="handleImport"
-              >导入</el-button
-            >
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="warning"
-              plain
-              icon="Download"
-              @click="handleExport"
-              >导出</el-button
-            >
-          </el-col> -->
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"
@@ -99,7 +81,7 @@
 
         <el-table
           v-loading="loading"
-          :data="caseList"
+          :data="envList"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="50" align="center" />
@@ -114,7 +96,7 @@
             label="环境名称"
             align="center"
             :key="columns[1].key"
-            prop="summary"
+            prop="envName"
             v-if="columns[1].visible"
             :show-overflow-tooltip="false"
           />
@@ -122,7 +104,7 @@
             label="环境地址"
             align="center"
             :key="columns[2].key"
-            prop="test_env_url"
+            prop="envUrl"
             v-if="columns[2].visible"
             :show-overflow-tooltip="false"
           />
@@ -143,7 +125,7 @@
             width="160"
           >
             <template #default="scope">
-              <span>{{ parseTime(scope.row.created_at) }}</span>
+              <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -182,133 +164,25 @@
       </el-col>
     </el-row>
 
-    <!-- 添加或修改用户配置对话框 -->
+    <!-- 添加或修改环境变量对话框 -->
     <el-dialog :title="title" v-model="open" width="600px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
+      <el-form :model="form" :rules="rules" ref="envRef" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
+            <el-form-item label="环境名称" prop="envName">
               <el-input
-                v-model="form.nickName"
-                placeholder="请输入用户昵称"
+                v-model="form.envName"
+                placeholder="请输入环境变量名称"
                 maxlength="30"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <el-tree-select
-                v-model="form.deptId"
-                :data="deptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
-                value-key="id"
-                placeholder="请选择归属部门"
-                check-strictly
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
+            <el-form-item label="环境地址" prop="envUrl">
               <el-input
-                v-model="form.phonenumber"
-                placeholder="请输入手机号码"
-                maxlength="11"
+                v-model="form.envUrl"
+                placeholder="请输入环境变量地址"
               />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input
-                v-model="form.email"
-                placeholder="请输入邮箱"
-                maxlength="50"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户名称"
-              prop="userName"
-            >
-              <el-input
-                v-model="form.userName"
-                placeholder="请输入用户名称"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户密码"
-              prop="password"
-            >
-              <el-input
-                v-model="form.password"
-                placeholder="请输入用户密码"
-                type="password"
-                maxlength="20"
-                show-password
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
-                <el-option
-                  v-for="dict in sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -384,7 +258,7 @@
 <script setup name="User">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listEnv } from "@/api/test/env";
+import { listEnv, addEnv, getEnv } from "@/api/test/env";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -393,7 +267,7 @@ const { sys_normal_disable, sys_user_sex } = proxy.useDict(
   "sys_user_sex"
 );
 
-const caseList = ref([]);
+const envList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -403,11 +277,6 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const deptName = ref("");
-const deptOptions = ref(undefined);
-const initPassword = ref(undefined);
-const postOptions = ref([]);
-const roleOptions = ref([]);
 /*** 用户导入参数 */
 const upload = reactive({
   // 是否显示弹出层（用户导入）
@@ -441,76 +310,33 @@ const data = reactive({
     suiteNo: undefined,
   },
   rules: {
-    userName: [
-      { required: true, message: "用户名称不能为空", trigger: "blur" },
+    envName: [
+      { required: true, message: "环境变量名称不能为空", trigger: "blur" },
       {
         min: 2,
-        max: 20,
-        message: "用户名称长度必须介于 2 和 20 之间",
+        max: 30,
+        message: "环境变量名称长度必须介于 2 和 30 之间",
         trigger: "blur",
       },
     ],
-    nickName: [
-      { required: true, message: "用户昵称不能为空", trigger: "blur" },
-    ],
-    password: [
-      { required: true, message: "用户密码不能为空", trigger: "blur" },
-      {
-        min: 5,
-        max: 20,
-        message: "用户密码长度必须介于 5 和 20 之间",
-        trigger: "blur",
-      },
-    ],
-    email: [
-      {
-        type: "email",
-        message: "请输入正确的邮箱地址",
-        trigger: ["blur", "change"],
-      },
-    ],
-    phonenumber: [
-      {
-        pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-        message: "请输入正确的手机号码",
-        trigger: "blur",
-      },
+    envUrl: [
+      { required: true, message: "环境变量地址不能为空", trigger: "blur" },
     ],
   },
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
-// /** 通过条件过滤节点  */
-// const filterNode = (value, data) => {
-//   if (!value) return true;
-//   return data.label.indexOf(value) !== -1;
-// };
-// /** 根据名称筛选部门树 */
-// watch(deptName, (val) => {
-//   proxy.$refs["deptTreeRef"].filter(val);
-// });
-// /** 查询部门下拉树结构 */
-// function getDeptTree() {
-//   deptTreeSelect().then((response) => {
-//     deptOptions.value = response.data;
-//   });
-// }
-/** 查询用例列表 */
+/** 查询环境列表 */
 async function getList() {
   loading.value = true;
   const res = await listEnv(
     proxy.addDateRange(queryParams.value, dateRange.value)
   );
   loading.value = false;
-  caseList.value = res.result.data;
+  envList.value = res.result.data;
   total.value = res.result.total;
 }
-/** 节点单击事件 */
-// function handleNodeClick(data) {
-//   queryParams.value.deptId = data.id;
-//   handleQuery();
-// }
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.page = 1;
@@ -520,8 +346,6 @@ function handleQuery() {
 function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
-  // queryParams.value.deptId = undefined;
-  // proxy.$refs.deptTreeRef.setCurrentKey(null);
   handleQuery();
 }
 /** 删除按钮操作 */
@@ -577,28 +401,6 @@ function handleCommand(command, row) {
       break;
   }
 }
-/** 跳转角色分配 */
-// function handleAuthRole(row) {
-//   const userId = row.userId;
-//   router.push("/system/user-auth/role/" + userId);
-// }
-/** 重置密码按钮操作 */
-// function handleResetPwd(row) {
-//   proxy
-//     .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
-//       confirmButtonText: "确定",
-//       cancelButtonText: "取消",
-//       closeOnClickModal: false,
-//       inputPattern: /^.{5,20}$/,
-//       inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-//     })
-//     .then(({ value }) => {
-//       resetUserPwd(row.userId, value).then((response) => {
-//         proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
-//       });
-//     })
-//     .catch(() => {});
-// }
 /** 选择条数  */
 function handleSelectionChange(selection) {
   ids.value = selection.map((item) => item.userId);
@@ -643,20 +445,12 @@ function submitFileForm() {
 /** 重置操作表单 */
 function reset() {
   form.value = {
-    userId: undefined,
-    deptId: undefined,
-    userName: undefined,
-    nickName: undefined,
-    password: undefined,
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
+    id: undefined,
+    envName: undefined,
+    envUrl: undefined,
     remark: undefined,
-    postIds: [],
-    roleIds: [],
   };
-  proxy.resetForm("userRef");
+  proxy.resetForm("envRef");
 }
 /** 取消按钮 */
 function cancel() {
@@ -666,41 +460,30 @@ function cancel() {
 /** 新增按钮操作 */
 function handleAdd() {
   reset();
-  getUser().then((response) => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    open.value = true;
-    title.value = "添加用户";
-    form.value.password = initPassword.value;
-  });
+  open.value = true;
+  title.value = "添加环境变量";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset();
-  const userId = row.userId || ids.value;
-  getUser(userId).then((response) => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
-    open.value = true;
-    title.value = "修改用户";
-    form.password = "";
-  });
+  const envId = row.id || ids.value;
+  const res = await getEnv(envId);
+  form.value = res.result;
+  open.value = true;
+  title.value = "修改环境变量";
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["userRef"].validate((valid) => {
+  proxy.$refs["envRef"].validate((valid) => {
     if (valid) {
-      if (form.value.userId != undefined) {
-        updateUser(form.value).then((response) => {
+      if (form.value.id != undefined) {
+        updateEnv(form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addUser(form.value).then((response) => {
+        addEnv(form.value).then((response) => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();

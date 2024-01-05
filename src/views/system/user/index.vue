@@ -116,7 +116,7 @@
             label="用户名称"
             align="center"
             :key="columns[1].key"
-            prop="username"
+            prop="userName"
             v-if="columns[1].visible"
             :show-overflow-tooltip="true"
           />
@@ -124,7 +124,7 @@
             label="用户详情"
             align="center"
             :key="columns[2].key"
-            prop="descriptions"
+            prop="remark"
             v-if="columns[2].visible"
             :show-overflow-tooltip="true"
             :formatter="tableDefaultFormatter"
@@ -141,6 +141,7 @@
                 v-model="scope.row.status"
                 :active-value="1"
                 :inactive-value="0"
+                :disabled="scope.row.userName === 'admin' ? true : false"
                 @change="handleStatusChange(scope.row)"
               ></el-switch>
             </template>
@@ -149,12 +150,12 @@
             label="创建时间"
             align="center"
             :key="columns[4].key"
-            prop="created_at"
+            prop="createdAt"
             width="160"
             v-if="columns[4].visible"
           >
             <template #default="scope">
-              <span>{{ parseTime(scope.row.created_at) }}</span>
+              <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -167,7 +168,7 @@
               <el-tooltip
                 content="修改"
                 placement="top"
-                v-if="scope.row.username !== 'admin'"
+                v-if="scope.row.userName !== 'admin'"
               >
                 <el-button
                   link
@@ -179,7 +180,7 @@
               <el-tooltip
                 content="删除"
                 placement="top"
-                v-if="scope.row.username !== 'admin'"
+                v-if="scope.row.userName !== 'admin'"
               >
                 <el-button
                   link
@@ -191,7 +192,7 @@
               <el-tooltip
                 content="重置密码"
                 placement="top"
-                v-if="scope.row.username !== 'admin'"
+                v-if="scope.row.userName !== 'admin'"
               >
                 <el-button
                   link
@@ -203,7 +204,7 @@
               <!-- <el-tooltip
                 content="分配角色"
                 placement="top"
-                v-if="scope.row.username !== 'admin'"
+                v-if="scope.row.userName !== 'admin'"
               >
                 <el-button
                   link
@@ -511,7 +512,7 @@ function handleStatusChange(row) {
   console.log(row);
   let text = row.status === 1 ? "启用" : "停用";
   proxy.$modal
-    .confirm('确认要"' + text + '""' + row.username + '"用户吗?')
+    .confirm('确认要"' + text + '""' + row.userName + '"用户吗?')
     .then(function () {
       return changeUserStatus(row.id, row.status);
     })
@@ -543,7 +544,7 @@ function handleAuthRole(row) {
 /** 重置密码按钮操作 */
 function handleResetPwd(row) {
   proxy
-    .$prompt('请输入"' + row.username + '"的新密码', "提示", {
+    .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       closeOnClickModal: false,
@@ -636,10 +637,10 @@ async function handleUpdate(row) {
     const res = await getUser(userId);
     const roles = await listRole();
     form.value.userId = userId;
-    form.value.userName = res.result.username;
+    form.value.userName = res.result.userName;
     form.value.password = "";
     form.value.status = String(res.result.status);
-    form.value.remark = res.result.descriptions;
+    form.value.remark = res.result.remark;
     form.value.roleIds = res.result.roles.map((role) => role.id); // 循环遍历role id组成新数组
     roleOptions.value = roles.result.data;
     open.value = true;

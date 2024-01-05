@@ -104,14 +104,14 @@
       <el-table-column
         label="字典名称"
         align="center"
-        prop="dict_label"
+        prop="dictLabel"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="字典类型"
         align="center"
         :show-overflow-tooltip="true"
-        prop="dict_type"
+        prop="dictType"
       >
         <!-- <template #default="scope">
           <router-link
@@ -136,11 +136,11 @@
       <el-table-column
         label="创建时间"
         align="center"
-        prop="createTime"
+        prop="createdAt"
         width="180"
       >
         <template #default="scope">
-          <span>{{ parseTime(scope.row.created_at) }}</span>
+          <span>{{ parseTime(scope.row.createdAt) }}</span>
         </template>
       </el-table-column>
       <el-table-column
