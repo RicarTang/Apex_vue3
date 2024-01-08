@@ -26,4 +26,23 @@ export function getEnv(envId) {
     method: 'get'
   })
 }
+// 修改环境变量
+export function updateEnv(envId, data) {
+  return request({
+    url: `/testenv/${envId}`,
+    method: 'put',
+    data: data
+  })
+}
+// 删除环境变量
+export function deleteEnv(data) {
+  const ids = {
+    envIds: data
+  }
+  return request({
+    url: `/testenv`,
+    method: 'delete',
+    data: ids
+  })
+}
 

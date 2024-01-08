@@ -303,6 +303,14 @@
             class-name="small-padding fixed-width"
           >
             <template #default="scope">
+              <el-tooltip content="详情" placement="top">
+                <el-button
+                  link
+                  type="primary"
+                  icon="More"
+                  @click="handleCaseInfo(scope.row)"
+                ></el-button>
+              </el-tooltip>
               <el-tooltip content="修改" placement="top">
                 <el-button
                   link
@@ -531,7 +539,7 @@
   </div>
 </template>
 
-<script setup name="User">
+<script setup name="Case">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
 // import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, deptTreeSelect } from "@/api/system/user";
@@ -743,11 +751,11 @@ function handleCommand(command, row) {
       break;
   }
 }
-/** 跳转角色分配 */
-// function handleAuthRole(row) {
-//   const userId = row.userId;
-//   router.push("/system/user-auth/role/" + userId);
-// }
+/** 跳转用例详情 */
+function handleCaseInfo(row) {
+  const caseId = row.id;
+  router.push({ name: 'CaseInfo', params: { caseId: caseId } });
+}
 /** 重置密码按钮操作 */
 // function handleResetPwd(row) {
 //   proxy

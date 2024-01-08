@@ -116,6 +116,7 @@ export function filterDynamicRoutes(routes) {
   const res = []
   routes.forEach(route => {
     if (route.permissions) {
+      console.log(route.permissions);
       if (auth.hasPermiOr(route.permissions)) {
         res.push(route)
       }
@@ -124,7 +125,9 @@ export function filterDynamicRoutes(routes) {
         res.push(route)
       }
     }
+    // res.push(route)  // 前端不做权限处理
   })
+  console.log(res);
   return res
 }
 

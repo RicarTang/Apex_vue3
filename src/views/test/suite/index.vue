@@ -129,6 +129,13 @@
         >
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column
+            label="id"
+            align="center"
+            :key="columns[4].key"
+            prop="id"
+            v-if="columns[4].visible"
+          />
+          <el-table-column
             label="套件编号"
             align="center"
             :key="columns[0].key"
@@ -171,6 +178,22 @@
             class-name="small-padding fixed-width"
           >
             <template #default="scope">
+              <el-tooltip content="运行套件" placement="top">
+                <el-button
+                  link
+                  type="primary"
+                  icon="Position"
+                  @click="handleSuiteRun(scope.row)"
+                ></el-button>
+              </el-tooltip>
+              <el-tooltip content="详情" placement="top">
+                <el-button
+                  link
+                  type="primary"
+                  icon="More"
+                  @click="handleSuiteInfo(scope.row)"
+                ></el-button>
+              </el-tooltip>
               <el-tooltip content="修改" placement="top">
                 <el-button
                   link
@@ -205,126 +228,32 @@
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input
-                v-model="form.nickName"
-                placeholder="请输入用户昵称"
-                maxlength="30"
-              />
+            <el-form-item label="套件编号" prop="suiteNo">
+              <el-input v-model="form.suiteNo" placeholder="请输入套件编号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <el-tree-select
-                v-model="form.deptId"
-                :data="deptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
-                value-key="id"
-                placeholder="请选择归属部门"
-                check-strictly
+            <el-form-item label="套件名称" prop="suiteTitle">
+              <el-input
+                v-model="form.suiteTitle"
+                placeholder="请输入套件名称"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input
-                v-model="form.phonenumber"
-                placeholder="请输入手机号码"
-                maxlength="11"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input
-                v-model="form.email"
-                placeholder="请输入邮箱"
-                maxlength="50"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户名称"
-              prop="userName"
-            >
-              <el-input
-                v-model="form.userName"
-                placeholder="请输入用户名称"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户密码"
-              prop="password"
-            >
-              <el-input
-                v-model="form.password"
-                placeholder="请输入用户密码"
-                type="password"
-                maxlength="20"
-                show-password
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
+            <el-form-item label="测试用例" prop="testcaseIds">
+              <el-select
+                v-model="form.testcaseIds"
+                multiple
+                placeholder="请选择"
+              >
                 <el-option
-                  v-for="dict in sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
+                  v-for="item in caseOptions"
+                  :key="item.id"
+                  :label="item.caseTitle"
+                  :value="item.id"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -332,7 +261,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="备注">
+            <el-form-item label="套件说明" prop="remark">
               <el-input
                 v-model="form.remark"
                 type="textarea"
@@ -351,7 +280,7 @@
     </el-dialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog
+    <!-- <el-dialog
       :title="upload.title"
       v-model="upload.open"
       width="400px"
@@ -395,21 +324,28 @@
           <el-button @click="upload.open = false">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
-<script setup name="User">
+<script setup name="Suite">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listSuite } from "@/api/test/suite";
+import {
+  listSuite,
+  addSuite,
+  deleteSuite,
+  updateSuite,
+  getSuite,
+} from "@/api/test/suite";
+import { listCase } from "@/api/test/case";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_normal_disable, sys_user_sex } = proxy.useDict(
-  "sys_normal_disable",
-  "sys_user_sex"
-);
+// const { sys_normal_disable, sys_user_sex } = proxy.useDict(
+//   "sys_normal_disable",
+//   "sys_user_sex"
+// );
 
 const caseList = ref([]);
 const open = ref(false);
@@ -422,10 +358,7 @@ const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
 const deptName = ref("");
-const deptOptions = ref(undefined);
-const initPassword = ref(undefined);
-const postOptions = ref([]);
-const roleOptions = ref([]);
+const caseOptions = ref([]);
 /*** 用户导入参数 */
 const upload = reactive({
   // 是否显示弹出层（用户导入）
@@ -447,6 +380,7 @@ const columns = ref([
   { key: 1, label: `套件名称`, visible: true },
   { key: 2, label: `套件说明`, visible: true },
   { key: 3, label: `创建时间`, visible: true },
+  { key: 4, label: `id`, visible: true },
 ]);
 
 const data = reactive({
@@ -458,40 +392,9 @@ const data = reactive({
     suiteNo: undefined,
   },
   rules: {
-    userName: [
-      { required: true, message: "用户名称不能为空", trigger: "blur" },
-      {
-        min: 2,
-        max: 20,
-        message: "用户名称长度必须介于 2 和 20 之间",
-        trigger: "blur",
-      },
-    ],
-    nickName: [
-      { required: true, message: "用户昵称不能为空", trigger: "blur" },
-    ],
-    password: [
-      { required: true, message: "用户密码不能为空", trigger: "blur" },
-      {
-        min: 5,
-        max: 20,
-        message: "用户密码长度必须介于 5 和 20 之间",
-        trigger: "blur",
-      },
-    ],
-    email: [
-      {
-        type: "email",
-        message: "请输入正确的邮箱地址",
-        trigger: ["blur", "change"],
-      },
-    ],
-    phonenumber: [
-      {
-        pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-        message: "请输入正确的手机号码",
-        trigger: "blur",
-      },
+    suiteNo: [{ required: true, message: "套件编号不能为空", trigger: "blur" }],
+    suiteTitle: [
+      { required: true, message: "套件名称不能为空", trigger: "blur" },
     ],
   },
 });
@@ -543,11 +446,11 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const userIds = row.userId || ids.value;
+  const caseIds = row.id ? [row.id] : ids.value;
   proxy.$modal
-    .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
+    .confirm('是否确认删除编号为"' + caseIds + '"的数据项？')
     .then(function () {
-      return delUser(userIds);
+      return deleteSuite(caseIds);
     })
     .then(() => {
       getList();
@@ -565,22 +468,6 @@ function handleExport() {
     `user_${new Date().getTime()}.xlsx`
   );
 }
-/** 执行状态修改  */
-function handleStatusChange(row) {
-  console.log(row);
-  let text = row.case_is_execute === 1 ? "启用" : "停用";
-  proxy.$modal
-    .confirm('确认要"' + text + '""' + row.case_title + '"用例吗?')
-    .then(function () {
-      // return changeUserStatus(row.id, row.status);
-    })
-    .then(() => {
-      proxy.$modal.msgSuccess(text + "成功");
-    })
-    .catch(function () {
-      row.case_is_execute = row.case_is_execute === 0 ? 1 : 0;
-    });
-}
 /** 更多操作 */
 function handleCommand(command, row) {
   switch (command) {
@@ -594,31 +481,20 @@ function handleCommand(command, row) {
       break;
   }
 }
-/** 跳转角色分配 */
-// function handleAuthRole(row) {
-//   const userId = row.userId;
-//   router.push("/system/user-auth/role/" + userId);
-// }
-/** 重置密码按钮操作 */
-// function handleResetPwd(row) {
-//   proxy
-//     .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
-//       confirmButtonText: "确定",
-//       cancelButtonText: "取消",
-//       closeOnClickModal: false,
-//       inputPattern: /^.{5,20}$/,
-//       inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-//     })
-//     .then(({ value }) => {
-//       resetUserPwd(row.userId, value).then((response) => {
-//         proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
-//       });
-//     })
-//     .catch(() => {});
-// }
+/** 跳转套件详情 */
+function handleSuiteInfo(row) {
+  const suiteId = row.id;
+  // router.push("/test/suite-info/" + suiteId);
+  router.push({ name: 'SuiteInfo', params: { suiteId: suiteId } });
+}
+/** 运行套件 */
+function handleSuiteRun(row) {
+  const suiteId = row.id;
+  
+}
 /** 选择条数  */
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.userId);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -660,18 +536,12 @@ function submitFileForm() {
 /** 重置操作表单 */
 function reset() {
   form.value = {
-    userId: undefined,
-    deptId: undefined,
-    userName: undefined,
-    nickName: undefined,
-    password: undefined,
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
+    id: undefined,
+    suiteNo: undefined,
+    suiteTitle: undefined,
+    // status: "0",
     remark: undefined,
-    postIds: [],
-    roleIds: [],
+    testcaseIds: undefined,
   };
   proxy.resetForm("userRef");
 }
@@ -681,43 +551,39 @@ function cancel() {
   reset();
 }
 /** 新增按钮操作 */
-function handleAdd() {
+async function handleAdd() {
   reset();
-  getUser().then((response) => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    open.value = true;
-    title.value = "添加用户";
-    form.value.password = initPassword.value;
-  });
+  // 先获取case list
+  const caseList = await listCase();
+  caseOptions.value = caseList.result.data;
+  open.value = true;
+  title.value = "添加测试套件";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset();
-  const userId = row.userId || ids.value;
-  getUser(userId).then((response) => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
-    open.value = true;
-    title.value = "修改用户";
-    form.password = "";
-  });
+  const suiteId = row.id || ids.value;
+  const res = await getSuite(suiteId);
+  const caseList = await listCase();
+  form.value = res.result;
+  caseOptions.value = caseList.result.data;
+  // options prop
+  form.value.testcaseIds = res.result.testcases.map((item) => item.id);
+  open.value = true;
+  title.value = "修改测试套件";
 }
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs["userRef"].validate((valid) => {
     if (valid) {
-      if (form.value.userId != undefined) {
-        updateUser(form.value).then((response) => {
+      if (form.value.id != undefined) {
+        updateSuite(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addUser(form.value).then((response) => {
+        addSuite(form.value).then((response) => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();

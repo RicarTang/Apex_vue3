@@ -92,7 +92,7 @@ export const dynamicRoutes = [
     path: '/system/user-auth',
     component: Layout,
     hidden: true,
-    permissions: ['system:user:edit'],
+    permissions: ['1'],
     children: [
       {
         path: 'role/:userId(\\d+)',
@@ -106,7 +106,7 @@ export const dynamicRoutes = [
     path: '/system/role-auth',
     component: Layout,
     hidden: true,
-    permissions: ['system:role:edit'],
+    permissions: ['1'],
     children: [
       {
         path: 'user/:roleId(\\d+)',
@@ -120,13 +120,41 @@ export const dynamicRoutes = [
     path: '/system/dict-data',
     component: Layout,
     hidden: true,
-    permissions: ['system:dict:list'],
+    permissions: ['1'],
     children: [
       {
         path: 'index/:dictId(\\d+)',
         component: () => import('@/views/system/dict/data'),
         name: 'Data',
         meta: { title: '字典数据', activeMenu: '/system/dict' }
+      }
+    ]
+  },
+  {
+    path: '/test/suite-info',
+    component: Layout,
+    hidden: true,
+    permissions: ["1","0"],
+    children: [
+      {
+        path: 'index/:suiteId(\\d+)',
+        component: () => import('@/views/test/suite/suiteInfo'),
+        name: 'SuiteInfo',
+        meta: { title: '套件详情', activeMenu: '/test/suite' }
+      }
+    ]
+  },
+  {
+    path: '/test/case-info',
+    component: Layout,
+    hidden: true,
+    permissions: ["1","0"],
+    children: [
+      {
+        path: 'index/:caseId(\\d+)',
+        component: () => import('@/views/test/case/caseInfo'),
+        name: 'CaseInfo',
+        meta: { title: '用例详情', activeMenu: '/test/case' }
       }
     ]
   },

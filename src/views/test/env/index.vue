@@ -255,10 +255,10 @@
   </div>
 </template>
 
-<script setup name="User">
+<script setup name="Env">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listEnv, addEnv, getEnv } from "@/api/test/env";
+import { listEnv, addEnv, getEnv, updateEnv, deleteEnv } from "@/api/test/env";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -350,11 +350,12 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const userIds = row.userId || ids.value;
+  const envIds = row.id ? [row.id] : ids.value;
+  console.log(envIds);
   proxy.$modal
-    .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
+    .confirm('是否确认删除编号为"' + envIds + '"的数据项？')
     .then(function () {
-      return delUser(userIds);
+      return deleteEnv(envIds);
     })
     .then(() => {
       getList();
@@ -403,7 +404,7 @@ function handleCommand(command, row) {
 }
 /** 选择条数  */
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.userId);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -477,7 +478,7 @@ function submitForm() {
   proxy.$refs["envRef"].validate((valid) => {
     if (valid) {
       if (form.value.id != undefined) {
-        updateEnv(form.value).then((response) => {
+        updateEnv(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

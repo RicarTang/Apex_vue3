@@ -1,11 +1,14 @@
 import useUserStore from '@/store/modules/user'
 
 function authPermission(permission) {
-  const all_permission = "*:*:*";
+  // const all_permission = "*:*:*";
+  const all_permission = "1";
   const permissions = useUserStore().permissions
+  
   if (permission && permission.length > 0) {
+    console.log(permissions,permission);
     return permissions.some(v => {
-      return all_permission === v || v === permission
+      return all_permission === String(v) || String(v) === permission
     })
   } else {
     return false

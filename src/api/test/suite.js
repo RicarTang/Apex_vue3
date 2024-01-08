@@ -9,5 +9,39 @@ export function listSuite(query) {
     params: query
   })
 }
+// 添加套件
+export function addSuite(data) {
+  return request({
+    url: '/testsuite/add',
+    method: 'post',
+    data: data
+  })
+}
+// 删除套件
+export function deleteSuite(data) {
+  const suiteIds = {
+    suiteIds: data
+  }
+  return request({
+    url: '/testsuite',
+    method: 'delete',
+    data: suiteIds
+  })
+}
+// 修改套件
+export function updateSuite(suiteId,data) {
+  return request({
+    url: `/testsuite/${suiteId}`,
+    method: 'put',
+    data: data
+  })
+}
+// 查询套件
+export function getSuite(suiteId) {
+  return request({
+    url: `/testsuite/${suiteId}`,
+    method: 'get'
+  })
+}
 
 

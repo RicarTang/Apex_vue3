@@ -34,8 +34,9 @@ const useUserStore = defineStore(
           const avatar = (user.avatar == "" || user.avatar == null) ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
 
           if (res.result.roles && res.result.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            this.roles = res.result.roles
-            // this.permissions = res.result.
+            this.roles = res.result.roles.map((role) => role.roleKey)
+            // 返回isSuper
+            this.permissions = res.result.roles.map((role) => role.isSuper)
           } else {
             this.roles = ['ROLE_DEFAULT']
           }

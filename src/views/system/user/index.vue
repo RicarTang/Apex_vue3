@@ -201,7 +201,7 @@
                   @click="handleResetPwd(scope.row)"
                 ></el-button>
               </el-tooltip>
-              <!-- <el-tooltip
+              <el-tooltip
                 content="分配角色"
                 placement="top"
                 v-if="scope.row.userName !== 'admin'"
@@ -212,7 +212,7 @@
                   icon="CircleCheck"
                   @click="handleAuthRole(scope.row)"
                 ></el-button>
-              </el-tooltip> -->
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
