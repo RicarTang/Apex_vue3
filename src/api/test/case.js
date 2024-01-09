@@ -9,5 +9,13 @@ export function listCase(query) {
     params: query
   })
 }
+// 添加测试用例
+export function addCase(data) {
+  return request({
+    url: '/testcase/add',
+    method: 'post',
+    data: data
+  })
+}
 
 

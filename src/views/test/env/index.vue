@@ -165,10 +165,10 @@
     </el-row>
 
     <!-- 添加或修改环境变量对话框 -->
-    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
+    <el-dialog :title="title" v-model="open"  append-to-body>
       <el-form :model="form" :rules="rules" ref="envRef" label-width="80px">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="环境名称" prop="envName">
               <el-input
                 v-model="form.envName"
@@ -177,7 +177,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="环境地址" prop="envUrl">
               <el-input
                 v-model="form.envUrl"
@@ -262,10 +262,6 @@ import { listEnv, addEnv, getEnv, updateEnv, deleteEnv } from "@/api/test/env";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_normal_disable, sys_user_sex } = proxy.useDict(
-  "sys_normal_disable",
-  "sys_user_sex"
-);
 
 const envList = ref([]);
 const open = ref(false);
@@ -362,16 +358,6 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess("删除成功");
     })
     .catch(() => {});
-}
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download(
-    "system/user/export",
-    {
-      ...queryParams.value,
-    },
-    `user_${new Date().getTime()}.xlsx`
-  );
 }
 /** 执行状态修改  */
 function handleStatusChange(row) {

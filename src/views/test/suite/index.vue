@@ -224,15 +224,15 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
+    <el-dialog :title="title" v-model="open" append-to-body>
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="套件编号" prop="suiteNo">
               <el-input v-model="form.suiteNo" placeholder="请输入套件编号" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="套件名称" prop="suiteTitle">
               <el-input
                 v-model="form.suiteTitle"
@@ -242,7 +242,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="测试用例" prop="testcaseIds">
               <el-select
                 v-model="form.testcaseIds"
@@ -342,10 +342,6 @@ import { listCase } from "@/api/test/case";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-// const { sys_normal_disable, sys_user_sex } = proxy.useDict(
-//   "sys_normal_disable",
-//   "sys_user_sex"
-// );
 
 const caseList = ref([]);
 const open = ref(false);
@@ -457,16 +453,6 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess("删除成功");
     })
     .catch(() => {});
-}
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download(
-    "system/user/export",
-    {
-      ...queryParams.value,
-    },
-    `user_${new Date().getTime()}.xlsx`
-  );
 }
 /** 更多操作 */
 function handleCommand(command, row) {

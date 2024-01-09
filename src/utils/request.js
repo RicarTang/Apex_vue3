@@ -142,15 +142,19 @@ service.interceptors.response.use(res => {
 // 通用下载方法
 export function download(url, params, filename, config) {
   downloadLoadingInstance = ElLoading.service({ text: "正在下载数据，请稍候", background: "rgba(0, 0, 0, 0.7)", })
-  return service.post(url, params, {
-    transformRequest: [(params) => { return tansParams(params) }],
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  return service({
+    // transformRequest: [(params) => { return tansParams(params) }],
+    method: "get",
+    url,
+    params,
     responseType: 'blob',
     ...config
   }).then(async (data) => {
     const isBlob = blobValidate(data);
     if (isBlob) {
-      const blob = new Blob([data])
+      const blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
       saveAs(blob, filename)
     } else {
       const resText = await data.text();

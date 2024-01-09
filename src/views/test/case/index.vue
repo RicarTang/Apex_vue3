@@ -82,11 +82,7 @@
 
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="Plus"
-              @click="handleAdd"
+            <el-button type="primary" plain icon="Plus" @click="handleAdd"
               >新增</el-button
             >
           </el-col>
@@ -111,11 +107,7 @@
             >
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              type="info"
-              plain
-              icon="Upload"
-              @click="handleImport"
+            <el-button type="info" plain icon="Upload" @click="handleImport"
               >导入</el-button
             >
           </el-col>
@@ -261,14 +253,21 @@
             :key="columns[14].key"
             prop="requestToRedis"
             v-if="columns[14].visible"
-          />
+          >
+            <template #default="scope">
+              <span>{{ scope.row.requestToRedis === 1 ? "是" : "否" }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             label="是否保存响应体至redis"
             align="center"
             :key="columns[15].key"
             prop="responseToRedis"
             v-if="columns[15].visible"
-          />
+            ><template #default="scope">
+              <span>{{ scope.row.responseToRedis === 1 ? "是" : "否" }}</span>
+            </template></el-table-column
+          >
           <el-table-column
             label="编写者"
             align="center"
@@ -340,139 +339,171 @@
       </el-col>
     </el-row>
 
-    <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
-      <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
+    <!-- 添加或修改对话框 -->
+    <el-dialog :title="title" v-model="open" append-to-body>
+      <el-form :model="form" :rules="rules" ref="caseRef" label-position="top">
+        <el-row gutter="20">
+          <el-col :span="8" :xs="24">
+            <el-form-item label="用例编号" prop="caseNo">
               <el-input
-                v-model="form.nickName"
-                placeholder="请输入用户昵称"
-                maxlength="30"
+                v-model="form.caseNo"
+                placeholder="请输入用例编号"
+                maxlength="10"
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <el-tree-select
-                v-model="form.deptId"
-                :data="deptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
-                value-key="id"
-                placeholder="请选择归属部门"
-                check-strictly
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
+          <el-col :span="8" :xs="24">
+            <el-form-item label="用例标题" prop="caseTitle">
               <el-input
-                v-model="form.phonenumber"
-                placeholder="请输入手机号码"
-                maxlength="11"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input
-                v-model="form.email"
-                placeholder="请输入邮箱"
+                v-model="form.caseTitle"
+                placeholder="请输入用例标题"
                 maxlength="50"
               />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户名称"
-              prop="userName"
-            >
-              <el-input
-                v-model="form.userName"
-                placeholder="请输入用户名称"
-                maxlength="30"
-              />
+          <el-col :span="8" :xs="24">
+            <el-form-item label="接口地址" prop="apiPath">
+              <el-input v-model="form.apiPath" placeholder="请输入接口地址" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item
-              v-if="form.userId == undefined"
-              label="用户密码"
-              prop="password"
-            >
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="8" :xs="24">
+            <el-form-item label="所属模块" prop="caseModule">
               <el-input
-                v-model="form.password"
-                placeholder="请输入用户密码"
-                type="password"
+                v-model="form.caseModule"
+                placeholder="请输入用例所属模块"
                 maxlength="20"
-                show-password
               />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择">
+          <el-col :span="8" :xs="24">
+            <el-form-item label="所属子模块" prop="caseSubModule">
+              <el-input
+                v-model="form.caseSubModule"
+                placeholder="请输入用例所属子模块"
+                maxlength="20"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" :xs="24">
+            <el-form-item label="请求参数类型" prop="requestParamType">
+              <el-select
+                v-model="form.requestParamType"
+                multiple
+                placeholder="请选择"
+              >
                 <el-option
-                  v-for="dict in sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
+                  v-for="item in paramOptions"
+                  :key="item.id"
+                  :label="item.roleName"
+                  :value="item.id"
+                  :disabled="item.status == 1"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
+        </el-row>
+
+        <el-row gutter="20">
+          <el-col :span="12" :xs="24">
+            <el-form-item label="请求头" prop="requestHeaders">
+              <el-input
+                v-model="form.requestHeaders"
+                placeholder="请输入请求头"
+                type="textarea"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item label="请求参数" prop="requestParam">
+              <el-input
+                v-model="form.requestParam"
+                type="textarea"
+                placeholder="请输入请求参数"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="12" :xs="24">
+            <el-form-item label="预期网络状态码" prop="expectCode">
+              <el-input
+                v-model="form.expectCode"
+                placeholder="请输入预期网络状态码"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item label="预期结果" prop="expectResult">
+              <el-input
+                v-model="form.expectResult"
+                placeholder="请输入预期结果"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="24">
+            <el-form-item label="预期返回数据" prop="expectData">
+              <el-input
+                v-model="form.expectData"
+                type="textarea"
+                placeholder="请输入预期返回数据"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row gutter="20">
+          <el-col :span="8" :xs="24">
+            <el-form-item label="是否执行" prop="caseIsExecute">
+              <el-radio-group v-model="form.caseIsExecute">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" :xs="24">
+            <el-form-item label="是否保存请求体到redis" prop="requestToRedis">
+              <el-radio-group v-model="form.requestToRedis">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" :xs="24">
+            <el-form-item label="是否保存响应体到redis" prop="responseToRedis">
+              <el-radio-group v-model="form.responseToRedis">
+                <el-radio label="1">是</el-radio>
+                <el-radio label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
+        <el-row gutter="20">
           <el-col :span="24">
-            <el-form-item label="备注">
+            <el-form-item label="用例说明" prop="caseDescription">
+              <el-input
+                v-model="form.caseDescription"
+                type="textarea"
+                placeholder="请输入内容"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <!-- <el-col :span="12">
+            <el-form-item label="用例编写者">
+              <el-input
+                v-model="form.caseDescription"
+                type="textarea"
+                placeholder="请输入内容"
+              ></el-input>
+            </el-form-item>
+          </el-col> -->
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
               <el-input
                 v-model="form.remark"
                 type="textarea"
@@ -490,7 +521,7 @@
       </template>
     </el-dialog>
 
-    <!-- 用户导入对话框 -->
+    <!-- 导入对话框 -->
     <el-dialog
       :title="upload.title"
       v-model="upload.open"
@@ -516,7 +547,7 @@
             <div class="el-upload__tip">
               <el-checkbox
                 v-model="upload.updateSupport"
-              />是否更新已经存在的用户数据
+              />是否更新已经存在的数据
             </div>
             <span>仅允许导入xls、xlsx格式文件。</span>
             <el-link
@@ -543,14 +574,10 @@
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
 // import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, deptTreeSelect } from "@/api/system/user";
-import { listCase } from "@/api/test/case";
+import { listCase, addCase } from "@/api/test/case";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_normal_disable, sys_user_sex } = proxy.useDict(
-  "sys_normal_disable",
-  "sys_user_sex"
-);
 
 const caseList = ref([]);
 const open = ref(false);
@@ -567,11 +594,11 @@ const deptOptions = ref(undefined);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
-/*** 用户导入参数 */
+/*** 用例导入参数 */
 const upload = reactive({
-  // 是否显示弹出层（用户导入）
+  // 是否显示弹出层（用例导入）
   open: false,
-  // 弹出层标题（用户导入）
+  // 弹出层标题（用例导入）
   title: "",
   // 是否禁用上传
   isUploading: false,
@@ -580,7 +607,7 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: { Authorization: "Bearer " + getToken() },
   // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData",
+  url: import.meta.env.VITE_APP_BASE_API + "/testcase/import",
 });
 // 列显隐信息
 const columns = ref([
@@ -615,38 +642,40 @@ const data = reactive({
     caseModule: undefined,
   },
   rules: {
-    userName: [
-      { required: true, message: "用户名称不能为空", trigger: "blur" },
+    caseNo: [
+      { required: true, message: "用例编号不能为空", trigger: "blur" },
       {
-        min: 2,
-        max: 20,
-        message: "用户名称长度必须介于 2 和 20 之间",
+        max: 10,
+        message: "用例编号长度必须小于10",
         trigger: "blur",
       },
     ],
-    nickName: [
-      { required: true, message: "用户昵称不能为空", trigger: "blur" },
-    ],
-    password: [
-      { required: true, message: "用户密码不能为空", trigger: "blur" },
+    caseTitle: [
+      { required: true, message: "用例标题不能为空", trigger: "blur" },
       {
-        min: 5,
-        max: 20,
-        message: "用户密码长度必须介于 5 和 20 之间",
+        max: 50,
+        message: "用例标题长度必须小于50",
         trigger: "blur",
       },
     ],
-    email: [
+    caseModule: [
+      { required: true, message: "用例所属模块不能为空", trigger: "blur" },
       {
-        type: "email",
-        message: "请输入正确的邮箱地址",
-        trigger: ["blur", "change"],
+        max: 20,
+        message: "用例所属模块长度必须小于20",
+        trigger: "blur",
       },
     ],
-    phonenumber: [
+    apiPath: [
+      { required: true, message: "用例接口地址不能为空", trigger: "blur" },
+    ],
+    requestParam: [
+      { required: true, message: "用例接口请求参数不能为空", trigger: "blur" },
+    ],
+    expectCode: [
       {
-        pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
-        message: "请输入正确的手机号码",
+        required: true,
+        message: "用例预期网络状态码不能为空",
         trigger: "blur",
       },
     ],
@@ -715,19 +744,19 @@ function handleDelete(row) {
 /** 导出按钮操作 */
 function handleExport() {
   proxy.download(
-    "system/user/export",
+    "/testcase/export", 
     {
       ...queryParams.value,
     },
-    `user_${new Date().getTime()}.xlsx`
+    `testcase_${new Date().getTime()}.xlsx`
   );
 }
 /** 执行状态修改  */
 function handleStatusChange(row) {
   console.log(row);
-  let text = row.case_is_execute === 1 ? "启用" : "停用";
+  let text = row.caseIsExecute === 1 ? "启用" : "停用";
   proxy.$modal
-    .confirm('确认要"' + text + '""' + row.case_title + '"用例吗?')
+    .confirm('确认要"' + text + '""' + row.caseTitle + '"用例吗?')
     .then(function () {
       // return changeUserStatus(row.id, row.status);
     })
@@ -735,7 +764,7 @@ function handleStatusChange(row) {
       proxy.$modal.msgSuccess(text + "成功");
     })
     .catch(function () {
-      row.case_is_execute = row.case_is_execute === 0 ? 1 : 0;
+      row.caseIsExecute = row.caseIsExecute === 0 ? 1 : 0;
     });
 }
 /** 更多操作 */
@@ -754,7 +783,7 @@ function handleCommand(command, row) {
 /** 跳转用例详情 */
 function handleCaseInfo(row) {
   const caseId = row.id;
-  router.push({ name: 'CaseInfo', params: { caseId: caseId } });
+  router.push({ name: "CaseInfo", params: { caseId: caseId } });
 }
 /** 重置密码按钮操作 */
 // function handleResetPwd(row) {
@@ -781,15 +810,15 @@ function handleSelectionChange(selection) {
 }
 /** 导入按钮操作 */
 function handleImport() {
-  upload.title = "用户导入";
+  upload.title = "用例导入";
   upload.open = true;
 }
 /** 下载模板操作 */
 function importTemplate() {
   proxy.download(
-    "system/user/importTemplate",
+    "/testcase/template/download",
     {},
-    `user_template_${new Date().getTime()}.xlsx`
+    `testcase_template_${new Date().getTime()}.xlsx`
   );
 }
 /**文件上传中处理 */
@@ -817,20 +846,25 @@ function submitFileForm() {
 /** 重置操作表单 */
 function reset() {
   form.value = {
-    userId: undefined,
-    deptId: undefined,
-    userName: undefined,
-    nickName: undefined,
-    password: undefined,
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
+    caseNo: undefined,
+    caseTitle: undefined,
+    caseModule: undefined,
+    caseDescription: undefined,
+    caseSubModule: undefined,
+    caseIsExecute: "1",
+    apiPath: undefined,
+    apiMethod: undefined,
+    requestHeaders: undefined,
+    requestParamType: undefined,
+    requestParam: undefined,
+    expectCode: undefined,
+    expectResult: undefined,
+    expectData: undefined,
+    requestToRedis: "0",
+    responseToRedis: "0",
     remark: undefined,
-    postIds: [],
-    roleIds: [],
   };
-  proxy.resetForm("userRef");
+  proxy.resetForm("caseRef");
 }
 /** 取消按钮 */
 function cancel() {
@@ -838,15 +872,11 @@ function cancel() {
   reset();
 }
 /** 新增按钮操作 */
-function handleAdd() {
+async function handleAdd() {
   reset();
-  getUser().then((response) => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    open.value = true;
-    title.value = "添加用户";
-    form.value.password = initPassword.value;
-  });
+  // const res = await addCase()
+  open.value = true;
+  title.value = "添加用例";
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
@@ -865,7 +895,7 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["userRef"].validate((valid) => {
+  proxy.$refs["caseRef"].validate((valid) => {
     if (valid) {
       if (form.value.userId != undefined) {
         updateUser(form.value).then((response) => {

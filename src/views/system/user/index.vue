@@ -26,12 +26,8 @@
               clearable
               style="width: 240px"
             >
-              <el-option
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
+              <el-option label="启用" value="1" />
+              <el-option label="停用" value="0" />
             </el-select>
           </el-form-item>
           <el-form-item label="创建时间" style="width: 308px">
@@ -227,10 +223,10 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" v-model="open" width="600px" append-to-body>
+    <el-dialog :title="title" v-model="open" append-to-body>
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item
               v-if="form.userId == undefined"
               label="用户名称"
@@ -243,7 +239,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item
               v-if="form.userId == undefined"
               label="用户密码"
@@ -260,7 +256,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="角色" prop="roleIds">
               <el-select v-model="form.roleIds" multiple placeholder="请选择">
                 <el-option
@@ -273,15 +269,11 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
+                <el-radio label="1">启用</el-radio>
+                <el-radio label="0">停用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -372,10 +364,6 @@ import { listRole } from "@/api/system/role";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_normal_disable, sys_user_sex } = proxy.useDict(
-  "sys_normal_disable",
-  "sys_user_sex"
-);
 
 const userList = ref([]);
 const open = ref(false);
@@ -496,16 +484,6 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess("删除成功");
     })
     .catch(() => {});
-}
-/** 导出按钮操作 */
-function handleExport() {
-  proxy.download(
-    "system/user/export",
-    {
-      ...queryParams.value,
-    },
-    `user_${new Date().getTime()}.xlsx`
-  );
 }
 /** 用户状态修改  */
 function handleStatusChange(row) {
