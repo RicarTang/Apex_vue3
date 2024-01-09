@@ -155,6 +155,7 @@
             prop="caseDescription"
             v-if="columns[2].visible"
             :show-overflow-tooltip="false"
+            :formatter="tableDefaultFormatter"
           />
           <el-table-column
             label="所属模块"
@@ -274,6 +275,7 @@
             :key="columns[16].key"
             prop="caseEditor"
             v-if="columns[16].visible"
+            :formatter="tableDefaultFormatter"
           />
           <el-table-column
             label="备注"
@@ -343,7 +345,7 @@
     <el-dialog :title="title" v-model="open" append-to-body>
       <el-form :model="form" :rules="rules" ref="caseRef" label-position="top">
         <el-row gutter="20">
-          <el-col :span="8" :xs="24">
+          <el-col :span="12" :xs="24">
             <el-form-item label="用例编号" prop="caseNo">
               <el-input
                 v-model="form.caseNo"
@@ -352,7 +354,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8" :xs="24">
+          <el-col :span="12" :xs="24">
             <el-form-item label="用例标题" prop="caseTitle">
               <el-input
                 v-model="form.caseTitle"
@@ -361,14 +363,14 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8" :xs="24">
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="12" :xs="24">
             <el-form-item label="接口地址" prop="apiPath">
               <el-input v-model="form.apiPath" placeholder="请输入接口地址" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row gutter="20">
-          <el-col :span="8" :xs="24">
+          <el-col :span="12" :xs="24">
             <el-form-item label="所属模块" prop="caseModule">
               <el-input
                 v-model="form.caseModule"
@@ -377,41 +379,14 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8" :xs="24">
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12" :xs="24">
             <el-form-item label="所属子模块" prop="caseSubModule">
               <el-input
                 v-model="form.caseSubModule"
                 placeholder="请输入用例所属子模块"
                 maxlength="20"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" :xs="24">
-            <el-form-item label="请求参数类型" prop="requestParamType">
-              <el-select
-                v-model="form.requestParamType"
-                multiple
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in paramOptions"
-                  :key="item.id"
-                  :label="item.roleName"
-                  :value="item.id"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row gutter="20">
-          <el-col :span="12" :xs="24">
-            <el-form-item label="请求头" prop="requestHeaders">
-              <el-input
-                v-model="form.requestHeaders"
-                placeholder="请输入请求头"
-                type="textarea"
               />
             </el-form-item>
           </el-col>
@@ -427,6 +402,37 @@
         </el-row>
         <el-row gutter="20">
           <el-col :span="12" :xs="24">
+            <el-form-item label="请求参数类型" prop="requestParamType">
+              <el-select v-model="form.requestParamType" placeholder="请选择">
+                <el-option label="BODY" value="body"></el-option>
+                <el-option label="QUERY" value="query"></el-option>
+                <el-option label="PATH" value="path"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item label="请求方法" prop="apiMethod">
+              <el-select v-model="form.apiMethod" placeholder="请选择">
+                <el-option label="GET" value="get"></el-option>
+                <el-option label="UPDATE" value="post"></el-option>
+                <el-option label="PUT" value="put"></el-option>
+                <el-option label="DELETE" value="delete"></el-option>
+                <el-option label="OPTIONS" value="options"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="12" :xs="24">
+            <el-form-item label="请求头" prop="requestHeaders">
+              <el-input
+                v-model="form.requestHeaders"
+                placeholder="请输入请求头"
+                type="textarea"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
             <el-form-item label="预期网络状态码" prop="expectCode">
               <el-input
                 v-model="form.expectCode"
@@ -434,6 +440,8 @@
               />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row gutter="20">
           <el-col :span="12" :xs="24">
             <el-form-item label="预期结果" prop="expectResult">
               <el-input
@@ -442,9 +450,7 @@
               />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row gutter="20">
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item label="预期返回数据" prop="expectData">
               <el-input
                 v-model="form.expectData"
@@ -589,11 +595,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const deptName = ref("");
-const deptOptions = ref(undefined);
-const initPassword = ref(undefined);
-const postOptions = ref([]);
-const roleOptions = ref([]);
+const paramOptions = ref(undefined);
 /*** 用例导入参数 */
 const upload = reactive({
   // 是否显示弹出层（用例导入）
@@ -679,6 +681,20 @@ const data = reactive({
         trigger: "blur",
       },
     ],
+    apiMethod: [
+      {
+        required: true,
+        message: "api方法不能为空",
+        trigger: "blur",
+      },
+    ],
+    requestParamType: [
+      {
+        required: true,
+        message: "请求参数类型不能为空",
+        trigger: "blur",
+      },
+    ],
   },
 });
 
@@ -744,7 +760,7 @@ function handleDelete(row) {
 /** 导出按钮操作 */
 function handleExport() {
   proxy.download(
-    "/testcase/export", 
+    "/testcase/export",
     {
       ...queryParams.value,
     },
@@ -897,14 +913,14 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["caseRef"].validate((valid) => {
     if (valid) {
-      if (form.value.userId != undefined) {
-        updateUser(form.value).then((response) => {
+      if (form.value.id != undefined) {
+        updateCase(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addUser(form.value).then((response) => {
+        addCase(form.value).then((response) => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
