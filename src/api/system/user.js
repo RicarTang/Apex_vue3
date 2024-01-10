@@ -21,14 +21,14 @@ export function getUser(userId) {
 // 新增用户
 export function addUser(data) {
   return request({
-    url: '/user/create',
+    url: '/user/add',
     method: 'post',
     data: data
   })
 }
 
 // 修改用户
-export function updateUser(userId,data) {
+export function updateUser(userId, data) {
   return request({
     url: `/user/${userId}`,
     method: 'put',
@@ -37,10 +37,14 @@ export function updateUser(userId,data) {
 }
 
 // 删除用户
-export function delUser(userId) {
+export function delUser(userIds) {
+  const data = {
+    userIds
+  }
   return request({
-    url: `/user/${userId}`,
-    method: 'delete'
+    url: `/user/delete`,
+    method: 'delete',
+    data: data
   })
 }
 

@@ -23,7 +23,7 @@ export function deleteSuite(data) {
     suiteIds: data
   }
   return request({
-    url: '/testsuite',
+    url: '/testsuite/delete',
     method: 'delete',
     data: suiteIds
   })

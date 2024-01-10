@@ -40,7 +40,7 @@ export function deleteEnv(data) {
     envIds: data
   }
   return request({
-    url: `/testenv`,
+    url: `/testenv/delete`,
     method: 'delete',
     data: ids
   })

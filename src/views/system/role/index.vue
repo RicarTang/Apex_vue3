@@ -59,15 +59,11 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
+        <el-button type="primary" plain icon="Plus" @click="handleAdd"
           >新增</el-button
         >
       </el-col>
-      <!-- <el-col :span="1.5">
+      <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -76,7 +72,7 @@
           @click="handleUpdate"
           >修改</el-button
         >
-      </el-col> -->
+      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -216,7 +212,13 @@
     />
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog
+      :title="title"
+      v-model="open"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="roleRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
@@ -224,10 +226,7 @@
         <el-form-item prop="roleKey">
           <template #label>
             <span>
-              <el-tooltip
-                content="角色字符,如: admin"
-                placement="top"
-              >
+              <el-tooltip content="角色字符,如: admin" placement="top">
                 <el-icon><question-filled /></el-icon>
               </el-tooltip>
               角色字符
@@ -445,7 +444,7 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const roleIds = row.roleId || ids.value;
+  const roleIds = row.id ? [row.id] : ids.value;
   proxy.$modal
     .confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?')
     .then(function () {
@@ -469,7 +468,7 @@ function handleExport() {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.roleId);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -505,7 +504,6 @@ function handleAuthUser(row) {
 function getMenuTreeselect() {
   menuTreeselect().then((response) => {
     menuOptions.value = response.result;
-
   });
 }
 /** 所有部门节点数据 */
@@ -556,7 +554,7 @@ function handleUpdate(row) {
     form.value = response.result;
     form.value.menuCheckStrictly = true;
     open.value = true;
-    
+
     // nextTick(() => {
     //   roleMenu.then((res) => {
     //     let checkedKeys = res.checkedKeys;
@@ -629,7 +627,7 @@ function submitForm() {
     if (valid) {
       if (form.value.id != undefined) {
         form.value.menuIds = getMenuAllCheckedKeys();
-        updateRole(form.value.id,form.value).then((response) => {
+        updateRole(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

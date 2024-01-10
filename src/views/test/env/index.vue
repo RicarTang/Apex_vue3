@@ -165,7 +165,7 @@
     </el-row>
 
     <!-- 添加或修改环境变量对话框 -->
-    <el-dialog :title="title" v-model="open"  append-to-body>
+    <el-dialog :title="title" v-model="open"  append-to-body :close-on-click-modal="false">
       <el-form :model="form" :rules="rules" ref="envRef" label-width="80px">
         <el-row>
           <el-col :span="12" :xs="24">

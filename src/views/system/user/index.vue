@@ -54,7 +54,7 @@
               >新增</el-button
             >
           </el-col>
-          <!-- <el-col :span="1.5">
+          <el-col :span="1.5">
             <el-button
               type="success"
               plain
@@ -63,7 +63,7 @@
               @click="handleUpdate"
               >修改</el-button
             >
-          </el-col> -->
+          </el-col>
           <el-col :span="1.5">
             <el-button
               type="danger"
@@ -74,20 +74,7 @@
               >删除</el-button
             >
           </el-col>
-          <!-- <el-col :span="1.5">
-            <el-button type="info" plain icon="Upload" @click="handleImport"
-              >导入</el-button
-            >
-          </el-col> -->
-          <!-- <el-col :span="1.5">
-            <el-button
-              type="warning"
-              plain
-              icon="Download"
-              @click="handleExport"
-              >导出</el-button
-            >
-          </el-col> -->
+
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"
@@ -223,7 +210,12 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" v-model="open" append-to-body>
+    <el-dialog
+      :title="title"
+      v-model="open"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
           <el-col :span="12" :xs="24">
@@ -294,53 +286,6 @@
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- 用户导入对话框 -->
-    <el-dialog
-      :title="upload.title"
-      v-model="upload.open"
-      width="400px"
-      append-to-body
-    >
-      <el-upload
-        ref="uploadRef"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
-        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <template #tip>
-          <div class="el-upload__tip text-center">
-            <div class="el-upload__tip">
-              <el-checkbox
-                v-model="upload.updateSupport"
-              />是否更新已经存在的用户数据
-            </div>
-            <span>仅允许导入xls、xlsx格式文件。</span>
-            <el-link
-              type="primary"
-              :underline="false"
-              style="font-size: 12px; vertical-align: baseline"
-              @click="importTemplate"
-              >下载模板</el-link
-            >
-          </div>
-        </template>
-      </el-upload>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitFileForm">确 定</el-button>
-          <el-button @click="upload.open = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -473,7 +418,7 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const userIds = row.id || ids.value;
+  const userIds = row.id ? [row.id] : ids.value;
   proxy.$modal
     .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
     .then(function () {
@@ -622,7 +567,7 @@ async function handleUpdate(row) {
     form.value.roleIds = res.result.roles.map((role) => role.id); // 循环遍历role id组成新数组
     roleOptions.value = roles.result.data;
     open.value = true;
-    title.value = "修改用户";
+    title.value = `修改用户:${row.userName}`;
     form.password = "";
   } catch (error) {
     console.log(error);

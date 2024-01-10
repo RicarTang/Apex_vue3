@@ -1,31 +1,6 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
-      <!-- <el-col :span="4" :xs="24">
-           <div class="head-container">
-              <el-input
-                 v-model="deptName"
-                 placeholder="请输入部门名称"
-                 clearable
-                 prefix-icon="Search"
-                 style="margin-bottom: 20px"
-              />
-           </div>
-           <div class="head-container">
-              <el-tree
-                 :data="deptOptions"
-                 :props="{ label: 'label', children: 'children' }"
-                 :expand-on-click-node="false"
-                 :filter-node-method="filterNode"
-                 ref="deptTreeRef"
-                 node-key="id"
-                 highlight-current
-                 default-expand-all
-                 @node-click="handleNodeClick"
-              />
-           </div>
-        </el-col> -->
       <!--用例数据-->
       <el-col :span="24" :xs="24">
         <el-form
@@ -97,24 +72,7 @@
               >删除</el-button
             >
           </el-col>
-          <!-- <el-col :span="1.5">
-            <el-button
-              type="info"
-              plain
-              icon="Upload"
-              @click="handleImport"
-              >导入</el-button
-            >
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="warning"
-              plain
-              icon="Download"
-              @click="handleExport"
-              >导出</el-button
-            >
-          </el-col> -->
+
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"
@@ -223,8 +181,13 @@
       </el-col>
     </el-row>
 
-    <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" v-model="open" append-to-body>
+    <!-- 添加或修改对话框 -->
+    <el-dialog
+      :title="title"
+      v-model="open"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" :rules="rules" ref="userRef" label-width="80px">
         <el-row>
           <el-col :span="12" :xs="24">
@@ -278,53 +241,6 @@
         </div>
       </template>
     </el-dialog>
-
-    <!-- 用户导入对话框 -->
-    <!-- <el-dialog
-      :title="upload.title"
-      v-model="upload.open"
-      width="400px"
-      append-to-body
-    >
-      <el-upload
-        ref="uploadRef"
-        :limit="1"
-        accept=".xlsx, .xls"
-        :headers="upload.headers"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport"
-        :disabled="upload.isUploading"
-        :on-progress="handleFileUploadProgress"
-        :on-success="handleFileSuccess"
-        :auto-upload="false"
-        drag
-      >
-        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <template #tip>
-          <div class="el-upload__tip text-center">
-            <div class="el-upload__tip">
-              <el-checkbox
-                v-model="upload.updateSupport"
-              />是否更新已经存在的用户数据
-            </div>
-            <span>仅允许导入xls、xlsx格式文件。</span>
-            <el-link
-              type="primary"
-              :underline="false"
-              style="font-size: 12px; vertical-align: baseline"
-              @click="importTemplate"
-              >下载模板</el-link
-            >
-          </div>
-        </template>
-      </el-upload>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitFileForm">确 定</el-button>
-          <el-button @click="upload.open = false">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -471,12 +387,11 @@ function handleCommand(command, row) {
 function handleSuiteInfo(row) {
   const suiteId = row.id;
   // router.push("/test/suite-info/" + suiteId);
-  router.push({ name: 'SuiteInfo', params: { suiteId: suiteId } });
+  router.push({ name: "SuiteInfo", params: { suiteId: suiteId } });
 }
 /** 运行套件 */
 function handleSuiteRun(row) {
   const suiteId = row.id;
-  
 }
 /** 选择条数  */
 function handleSelectionChange(selection) {

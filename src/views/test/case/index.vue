@@ -342,7 +342,12 @@
     </el-row>
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" v-model="open" append-to-body>
+    <el-dialog
+      :title="title"
+      v-model="open"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" :rules="rules" ref="caseRef" label-position="top">
         <el-row gutter="20">
           <el-col :span="12" :xs="24">
@@ -465,24 +470,24 @@
           <el-col :span="8" :xs="24">
             <el-form-item label="是否执行" prop="caseIsExecute">
               <el-radio-group v-model="form.caseIsExecute">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="24">
             <el-form-item label="是否保存请求体到redis" prop="requestToRedis">
               <el-radio-group v-model="form.requestToRedis">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="24">
             <el-form-item label="是否保存响应体到redis" prop="responseToRedis">
               <el-radio-group v-model="form.responseToRedis">
-                <el-radio label="1">是</el-radio>
-                <el-radio label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -580,7 +585,7 @@
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
 // import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, deptTreeSelect } from "@/api/system/user";
-import { listCase, addCase } from "@/api/test/case";
+import { listCase, addCase, getCase, deleteCase } from "@/api/test/case";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -745,11 +750,11 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const userIds = row.userId || ids.value;
+  const caseIds = row.id ? [row.id] : ids.value;
   proxy.$modal
-    .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
+    .confirm('是否确认删除用户编号为"' + caseIds + '"的数据项？')
     .then(function () {
-      return delUser(userIds);
+      return deleteCase(caseIds);
     })
     .then(() => {
       getList();
@@ -801,26 +806,10 @@ function handleCaseInfo(row) {
   const caseId = row.id;
   router.push({ name: "CaseInfo", params: { caseId: caseId } });
 }
-/** 重置密码按钮操作 */
-// function handleResetPwd(row) {
-//   proxy
-//     .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
-//       confirmButtonText: "确定",
-//       cancelButtonText: "取消",
-//       closeOnClickModal: false,
-//       inputPattern: /^.{5,20}$/,
-//       inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-//     })
-//     .then(({ value }) => {
-//       resetUserPwd(row.userId, value).then((response) => {
-//         proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
-//       });
-//     })
-//     .catch(() => {});
-// }
+
 /** 选择条数  */
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.userId);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -867,7 +856,7 @@ function reset() {
     caseModule: undefined,
     caseDescription: undefined,
     caseSubModule: undefined,
-    caseIsExecute: "1",
+    caseIsExecute: 1,
     apiPath: undefined,
     apiMethod: undefined,
     requestHeaders: undefined,
@@ -876,8 +865,8 @@ function reset() {
     expectCode: undefined,
     expectResult: undefined,
     expectData: undefined,
-    requestToRedis: "0",
-    responseToRedis: "0",
+    requestToRedis: 0,
+    responseToRedis: 0,
     remark: undefined,
   };
   proxy.resetForm("caseRef");
@@ -895,19 +884,13 @@ async function handleAdd() {
   title.value = "添加用例";
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset();
-  const userId = row.userId || ids.value;
-  getUser(userId).then((response) => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
-    open.value = true;
-    title.value = "修改用户";
-    form.password = "";
-  });
+  const caseId = row.id || ids.value;
+  const res = await getCase(caseId);
+  form.value = res.result;
+  open.value = true;
+  title.value = "修改用例";
 }
 /** 提交按钮 */
 function submitForm() {
