@@ -99,7 +99,7 @@
         label="组件路径"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column prop="status" label="状态" >
+      <el-table-column prop="status" label="状态">
         <template #default="scope">
           <!-- <dict-tag :options="sys_normal_disable" :value="scope.row.status" /> -->
           <el-tag
@@ -149,10 +149,10 @@
     </el-table>
 
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog :title="title" v-model="open" width="680px" append-to-body>
+    <el-dialog :title="title" v-model="open" append-to-body>
       <el-form ref="menuRef" :model="form" :rules="rules" label-width="100px">
         <el-row>
-          <el-col :span="24">
+          <el-col :span="12" :xs="24">
             <el-form-item label="上级菜单">
               <el-tree-select
                 v-model="form.parentId"
@@ -168,7 +168,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
                 <el-radio label="M">目录</el-radio>
@@ -176,8 +176,8 @@
                 <el-radio label="F">按钮</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="form.menuType != 'F'">
+          </el-col> -->
+          <el-col :span="12" :xs="24">
             <el-form-item label="菜单图标" prop="icon">
               <el-popover placement="bottom-start" :width="540" trigger="click">
                 <template #reference>
@@ -208,39 +208,12 @@
               </el-popover>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item label="菜单名称" prop="menuName">
               <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number
-                v-model="form.orderNum"
-                controls-position="right"
-                :min="0"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.menuType != 'F'">
-            <el-form-item>
-              <template #label>
-                <span>
-                  <el-tooltip
-                    content="选择是外链则路由地址需要以`http(s)://`开头"
-                    placement="top"
-                  >
-                    <el-icon><question-filled /></el-icon> </el-tooltip
-                  >是否外链
-                </span>
-              </template>
-              <el-radio-group v-model="form.isFrame">
-                <el-radio label="0">是</el-radio>
-                <el-radio label="1">否</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.menuType != 'F'">
+          <el-col :span="12" :xs="24" v-if="form.menuType != 'F'">
             <el-form-item prop="path">
               <template #label>
                 <span>
@@ -256,7 +229,7 @@
               <el-input v-model="form.path" placeholder="请输入路由地址" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType == 'C'">
+          <el-col :span="12" :xs="24">
             <el-form-item prop="component">
               <template #label>
                 <span>
@@ -272,27 +245,7 @@
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType != 'M'">
-            <el-form-item>
-              <el-input
-                v-model="form.perms"
-                placeholder="请输入权限标识"
-                maxlength="100"
-              />
-              <template #label>
-                <span>
-                  <el-tooltip
-                    content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
-                    placement="top"
-                  >
-                    <el-icon><question-filled /></el-icon>
-                  </el-tooltip>
-                  权限字符
-                </span>
-              </template>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.menuType == 'C'">
+          <el-col :span="12" :xs="24" >
             <el-form-item>
               <el-input
                 v-model="form.query"
@@ -312,7 +265,7 @@
               </template>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType == 'C'">
+          <el-col :span="12" :xs="24" >
             <el-form-item>
               <template #label>
                 <span>
@@ -326,12 +279,12 @@
                 </span>
               </template>
               <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
+                <el-radio :label="0">缓存</el-radio>
+                <el-radio :label="1">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.menuType != 'F'">
+          <el-col :span="12" :xs="24" >
             <el-form-item>
               <template #label>
                 <span>
@@ -345,16 +298,12 @@
                 </span>
               </template>
               <el-radio-group v-model="form.visible">
-                <el-radio
-                  v-for="dict in sys_show_hide"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
+                <el-radio :label="1">显示</el-radio>
+                <el-radio :label="0">隐藏</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" :xs="24">
             <el-form-item>
               <template #label>
                 <span>
@@ -368,12 +317,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
+                <el-radio :label="1">正常</el-radio>
+                <el-radio :label="0">停用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -464,12 +409,11 @@ function reset() {
     parentId: 0,
     menuName: undefined,
     icon: undefined,
-    menuType: "M",
     orderNum: undefined,
-    isFrame: "1",
-    isCache: "0",
-    visible: "0",
-    status: "0",
+    isFrame: 1,
+    isCache: 0,
+    visible: 0,
+    status: 1,
   };
   proxy.resetForm("menuRef");
 }
