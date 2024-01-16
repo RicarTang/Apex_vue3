@@ -71,7 +71,7 @@
       :default-expand-all="isExpandAll"
     >
       <el-table-column
-        prop="menuName"
+        prop="title"
         label="菜单名称"
         :show-overflow-tooltip="true"
       >
@@ -153,18 +153,19 @@
       <el-form ref="menuRef" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="12" :xs="24">
-            <el-form-item label="上级菜单">
+            <el-form-item label="上级菜单" prop="parentId">
               <el-tree-select
                 v-model="form.parentId"
                 :data="menuOptions"
                 :props="{
-                  value: 'menuId',
-                  label: 'menuName',
+                  value: 'id',
+                  label: 'name',
                   children: 'children',
                 }"
-                value-key="menuId"
+                value-key="id"
                 placeholder="选择上级菜单"
                 check-strictly
+                :disabled="form.parentId === null ? true : false"
               />
             </el-form-item>
           </el-col>
@@ -209,8 +210,29 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" :xs="24">
-            <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+            <el-form-item prop="title">
+              <template #label>
+                <span>
+                  <el-tooltip content="侧边栏菜单名称" placement="top">
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  菜单名称
+                </span>
+              </template>
+              <el-input v-model="form.title" placeholder="请输入菜单名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="name">
+              <template #label>
+                <span>
+                  <el-tooltip content="组件路由名称" placement="top">
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  路由名称
+                </span>
+              </template>
+              <el-input v-model="form.name" placeholder="请输入菜单标题" />
             </el-form-item>
           </el-col>
           <el-col :span="12" :xs="24" v-if="form.menuType != 'F'">
@@ -245,7 +267,7 @@
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" :xs="24" >
+          <!-- <el-col :span="12" :xs="24">
             <el-form-item>
               <el-input
                 v-model="form.query"
@@ -264,8 +286,8 @@
                 </span>
               </template>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24" >
+          </el-col> -->
+          <el-col :span="12" :xs="24">
             <el-form-item>
               <template #label>
                 <span>
@@ -284,7 +306,7 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12" :xs="24" >
+          <el-col :span="12" :xs="24">
             <el-form-item>
               <template #label>
                 <span>
@@ -297,9 +319,9 @@
                   显示状态
                 </span>
               </template>
-              <el-radio-group v-model="form.visible">
-                <el-radio :label="1">显示</el-radio>
-                <el-radio :label="0">隐藏</el-radio>
+              <el-radio-group v-model="form.hidden">
+                <el-radio :label="0">显示</el-radio>
+                <el-radio :label="1">隐藏</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -319,6 +341,25 @@
               <el-radio-group v-model="form.status">
                 <el-radio :label="1">正常</el-radio>
                 <el-radio :label="0">停用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item>
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  折叠菜单
+                </span>
+              </template>
+              <el-radio-group v-model="form.alwaysShow">
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="0">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -362,16 +403,18 @@ const data = reactive({
   form: {},
   queryParams: {
     menuName: undefined,
-    visible: undefined,
   },
   rules: {
-    menuName: [
-      { required: true, message: "菜单名称不能为空", trigger: "blur" },
-    ],
-    orderNum: [
-      { required: true, message: "菜单顺序不能为空", trigger: "blur" },
+    title: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
+    name: [{ required: true, message: "菜单标题不能为空", trigger: "blur" }],
+    component: [
+      { required: true, message: "组件路径不能为空", trigger: "blur" },
     ],
     path: [{ required: true, message: "路由地址不能为空", trigger: "blur" }],
+    icon: [{ required: true, message: "菜单图标不能为空", trigger: "blur" }],
+    parentId: [
+      { required: true, message: "上级菜单不能为空", trigger: "blur" },
+    ],
   },
 });
 
@@ -384,17 +427,18 @@ function getList() {
     (response) => {
       //  menuList.value = proxy.handleTree(response.data, "menuId");
       menuList.value = response.result.data;
+      menuOptions.value = response.result.data;
       loading.value = false;
     }
   );
 }
 /** 查询菜单下拉树结构 */
 function getTreeselect() {
-  menuOptions.value = [];
   listMenu().then((response) => {
-    const menu = { menuId: 0, menuName: "主类目", children: [] };
-    menu.children = proxy.handleTree(response.data, "menuId");
-    menuOptions.value.push(menu);
+    // const menu = { menuId: 0, menuName: "主类目", children: [] };
+    // menu.children = proxy.handleTree(response.data, "menuId");
+    // menuOptions.value.push(menu);
+    menuOptions.value = response.result.data;
   });
 }
 /** 取消按钮 */
@@ -405,15 +449,14 @@ function cancel() {
 /** 表单重置 */
 function reset() {
   form.value = {
-    menuId: undefined,
-    parentId: 0,
-    menuName: undefined,
+    id: undefined,
+    parentId: undefined,
+    title: undefined,
     icon: undefined,
-    orderNum: undefined,
-    isFrame: 1,
     isCache: 0,
-    visible: 0,
+    hidden: 0,
     status: 1,
+    alwaysShow: 0,
   };
   proxy.resetForm("menuRef");
 }
@@ -437,11 +480,9 @@ function resetQuery() {
 /** 新增按钮操作 */
 function handleAdd(row) {
   reset();
-  getTreeselect();
-  if (row != null && row.menuId) {
-    form.value.parentId = row.menuId;
-  } else {
-    form.value.parentId = 0;
+  // getTreeselect();
+  if (row != null && row.id) {
+    form.value.parentId = row.id;
   }
   open.value = true;
   title.value = "添加菜单";
@@ -457,9 +498,11 @@ function toggleExpandAll() {
 /** 修改按钮操作 */
 async function handleUpdate(row) {
   reset();
-  await getTreeselect();
-  getMenu(row.menuId).then((response) => {
-    form.value = response.data;
+  getMenu(row.id).then((response) => {
+    form.value = response.result;
+    form.value.title = response.result.meta.title;
+    form.value.icon = response.result.meta.icon;
+    form.value.isCache = response.result.meta.noCache;
     open.value = true;
     title.value = "修改菜单";
   });
@@ -468,8 +511,8 @@ async function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["menuRef"].validate((valid) => {
     if (valid) {
-      if (form.value.menuId != undefined) {
-        updateMenu(form.value).then((response) => {
+      if (form.value.id != undefined) {
+        updateMenu(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
@@ -486,10 +529,11 @@ function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
+  console.log(row);
   proxy.$modal
-    .confirm('是否确认删除名称为"' + row.menuName + '"的数据项?')
+    .confirm('是否确认删除名称为"' + row.meta.title + '"的数据项?')
     .then(function () {
-      return delMenu(row.menuId);
+      return delMenu(row.id);
     })
     .then(() => {
       getList();
