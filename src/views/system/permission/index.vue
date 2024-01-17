@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--环境变量数据-->
+      <!--查询数据-->
       <el-col :span="24" :xs="24">
         <el-form
           :model="queryParams"
@@ -10,19 +10,19 @@
           v-show="showSearch"
           label-width="68px"
         >
-          <el-form-item label="环境名称" prop="envName">
+          <el-form-item label="权限名称" prop="permissionName">
             <el-input
-              v-model="queryParams.envName"
-              placeholder="请输入环境名称"
+              v-model="queryParams.permissionName"
+              placeholder="请输入权限名称"
               clearable
               style="width: 240px"
               @keyup.enter="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="环境地址" prop="envUrl">
+          <el-form-item label="权限模块" prop="permissionModule">
             <el-input
-              v-model="queryParams.envUrl"
-              placeholder="请输入环境地址"
+              v-model="queryParams.permissionModule"
+              placeholder="请输入权限模块"
               clearable
               style="width: 240px"
               @keyup.enter="handleQuery"
@@ -45,7 +45,7 @@
             <el-button icon="Refresh" @click="resetQuery">重置</el-button>
           </el-form-item>
         </el-form>
-
+        <!-- 工具栏 -->
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button type="primary" plain icon="Plus" @click="handleAdd"
@@ -78,10 +78,10 @@
             :columns="columns"
           ></right-toolbar>
         </el-row>
-
+        <!-- 表格数据 -->
         <el-table
           v-loading="loading"
-          :data="envList"
+          :data="permissionList"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="50" align="center" />
@@ -93,29 +93,28 @@
             v-if="columns[0].visible"
           />
           <el-table-column
-            label="环境名称"
+            label="权限名称"
             align="center"
             :key="columns[1].key"
-            prop="envName"
+            prop="permissionName"
             v-if="columns[1].visible"
             :show-overflow-tooltip="false"
           />
           <el-table-column
-            label="环境地址"
+            label="权限模块"
             align="center"
             :key="columns[2].key"
-            prop="envUrl"
+            prop="permissionModule"
             v-if="columns[2].visible"
             :show-overflow-tooltip="false"
           />
           <el-table-column
-            label="备注"
+            label="权限行为"
             align="center"
             :key="columns[3].key"
-            prop="remark"
+            prop="permissionAction"
             v-if="columns[3].visible"
             :show-overflow-tooltip="false"
-            :formatter="tableDefaultFormatter"
           />
           <el-table-column
             label="创建时间"
@@ -164,36 +163,51 @@
       </el-col>
     </el-row>
 
-    <!-- 添加或修改环境变量对话框 -->
-    <el-dialog :title="title" v-model="open"  append-to-body :close-on-click-modal="false">
-      <el-form :model="form" :rules="rules" ref="envRef" label-width="80px">
-        <el-row>
+    <!-- 添加或修改对话框 -->
+    <el-dialog
+      :title="title"
+      v-model="open"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+      <el-form :model="form" :rules="rules" ref="permRef" label-width="80px">
+        <el-row :gutter="20">
           <el-col :span="12" :xs="24">
-            <el-form-item label="环境名称" prop="envName">
+            <el-form-item label="权限名称" prop="permissionName">
               <el-input
-                v-model="form.envName"
-                placeholder="请输入环境变量名称"
+                v-model="form.permissionName"
+                placeholder="请输入权限名称"
                 maxlength="30"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12" :xs="24">
-            <el-form-item label="环境地址" prop="envUrl">
-              <el-input
-                v-model="form.envUrl"
-                placeholder="请输入环境变量地址"
-              />
+            <el-form-item label="权限模块" prop="permissionModule">
+              <el-select
+                v-model="form.permissionModule"
+                placeholder="请选择权限模块"
+              >
+                <el-option label="user" value="user"></el-option>
+                <el-option label="admin" value="admin"></el-option>
+                <el-option label="apitest" value="apitest"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="备注">
-              <el-input
-                v-model="form.remark"
-                type="textarea"
-                placeholder="请输入内容"
-              ></el-input>
+          <el-col :span="12" :xs="24">
+            <el-form-item label="权限行为" prop="permissionAction">
+              <!-- <el-input
+                v-model="form.permissionAction"
+                placeholder="请输入权限行为"
+              /> -->
+              <el-select
+                v-model="form.permissionAction"
+                placeholder="请选择权限行为"
+              >
+                <el-option label="新增" value="add"></el-option>
+                <el-option label="删除" value="delete"></el-option>
+                <el-option label="修改" value="update"></el-option>
+                <el-option label="查询" value="query"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -205,19 +219,24 @@
         </div>
       </template>
     </el-dialog>
-
   </div>
 </template>
-
-<script setup name="Env">
+  
+  <script setup name="Env">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listEnv, addEnv, getEnv, updateEnv, deleteEnv } from "@/api/test/env";
+import {
+  listPermission,
+  getPermission,
+  addPermission,
+  updatePermission,
+  deletePermission,
+} from "@/api/system/permission";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
-const envList = ref([]);
+const permissionList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -230,9 +249,9 @@ const dateRange = ref([]);
 // 列显隐信息
 const columns = ref([
   { key: 0, label: `id`, visible: true },
-  { key: 1, label: `环境名称`, visible: true },
-  { key: 2, label: `环境地址`, visible: true },
-  { key: 3, label: `备注`, visible: true },
+  { key: 1, label: `权限名称`, visible: true },
+  { key: 2, label: `权限模块`, visible: true },
+  { key: 3, label: `权限行为`, visible: true },
   { key: 4, label: `创建时间`, visible: true },
 ]);
 
@@ -241,35 +260,38 @@ const data = reactive({
   queryParams: {
     page: 1,
     limit: 10,
-    suiteTitle: undefined,
-    suiteNo: undefined,
+    permissionName: undefined,
+    permissionModule: undefined,
   },
   rules: {
-    envName: [
-      { required: true, message: "环境变量名称不能为空", trigger: "blur" },
+    permissionName: [
+      { required: true, message: "权限名称不能为空", trigger: "blur" },
       {
         min: 2,
         max: 30,
-        message: "环境变量名称长度必须介于 2 和 30 之间",
+        message: "权限名称长度必须介于 2 和 30 之间",
         trigger: "blur",
       },
     ],
-    envUrl: [
-      { required: true, message: "环境变量地址不能为空", trigger: "blur" },
+    permissionModule: [
+      { required: true, message: "权限模块不能为空", trigger: "blur" },
+    ],
+    permissionAction: [
+      { required: true, message: "权限行为不能为空", trigger: "blur" },
     ],
   },
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询环境列表 */
+/** 查询权限列表 */
 async function getList() {
   loading.value = true;
-  const res = await listEnv(
+  const res = await listPermission(
     proxy.addDateRange(queryParams.value, dateRange.value)
   );
   loading.value = false;
-  envList.value = res.result.data;
+  permissionList.value = res.result.data;
   total.value = res.result.total;
 }
 /** 搜索按钮操作 */
@@ -285,12 +307,11 @@ function resetQuery() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const envIds = row.id ? [row.id] : ids.value;
-  console.log(envIds);
+  const permissionIds = row.id ? [row.id] : ids.value;
   proxy.$modal
-    .confirm('是否确认删除编号为"' + envIds + '"的数据项？')
+    .confirm('是否确认删除编号为"' + permissionIds + '"的数据项？')
     .then(function () {
-      return deleteEnv(envIds);
+      return deletePermission(permissionIds);
     })
     .then(() => {
       getList();
@@ -321,11 +342,11 @@ function handleSelectionChange(selection) {
 function reset() {
   form.value = {
     id: undefined,
-    envName: undefined,
-    envUrl: undefined,
-    remark: undefined,
+    permissionName: undefined,
+    permissionModule: undefined,
+    permissionAction: undefined,
   };
-  proxy.resetForm("envRef");
+  proxy.resetForm("permRef");
 }
 /** 取消按钮 */
 function cancel() {
@@ -336,29 +357,29 @@ function cancel() {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加环境变量";
+  title.value = "添加权限";
 }
 /** 修改按钮操作 */
 async function handleUpdate(row) {
   reset();
-  const envId = row.id || ids.value;
-  const res = await getEnv(envId);
+  const permissionId = row.id || ids.value;
+  const res = await getPermission(permissionId);
   form.value = res.result;
   open.value = true;
-  title.value = "修改环境变量";
+  title.value = "修改权限";
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["envRef"].validate((valid) => {
+  proxy.$refs["permRef"].validate((valid) => {
     if (valid) {
       if (form.value.id != undefined) {
-        updateEnv(form.value.id, form.value).then((response) => {
+        updatePermission(form.value.id, form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addEnv(form.value).then((response) => {
+        addPermission(form.value).then((response) => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
@@ -368,6 +389,5 @@ function submitForm() {
   });
 }
 
-// getDeptTree();
 getList();
 </script>

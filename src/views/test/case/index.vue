@@ -117,6 +117,7 @@
               plain
               icon="Download"
               @click="handleExport"
+              disabled
               >导出</el-button
             >
           </el-col>
@@ -584,7 +585,6 @@
 <script setup name="Case">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-// import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, deptTreeSelect } from "@/api/system/user";
 import { listCase, addCase, getCase, deleteCase } from "@/api/test/case";
 
 const router = useRouter();
@@ -837,7 +837,7 @@ const handleFileSuccess = (response, file, fileList) => {
   proxy.$refs["uploadRef"].handleRemove(file);
   proxy.$alert(
     "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
-      response.msg +
+      response.message +
       "</div>",
     "导入结果",
     { dangerouslyUseHTMLString: true }

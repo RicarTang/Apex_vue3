@@ -303,7 +303,6 @@ import {
   getUser,
   updateUser,
   addUser,
-  deptTreeSelect,
 } from "@/api/system/user";
 import { listRole } from "@/api/system/role";
 
@@ -320,26 +319,8 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const deptName = ref("");
-const deptOptions = ref(undefined);
 const initPassword = ref(undefined);
-const postOptions = ref([]);
 const roleOptions = ref([]);
-/*** 用户导入参数 */
-const upload = reactive({
-  // 是否显示弹出层（用户导入）
-  open: false,
-  // 弹出层标题（用户导入）
-  title: "",
-  // 是否禁用上传
-  isUploading: false,
-  // 是否更新已经存在的用户数据
-  updateSupport: 0,
-  // 设置上传的请求头部
-  headers: { Authorization: "Bearer " + getToken() },
-  // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData",
-});
 // 列显隐信息
 const columns = ref([
   { key: 0, label: `用户编号`, visible: true },
@@ -383,11 +364,6 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 通过条件过滤节点  */
-const filterNode = (value, data) => {
-  if (!value) return true;
-  return data.label.indexOf(value) !== -1;
-};
 /** 查询用户列表 */
 async function getList() {
   loading.value = true;
@@ -487,41 +463,7 @@ function handleSelectionChange(selection) {
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
-// /** 导入按钮操作 */
-// function handleImport() {
-//   upload.title = "用户导入";
-//   upload.open = true;
-// }
-// /** 下载模板操作 */
-// function importTemplate() {
-//   proxy.download(
-//     "system/user/importTemplate",
-//     {},
-//     `user_template_${new Date().getTime()}.xlsx`
-//   );
-// }
-// /**文件上传中处理 */
-// const handleFileUploadProgress = (event, file, fileList) => {
-//   upload.isUploading = true;
-// };
-// /** 文件上传成功处理 */
-// const handleFileSuccess = (response, file, fileList) => {
-//   upload.open = false;
-//   upload.isUploading = false;
-//   proxy.$refs["uploadRef"].handleRemove(file);
-//   proxy.$alert(
-//     "<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" +
-//       response.msg +
-//       "</div>",
-//     "导入结果",
-//     { dangerouslyUseHTMLString: true }
-//   );
-//   getList();
-// };
-// /** 提交上传文件 */
-// function submitFileForm() {
-//   proxy.$refs["uploadRef"].submit();
-// }
+
 /** 重置操作表单 */
 function reset() {
   form.value = {
@@ -596,6 +538,5 @@ function submitForm() {
   });
 }
 
-// getDeptTree();
 getList();
 </script>

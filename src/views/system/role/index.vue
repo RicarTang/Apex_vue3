@@ -657,19 +657,19 @@ function dataScopeSelectChange(value) {
 /** 分配数据权限操作 */
 function handleDataScope(row) {
   reset();
-  const deptTreeSelect = getDeptTree(row.roleId);
-  getRole(row.roleId).then((response) => {
-    form.value = response.data;
+  // const deptTreeSelect = getDeptTree(row.roleId);
+  getRole(row.id).then((response) => {
+    form.value = response.result;
     openDataScope.value = true;
-    nextTick(() => {
-      deptTreeSelect.then((res) => {
-        nextTick(() => {
-          if (deptRef.value) {
-            deptRef.value.setCheckedKeys(res.checkedKeys);
-          }
-        });
-      });
-    });
+    // nextTick(() => {
+    //   deptTreeSelect.then((res) => {
+    //     nextTick(() => {
+    //       if (deptRef.value) {
+    //         deptRef.value.setCheckedKeys(res.checkedKeys);
+    //       }
+    //     });
+    //   });
+    // });
     title.value = "分配数据权限";
   });
 }

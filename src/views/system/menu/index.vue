@@ -426,7 +426,7 @@ function getList() {
   listMenu(proxy.addDateRange(queryParams.value, dateRange.value)).then(
     (response) => {
       //  menuList.value = proxy.handleTree(response.data, "menuId");
-      menuList.value = response.result.data;
+      menuList.value = response.result.data
       menuOptions.value = response.result.data;
       loading.value = false;
     }
