@@ -35,5 +35,13 @@ export function deleteCase(caseIds) {
     data: data
   })
 }
+// 更新测试用例
+export function updateCase(caseIds, data) {
+  return request({
+    url: `/testcase/${caseIds}`,
+    method: 'put',
+    data: data
+  })
+}
 
 

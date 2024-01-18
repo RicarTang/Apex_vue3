@@ -585,7 +585,7 @@
 <script setup name="Case">
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listCase, addCase, getCase, deleteCase } from "@/api/test/case";
+import { listCase, addCase, getCase, deleteCase, updateCase } from "@/api/test/case";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
