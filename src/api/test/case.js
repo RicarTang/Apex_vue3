@@ -43,5 +43,16 @@ export function updateCase(caseIds, data) {
     data: data
   })
 }
+// 执行测试用例
+export function executeCase(caseId) {
+  const data = {
+    caseId
+  }
+  return request({
+    url: `/testcase/executeOne`,
+    method: 'post',
+    data: data
+  })
+}
 
 

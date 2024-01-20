@@ -24,8 +24,8 @@ export default {
     ElMessageBox.alert(content, "系统提示")
   },
   // 错误提示
-  alertError(content) {
-    ElMessageBox.alert(content, "系统提示", { type: 'error' })
+  alertError(content, title = "系统提示") {
+    ElMessageBox.alert(content, title, { type: 'error' })
   },
   // 成功提示
   alertSuccess(content) {

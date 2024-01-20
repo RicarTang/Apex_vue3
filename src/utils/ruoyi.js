@@ -7,7 +7,7 @@
 
 /**表格默认值格式化 */
 export function tableDefaultFormatter(row, column, cellValue) {
-  return cellValue !== null ? cellValue : "-";
+  return cellValue !== null && cellValue !== "" ? cellValue : "-";
 }
 
 // 日期格式化

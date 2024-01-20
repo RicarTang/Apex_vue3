@@ -89,9 +89,7 @@
           <el-table-column
             label="id"
             align="center"
-            :key="columns[4].key"
             prop="id"
-            v-if="columns[4].visible"
           />
           <el-table-column
             label="套件编号"
@@ -276,7 +274,7 @@ const columns = ref([
   { key: 1, label: `套件名称`, visible: true },
   { key: 2, label: `套件说明`, visible: true },
   { key: 3, label: `创建时间`, visible: true },
-  { key: 4, label: `id`, visible: true },
+  // { key: 4, label: `id`, visible: true },
 ]);
 
 const data = reactive({

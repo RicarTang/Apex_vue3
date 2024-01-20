@@ -121,6 +121,16 @@
               >导出</el-button
             >
           </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="success"
+              plain
+              icon="Position"
+              :disabled="single"
+              @click="handleExecute"
+              >执行测试</el-button
+            >
+          </el-col>
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"
@@ -134,6 +144,7 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="id" align="center" prop="id" />
           <el-table-column
             label="用例编号"
             align="center"
@@ -181,12 +192,13 @@
             v-if="columns[5].visible"
           >
             <template #default="scope">
-              <el-switch
+              <!-- <el-switch
                 v-model="scope.row.caseIsExecute"
                 :active-value="1"
                 :inactive-value="0"
                 @change="handleStatusChange(scope.row)"
-              ></el-switch>
+              ></el-switch> -->
+              <span>{{ scope.row.caseIsExecute === 1 ? "是" : "否" }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -301,34 +313,54 @@
           <el-table-column
             label="操作"
             align="center"
-            width="150"
+            fixed="right"
             class-name="small-padding fixed-width"
           >
             <template #default="scope">
-              <el-tooltip content="详情" placement="top">
-                <el-button
-                  link
-                  type="primary"
-                  icon="More"
-                  @click="handleCaseInfo(scope.row)"
-                ></el-button>
-              </el-tooltip>
-              <el-tooltip content="修改" placement="top">
-                <el-button
-                  link
-                  type="primary"
-                  icon="Edit"
-                  @click="handleUpdate(scope.row)"
-                ></el-button>
-              </el-tooltip>
-              <el-tooltip content="删除" placement="top">
-                <el-button
-                  link
-                  type="primary"
-                  icon="Delete"
-                  @click="handleDelete(scope.row)"
-                ></el-button>
-              </el-tooltip>
+              <el-row :gutter="8">
+                <el-col :span="6" :xs="12">
+                  <el-tooltip content="执行用例" placement="top">
+                    <el-button
+                      link
+                      type="primary"
+                      icon="Position"
+                      :loading="scope.row.loading"
+                      @click="handleExecute(scope.row)"
+                    >
+                    </el-button>
+                  </el-tooltip>
+                </el-col>
+                <el-col :span="6" :xs="12">
+                  <el-tooltip content="详情" placement="top">
+                    <el-button
+                      link
+                      type="primary"
+                      icon="More"
+                      @click="handleCaseInfo(scope.row)"
+                    ></el-button>
+                  </el-tooltip>
+                </el-col>
+                <el-col :span="6" :xs="12">
+                  <el-tooltip content="修改" placement="top">
+                    <el-button
+                      link
+                      type="primary"
+                      icon="Edit"
+                      @click="handleUpdate(scope.row)"
+                    ></el-button>
+                  </el-tooltip>
+                </el-col>
+                <el-col :span="6" :xs="12">
+                  <el-tooltip content="删除" placement="top">
+                    <el-button
+                      link
+                      type="primary"
+                      icon="Delete"
+                      @click="handleDelete(scope.row)"
+                    ></el-button>
+                  </el-tooltip>
+                </el-col>
+              </el-row>
             </template>
           </el-table-column>
         </el-table>
@@ -420,8 +452,9 @@
             <el-form-item label="请求方法" prop="apiMethod">
               <el-select v-model="form.apiMethod" placeholder="请选择">
                 <el-option label="GET" value="get"></el-option>
-                <el-option label="UPDATE" value="post"></el-option>
+                <el-option label="POST" value="post"></el-option>
                 <el-option label="PUT" value="put"></el-option>
+                <el-option label="UPDATE" value="update"></el-option>
                 <el-option label="DELETE" value="delete"></el-option>
                 <el-option label="OPTIONS" value="options"></el-option>
               </el-select>
@@ -579,13 +612,54 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 测试结果展示框 -->
+    <el-dialog :title="execute.title" v-model="execute.open" append-to-body>
+      <el-result :icon="execute.resultIcon" :sub-title="execute.resultSubTitle">
+        <template #extra>
+          <el-descriptions direction="vertical" :column="2" border>
+            <el-descriptions-item label="响应状态码">
+              <el-tag
+                :type="execute.resultStatusCode === 200 ? 'success' : 'danger'"
+                >{{ execute.resultStatusCode }}</el-tag
+              >
+            </el-descriptions-item>
+            <el-descriptions-item label="响应时间">
+              <i>{{
+                execute.resultResponseTime ? execute.resultResponseTime : "-"
+              }}</i>
+              ms
+            </el-descriptions-item>
+            <el-descriptions-item label="响应头" :span="2">
+              <vue-json-pretty :data="execute.resultHeaders" showLineNumber />
+            </el-descriptions-item>
+            <el-descriptions-item label="响应体" :span="2">
+              <vue-json-pretty :data="execute.resultContent" showLineNumber />
+            </el-descriptions-item>
+          </el-descriptions>
+        </template>
+        <template #title>
+          <p :style="execute.resultTitleStyle">{{ execute.resultTitle }}</p>
+        </template>
+      </el-result>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Case">
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listCase, addCase, getCase, deleteCase, updateCase } from "@/api/test/case";
+import {
+  listCase,
+  addCase,
+  getCase,
+  deleteCase,
+  updateCase,
+  executeCase,
+} from "@/api/test/case";
+import { reactive } from "vue";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -615,6 +689,29 @@ const upload = reactive({
   headers: { Authorization: "Bearer " + getToken() },
   // 上传的地址
   url: import.meta.env.VITE_APP_BASE_API + "/testcase/import",
+});
+/**执行用例参数 */
+const execute = reactive({
+  // 是否显示执行结果弹出框
+  open: false,
+  // 弹出层标题
+  title: "测试结果",
+  // 测试结果icon
+  resultIcon: "",
+  // 测试结果标题
+  resultTitle: "",
+  // 标题样式
+  resultTitleStyle: {},
+  // 测试结果子标题
+  resultSubTitle: "",
+  // 测试结果响应状态码
+  resultStatusCode: 200,
+  // 响应时间
+  resultResponseTime: 0,
+  // 测试结果响应头
+  resultHeaders: {},
+  // 测试结果响应体
+  resultContent: {},
 });
 // 列显隐信息
 const columns = ref([
@@ -705,21 +802,6 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data);
 
-// /** 通过条件过滤节点  */
-// const filterNode = (value, data) => {
-//   if (!value) return true;
-//   return data.label.indexOf(value) !== -1;
-// };
-// /** 根据名称筛选部门树 */
-// watch(deptName, (val) => {
-//   proxy.$refs["deptTreeRef"].filter(val);
-// });
-// /** 查询部门下拉树结构 */
-// function getDeptTree() {
-//   deptTreeSelect().then((response) => {
-//     deptOptions.value = response.data;
-//   });
-// }
 /** 查询用例列表 */
 async function getList() {
   loading.value = true;
@@ -727,14 +809,11 @@ async function getList() {
     proxy.addDateRange(queryParams.value, dateRange.value)
   );
   loading.value = false;
-  caseList.value = res.result.data;
+  // 添加loading字段颗粒化row的loading
+  caseList.value = res.result.data.map((item) => ({ ...item, loading: false }));
+  console.log(caseList.value);
   total.value = res.result.total;
 }
-/** 节点单击事件 */
-// function handleNodeClick(data) {
-//   queryParams.value.deptId = data.id;
-//   handleQuery();
-// }
 /** 搜索按钮操作 */
 function handleQuery() {
   queryParams.value.page = 1;
@@ -761,6 +840,60 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess("删除成功");
     })
     .catch(() => {});
+}
+/**充值测试结果数据 */
+function resetTestResult() {
+  execute.resultTitle = undefined;
+  execute.resultSubTitle = undefined;
+  execute.resultStatusCode = undefined;
+  execute.resultResponseTime = undefined;
+  execute.resultHeaders = undefined;
+  execute.resultContent = undefined;
+}
+
+/** 执行测试按钮操作 */
+async function handleExecute(row) {
+  resetTestResult();
+  const caseIds = row.id || ids.value[0];
+  row.loading = true;
+  try {
+    // 测试通过
+    const res = await executeCase(caseIds);
+    console.log(res);
+    execute.resultTitleStyle = { color: "green", fontSize: "25px" };
+    execute.open = true;
+    execute.resultIcon = "success";
+    execute.resultTitle = "passed";
+    execute.resultStatusCode = res.result.code;
+    execute.resultResponseTime = res.result.time;
+    execute.resultHeaders = res.result.headers;
+    execute.resultContent = res.result.body;
+  } catch (error) {
+    // 测试失败
+    execute.resultTitleStyle = { color: "red", fontSize: "25px" };
+    console.log(error);
+    if (error.code === "ECONNABORTED") {
+      // 请求超时处理
+      console.log("请求超时");
+    } else {
+      // 其他错误处理
+      execute.open = true;
+      execute.resultIcon = "error";
+      execute.resultTitle = "failed";
+      execute.resultSubTitle = error.response.data.message;
+      if (error.response.status === 504) {
+      } else if (error.response.status === 417) {
+        execute.resultStatusCode = error.response.data.result.code;
+        execute.resultHeaders = error.response.data.result.headers;
+        execute.resultContent = error.response.data.result.body;
+        console.log(error);
+      } else {
+        proxy.$modal.alertError("测试失败，未知错误");
+      }
+    }
+  } finally {
+    row.loading = false;
+  }
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -916,3 +1049,16 @@ function submitForm() {
 // getDeptTree();
 getList();
 </script>
+<style lang="scss" scoped>
+.el-result {
+  padding-top: 0;
+  :deep(.el-result__extra) {
+    width: 100%;
+  }
+  :deep(.el-result__subtitle) {
+    p {
+      color: red;
+    }
+  }
+}
+</style>
