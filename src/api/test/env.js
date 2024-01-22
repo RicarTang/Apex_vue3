@@ -26,6 +26,24 @@ export function getEnv(envId) {
     method: 'get'
   })
 }
+// 获取当前设置的环境变量
+export function getCurrentEnv() {
+  return request({
+    url: `/testenv/getCurrentEnv`,
+    method: 'get'
+  })
+}
+// 设置当前的环境变量
+export function setCurrentEnv(envId) {
+  const data = {
+    envId
+  }
+  return request({
+    url: `/testenv/setCurrentEnv`,
+    method: 'post',
+    data: data
+  })
+}
 // 修改环境变量
 export function updateEnv(envId, data) {
   return request({

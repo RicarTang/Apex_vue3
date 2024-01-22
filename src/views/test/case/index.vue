@@ -81,12 +81,12 @@
         </el-form>
 
         <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button type="primary" plain icon="Plus" @click="handleAdd"
               >新增</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button
               type="success"
               plain
@@ -96,7 +96,7 @@
               >修改</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button
               type="danger"
               plain
@@ -106,12 +106,12 @@
               >删除</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button type="info" plain icon="Upload" @click="handleImport"
               >导入</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button
               type="warning"
               plain
@@ -121,7 +121,7 @@
               >导出</el-button
             >
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" :xs="8">
             <el-button
               type="success"
               plain
@@ -130,6 +130,29 @@
               @click="handleExecute"
               >执行测试</el-button
             >
+          </el-col>
+          <el-col :span="1.5" :offset="6" :xs="24">
+            <!-- <el-tooltip content="当前测试环境,点击更改" placement="top"> -->
+            <el-dropdown
+              type="primary"
+              trigger="click"
+              split-button
+              @command="handleChangeEnv"
+            >
+              {{ currentEnv.envUrl }}
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    v-for="item in currentEnv.envOptions"
+                    :key="item.id"
+                    :command="item.id"
+                    >{{ item.envUrl }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+
+            <!-- </el-tooltip> -->
           </el-col>
           <right-toolbar
             v-model:showSearch="showSearch"
@@ -621,7 +644,9 @@
             <el-descriptions-item label="响应状态码">
               <el-tag
                 :type="execute.resultStatusCode === 200 ? 'success' : 'danger'"
-                >{{ execute.resultStatusCode }}</el-tag
+                >{{
+                  execute.resultStatusCode ? execute.resultStatusCode : "-"
+                }}</el-tag
               >
             </el-descriptions-item>
             <el-descriptions-item label="响应时间">
@@ -659,6 +684,8 @@ import {
   updateCase,
   executeCase,
 } from "@/api/test/case";
+import { getCurrentEnv, setCurrentEnv, listEnv } from "@/api/test/env";
+
 import { reactive } from "vue";
 
 const router = useRouter();
@@ -690,6 +717,15 @@ const upload = reactive({
   // 上传的地址
   url: import.meta.env.VITE_APP_BASE_API + "/testcase/import",
 });
+
+/**当前环境显示 */
+const currentEnv = reactive({
+  // 环境变量地址
+  envUrl: "",
+  // env列表选项
+  envOptions: [],
+});
+
 /**执行用例参数 */
 const execute = reactive({
   // 是否显示执行结果弹出框
@@ -801,6 +837,18 @@ const data = reactive({
 });
 
 const { queryParams, form, rules } = toRefs(data);
+/**获取当前环境变量 */
+async function queryCurrentEnv() {
+  const env = await getCurrentEnv();
+  currentEnv.envUrl = env.result;
+}
+/**设置当前环境变量 */
+async function handleChangeEnv(command) {
+  const envId = command;
+  const res = await setCurrentEnv(envId);
+  proxy.$modal.msgSuccess("设置成功");
+  currentEnv.envUrl = res.result;
+}
 
 /** 查询用例列表 */
 async function getList() {
@@ -808,6 +856,11 @@ async function getList() {
   const res = await listCase(
     proxy.addDateRange(queryParams.value, dateRange.value)
   );
+  // 获取当前环境
+  await queryCurrentEnv();
+  // 获取env list
+  const envRes = await listEnv();
+  currentEnv.envOptions = envRes.result.data;
   loading.value = false;
   // 添加loading字段颗粒化row的loading
   caseList.value = res.result.data.map((item) => ({ ...item, loading: false }));
@@ -882,10 +935,12 @@ async function handleExecute(row) {
       execute.resultTitle = "failed";
       execute.resultSubTitle = error.response.data.message;
       if (error.response.status === 504) {
+        console.log("网关超时");
       } else if (error.response.status === 417) {
         execute.resultStatusCode = error.response.data.result.code;
         execute.resultHeaders = error.response.data.result.headers;
         execute.resultContent = error.response.data.result.body;
+        execute.resultResponseTime = error.response.data.result.time;
         console.log(error);
       } else {
         proxy.$modal.alertError("测试失败，未知错误");

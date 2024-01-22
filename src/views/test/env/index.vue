@@ -107,7 +107,16 @@
             prop="envUrl"
             v-if="columns[2].visible"
             :show-overflow-tooltip="false"
-          />
+          >
+            <template #default="scope">
+              <span>
+                <i class="current-env">{{ scope.row.envUrl }}</i>
+                <el-tag type="success" v-if="scope.row.envUrl === currentEnv">
+                  current
+                </el-tag>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column
             label="备注"
             align="center"
@@ -135,6 +144,14 @@
             class-name="small-padding fixed-width"
           >
             <template #default="scope">
+              <el-tooltip content="设置为当前环境变量" placement="top">
+                <el-button
+                  link
+                  type="primary"
+                  icon="Refresh"
+                  @click="handleChangeEnv(scope.row)"
+                ></el-button>
+              </el-tooltip>
               <el-tooltip content="修改" placement="top">
                 <el-button
                   link
@@ -165,7 +182,12 @@
     </el-row>
 
     <!-- 添加或修改环境变量对话框 -->
-    <el-dialog :title="title" v-model="open"  append-to-body :close-on-click-modal="false">
+    <el-dialog
+      :title="title"
+      v-model="open"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" :rules="rules" ref="envRef" label-width="80px">
         <el-row>
           <el-col :span="12" :xs="24">
@@ -205,19 +227,26 @@
         </div>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
 <script setup name="Env">
-import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
-import { listEnv, addEnv, getEnv, updateEnv, deleteEnv } from "@/api/test/env";
+import {
+  listEnv,
+  addEnv,
+  getEnv,
+  updateEnv,
+  deleteEnv,
+  getCurrentEnv,
+  setCurrentEnv,
+} from "@/api/test/env";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 const envList = ref([]);
+const currentEnv = ref("");
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -268,9 +297,23 @@ async function getList() {
   const res = await listEnv(
     proxy.addDateRange(queryParams.value, dateRange.value)
   );
+  await queryCurrentEnv();
+  console.log(currentEnv.value);
   loading.value = false;
   envList.value = res.result.data;
   total.value = res.result.total;
+}
+/**获取当前环境变量 */
+async function queryCurrentEnv() {
+  const env = await getCurrentEnv();
+  currentEnv.value = env.result;
+}
+/**设置当前环境变量 */
+async function handleChangeEnv(row) {
+  const envId = row.id ? row.id : ids.value[0];
+  const res = await setCurrentEnv(envId);
+  proxy.$modal.msgSuccess("设置成功");
+  currentEnv.value = res.result;
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -371,3 +414,9 @@ function submitForm() {
 // getDeptTree();
 getList();
 </script>
+<style lang="scss">
+.current-env {
+  margin-right: 2px;
+  font-style: normal;
+}
+</style>
