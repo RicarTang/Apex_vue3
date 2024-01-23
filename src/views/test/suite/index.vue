@@ -72,6 +72,16 @@
               >删除</el-button
             >
           </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="success"
+              plain
+              icon="Position"
+              :disabled="multiple"
+              @click="handleExecuteSuite"
+              >执行套件测试</el-button
+            >
+          </el-col>
 
           <right-toolbar
             v-model:showSearch="showSearch"
@@ -86,11 +96,7 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            label="id"
-            align="center"
-            prop="id"
-          />
+          <el-table-column label="id" align="center" prop="id" />
           <el-table-column
             label="套件编号"
             align="center"
@@ -139,7 +145,7 @@
                   link
                   type="primary"
                   icon="Position"
-                  @click="handleSuiteRun(scope.row)"
+                  @click="handleExecuteSuite(scope.row)"
                 ></el-button>
               </el-tooltip>
               <el-tooltip content="详情" placement="top">
@@ -243,7 +249,6 @@
 </template>
 
 <script setup name="Suite">
-import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
 import {
   listSuite,
@@ -251,6 +256,7 @@ import {
   deleteSuite,
   updateSuite,
   getSuite,
+  runSuite,
 } from "@/api/test/suite";
 import { listCase } from "@/api/test/case";
 
@@ -420,6 +426,16 @@ function submitForm() {
       }
     }
   });
+}
+/**运行套件测试 */
+async function handleExecuteSuite(row) {
+  const suiteId = row.id || ids.value[0];
+  try {
+    const res = await runSuite(suiteId);
+    proxy.$modal.msgSuccess("测试套件后台运行中");
+  } catch (error) {
+    proxy.$modal.msgError("测试套件执行失败");
+  }
 }
 
 getList();

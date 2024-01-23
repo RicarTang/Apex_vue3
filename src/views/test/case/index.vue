@@ -131,28 +131,26 @@
               >执行测试</el-button
             >
           </el-col>
-          <el-col :span="1.5" :offset="6" :xs="24">
-            <!-- <el-tooltip content="当前测试环境,点击更改" placement="top"> -->
-            <el-dropdown
-              type="primary"
-              trigger="click"
-              split-button
-              @command="handleChangeEnv"
-            >
-              {{ currentEnv.envUrl }}
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item
-                    v-for="item in currentEnv.envOptions"
-                    :key="item.id"
-                    :command="item.id"
-                    >{{ item.envUrl }}</el-dropdown-item
-                  >
-                </el-dropdown-menu>
+          <!-- 环境变量显示 -->
+          <el-col :span="1.5" :offset="1" :xs="24">
+            <Tag color="success" :bordered="false">
+              <Select
+                v-model:value="currentEnv.envUrl"
+                :options="currentEnv.envOptions"
+                placeholder="当前未设置环境变量"
+                notFoundContent="未添加任何环境变量"
+                :bordered="false"
+                :field-names="{
+                  label: 'envUrl',
+                  value: 'id',
+                }"
+                @change="handleChangeEnv"
+              >
+              </Select>
+              <template #icon>
+                <sync-outlined :spin="true" />
               </template>
-            </el-dropdown>
-
-            <!-- </el-tooltip> -->
+            </Tag>
           </el-col>
           <right-toolbar
             v-model:showSearch="showSearch"
@@ -673,6 +671,8 @@
 
 <script setup name="Case">
 import VueJsonPretty from "vue-json-pretty";
+import { Select, Tag } from "ant-design-vue";
+import { SyncOutlined } from "@ant-design/icons-vue";
 import "vue-json-pretty/lib/styles.css";
 import { getToken } from "@/utils/auth";
 import { tableDefaultFormatter } from "@/utils/ruoyi";
@@ -721,9 +721,9 @@ const upload = reactive({
 /**当前环境显示 */
 const currentEnv = reactive({
   // 环境变量地址
-  envUrl: "",
+  envUrl: undefined,
   // env列表选项
-  envOptions: [],
+  envOptions: undefined,
 });
 
 /**执行用例参数 */
@@ -733,21 +733,21 @@ const execute = reactive({
   // 弹出层标题
   title: "测试结果",
   // 测试结果icon
-  resultIcon: "",
+  resultIcon: undefined,
   // 测试结果标题
-  resultTitle: "",
+  resultTitle: undefined,
   // 标题样式
   resultTitleStyle: {},
   // 测试结果子标题
-  resultSubTitle: "",
+  resultSubTitle: undefined,
   // 测试结果响应状态码
-  resultStatusCode: 200,
+  resultStatusCode: undefined,
   // 响应时间
-  resultResponseTime: 0,
+  resultResponseTime: undefined,
   // 测试结果响应头
-  resultHeaders: {},
+  resultHeaders: undefined,
   // 测试结果响应体
-  resultContent: {},
+  resultContent: undefined,
 });
 // 列显隐信息
 const columns = ref([

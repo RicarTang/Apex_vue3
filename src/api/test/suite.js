@@ -29,7 +29,7 @@ export function deleteSuite(data) {
   })
 }
 // 修改套件
-export function updateSuite(suiteId,data) {
+export function updateSuite(suiteId, data) {
   return request({
     url: `/testsuite/${suiteId}`,
     method: 'put',
@@ -41,6 +41,14 @@ export function getSuite(suiteId) {
   return request({
     url: `/testsuite/${suiteId}`,
     method: 'get'
+  })
+}
+// 运行套件测试
+export function runSuite(suiteId) {
+  return request({
+    url: `/testsuite/run`,
+    method: 'post',
+    data: { suiteId }
   })
 }
 
