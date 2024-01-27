@@ -274,10 +274,6 @@
         </div>
       </template>
     </el-dialog>
-    <!-- sse 测试 -->
-    <el-dialog v-model="sseOpen" title="sse测试" @close="handleCloseSse">
-      <Steps :current="1" :items="sseMessages"> </Steps>
-    </el-dialog>
   </div>
 </template>
 
@@ -308,8 +304,7 @@ const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
 const caseOptions = ref([]);
-const sseMessages = ref([]);
-const sseOpen = ref(false);
+
 // 列显隐信息
 const columns = ref([
   { key: 0, label: `套件编号`, visible: true },
@@ -392,10 +387,6 @@ function handleSuiteInfo(row) {
   const suiteId = row.id;
   // router.push("/test/suite-info/" + suiteId);
   router.push({ name: "SuiteInfo", params: { suiteId: suiteId } });
-}
-/** 运行套件 */
-function handleSuiteRun(row) {
-  const suiteId = row.id;
 }
 /** 选择条数  */
 function handleSelectionChange(selection) {
@@ -480,35 +471,6 @@ function handleOpenReport(row) {
     import.meta.env.VITE_APP_BASE_API + `/report/${row.taskId}`,
     "_blank"
   );
-}
-
-let eventSource;
-/**sse测试 */
-function handleTestSse() {
-  sseOpen.value = true;
-  // 向SSE端点发起请求
-  eventSource = new EventSource(
-    `${import.meta.env.VITE_APP_BASE_API}/testsuite/runState`
-  );
-  // 监听SSE消息
-  eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    sseMessages.value.push(data);
-  };
-  eventSource.onopen = () => {
-    console.log("EventSource connected");
-  };
-
-  // 监听错误事件
-  eventSource.onerror = (error) => {
-    console.error("Error occurred:", error);
-    eventSource.close(); // 在出现错误时关闭连接
-  };
-}
-/**关闭sse dialog */
-function handleCloseSse() {
-  console.log("关闭sse连接");
-  eventSource.close();
 }
 
 getList();

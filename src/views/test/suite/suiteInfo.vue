@@ -2,8 +2,26 @@
   <div class="app-container">
     <el-form label-width="100px">
       <div class="operation">
-        <el-button type="primary" @click="submitForm()">提交</el-button>
-        <el-button @click="close()">返回</el-button>
+        <el-button
+          type="success"
+          round
+          plain
+          icon="Position"
+          @click="handleRunSuite"
+          >运行套件</el-button
+        >
+        <el-button
+          type="info"
+          color="#d35ebe"
+          round
+          plain
+          icon="Reading"
+          @click="handleOpenReport"
+          v-if="suite.isReport"
+          >查看allure报告</el-button
+        >
+        <el-button type="primary" round @click="submitForm">提交修改</el-button>
+        <el-button @click="close" round>返回</el-button>
       </div>
     </el-form>
     <h4 class="form-header h4">套件信息</h4>
@@ -79,11 +97,16 @@
       v-model:page="pageNum"
       v-model:limit="pageSize"
     />
+    <!-- 测试进度弹窗 -->
+    <el-dialog v-model="suite.sseOpen" title="测试详情" @close="handleCloseSse">
+      <Steps :current="1" :items="suite.sseMessages"> </Steps>
+    </el-dialog>
   </div>
 </template>
  
  <script setup name="SuiteInfo">
-import { getSuite } from "@/api/test/suite";
+import { getSuite, runSuite } from "@/api/test/suite";
+import { reactive } from "vue";
 
 const route = useRoute();
 const { proxy } = getCurrentInstance();
@@ -92,12 +115,23 @@ const loading = ref(true);
 const total = ref(0);
 const pageNum = ref(1);
 const pageSize = ref(10);
-const roleIds = ref([]);
 const testcases = ref([]);
+const suite = reactive({
+  // id
+  suiteId: undefined,
+  // 是否有报告
+  isReport: false,
+  // 报告的task id
+  taskId: undefined,
+  // 测试过程信息
+  sseMessages: [],
+  // 控制测试过程弹窗开关
+  sseOpen: false,
+});
 const form = ref({
-  nickName: undefined,
-  userName: undefined,
-  userId: undefined,
+  suiteNo: undefined,
+  suiteTitle: undefined,
+  remark: undefined,
 });
 
 /** 单击选中行数据 */
@@ -106,15 +140,15 @@ function clickRow(row) {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  roleIds.value = selection.map((item) => item.roleId);
+  roleIds.value = selection.map((item) => item.id);
 }
 /** 保存选中的数据编号 */
 function getRowKey(row) {
-  return row.roleId;
+  return row.id;
 }
 /** 关闭按钮 */
 function close() {
-  const obj = { path: "/system/user" };
+  const obj = { path: "/test/suite" };
   proxy.$tab.closeOpenPage(obj);
 }
 /** 提交按钮 */
@@ -126,13 +160,60 @@ function submitForm() {
     close();
   });
 }
+/**运行套件测试 */
+async function handleRunSuite() {
+  const res = await runSuite(suite.suiteId);
+  suite.taskId = res.result.task_id;
+  handleTestSse(res.result.task_id);
+}
+/**查看allure报告 */
+async function handleOpenReport() {
+  // 在新的浏览器标签中打开新的路由
+  window.open(
+    import.meta.env.VITE_APP_BASE_API + `/report/${suite.taskId}`,
+    "_blank"
+  );
+}
+
+let eventSource;
+/**sse测试 */
+function handleTestSse(task_id) {
+  suite.sseOpen = true;
+  // 向SSE端点发起请求
+  eventSource = new EventSource(
+    `${import.meta.env.VITE_APP_BASE_API}/testsuite/runState?task_id=${task_id}`
+  );
+  // 监听SSE消息
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    suite.sseMessages.push(data);
+  };
+  eventSource.onopen = () => {
+    console.log("EventSource connected");
+  };
+
+  // 监听错误事件
+  eventSource.onerror = (error) => {
+    console.error("Error occurred:", error);
+    eventSource.close(); // 在出现错误时关闭连接
+  };
+}
+/**关闭sse dialog */
+function handleCloseSse() {
+  console.log("关闭sse连接");
+  eventSource.close();
+}
 
 (() => {
-  const suiteId = route.params && route.params.suiteId;
-  if (suiteId) {
+  suite.suiteId = route.params && route.params.suiteId;
+  if (suite.suiteId) {
     loading.value = true;
-    getSuite(suiteId).then((response) => {
+    getSuite(suite.suiteId).then((response) => {
       form.value = response.result;
+      suite.taskId = response.result.taskId;
+      if (response.result.status !== 0) {
+        suite.isReport = true;
+      }
       testcases.value = response.result.testcases;
       total.value = testcases.value.length;
       //    nextTick(() => {
@@ -148,8 +229,8 @@ function submitForm() {
 })();
 </script>
 <style lang="scss" scoped>
-.operation{
-    text-align: right;
+.operation {
+  text-align: right;
 }
 </style>
  
