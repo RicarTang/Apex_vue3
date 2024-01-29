@@ -99,12 +99,14 @@
     />
     <!-- 测试进度弹窗 -->
     <el-dialog v-model="suite.sseOpen" title="测试详情" @close="handleCloseSse">
-      <Steps :current="1" :items="suite.sseMessages"> </Steps>
+      <!-- <Steps :current="1" :items="suite.sseMessages"> </Steps> -->
+      <Console :logs="suite.sseMessages"></Console>
     </el-dialog>
   </div>
 </template>
  
  <script setup name="SuiteInfo">
+import Console from "@/components/Console";
 import { getSuite, runSuite } from "@/api/test/suite";
 import { reactive } from "vue";
 
