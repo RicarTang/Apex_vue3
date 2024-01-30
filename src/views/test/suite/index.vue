@@ -288,7 +288,6 @@ import {
   runSuite,
 } from "@/api/test/suite";
 import { listCase } from "@/api/test/case";
-import { Steps } from "ant-design-vue";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();

@@ -98,14 +98,33 @@
       v-model:limit="pageSize"
     />
     <!-- 测试进度弹窗 -->
-    <el-dialog v-model="suite.sseOpen" title="测试详情" @close="handleCloseSse">
-      <!-- <Steps :current="1" :items="suite.sseMessages"> </Steps> -->
+    <el-dialog
+      v-model="suite.sseOpen"
+      title="测试详情"
+      @close="handleCloseSse"
+      :close-on-click-modal="false"
+    >
+      <!-- <Steps :current="testProcess.currentStep" :items="testProcess.setpItems">
+      </Steps> -->
+      <Result :title="testProcess.title" style="padding: 0px 0px;">
+        <template #icon>
+          <smile-outlined
+            v-if="testProcess.status === 'success'"
+          ></smile-outlined>
+          <loading-outlined
+            v-else-if="testProcess.status === 'process'"
+          ></loading-outlined>
+        </template>
+       
+      </Result>
       <Console :logs="suite.sseMessages"></Console>
     </el-dialog>
   </div>
 </template>
  
  <script setup name="SuiteInfo">
+import { Result } from "ant-design-vue";
+import { LoadingOutlined, SmileOutlined } from "@ant-design/icons-vue";
 import Console from "@/components/Console";
 import { getSuite, runSuite } from "@/api/test/suite";
 import { reactive } from "vue";
@@ -134,6 +153,13 @@ const form = ref({
   suiteNo: undefined,
   suiteTitle: undefined,
   remark: undefined,
+});
+// 测试过程
+const testProcess = reactive({
+  // result组件title
+  title: "测试运行中",
+  // result组件status
+  status: "process",
 });
 
 /** 单击选中行数据 */
@@ -189,6 +215,11 @@ function handleTestSse(task_id) {
   eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);
     suite.sseMessages.push(data);
+    if (data.message.status === 1) {
+      // 变更当前status,title
+      testProcess.title = "测试完成";
+      testProcess.status = "success";
+    }
   };
   eventSource.onopen = () => {
     console.log("EventSource connected");
@@ -204,6 +235,9 @@ function handleTestSse(task_id) {
 function handleCloseSse() {
   console.log("关闭sse连接");
   eventSource.close();
+  // 重置result状态
+  testProcess.title = "测试运行中";
+  testProcess.status = "process";
 }
 
 (() => {
