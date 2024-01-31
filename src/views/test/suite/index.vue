@@ -82,16 +82,6 @@
               >执行套件测试</el-button
             >
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="default"
-              plain
-              icon="Position"
-              @click="handleTestSse"
-              >测试sse</el-button
-            >
-          </el-col>
-
           <right-toolbar
             v-model:showSearch="showSearch"
             @queryTable="getList"

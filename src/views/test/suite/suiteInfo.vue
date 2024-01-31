@@ -20,7 +20,7 @@
           v-if="suite.isReport"
           >查看allure报告</el-button
         >
-        <el-button type="primary" round @click="submitForm">提交修改</el-button>
+        <el-button type="primary" round @click="submitForm" :disabled="isFormDirty">提交修改</el-button>
         <el-button @click="close" round>返回</el-button>
       </div>
     </el-form>
@@ -106,7 +106,7 @@
     >
       <!-- <Steps :current="testProcess.currentStep" :items="testProcess.setpItems">
       </Steps> -->
-      <Result :title="testProcess.title" style="padding: 0px 0px;">
+      <Result :title="testProcess.title" style="padding: 0px 0px">
         <template #icon>
           <smile-outlined
             v-if="testProcess.status === 'success'"
@@ -115,7 +115,6 @@
             v-else-if="testProcess.status === 'process'"
           ></loading-outlined>
         </template>
-       
       </Result>
       <Console :logs="suite.sseMessages"></Console>
     </el-dialog>
@@ -127,7 +126,7 @@ import { Result } from "ant-design-vue";
 import { LoadingOutlined, SmileOutlined } from "@ant-design/icons-vue";
 import Console from "@/components/Console";
 import { getSuite, runSuite } from "@/api/test/suite";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 
 const route = useRoute();
 const { proxy } = getCurrentInstance();
@@ -137,6 +136,7 @@ const total = ref(0);
 const pageNum = ref(1);
 const pageSize = ref(10);
 const testcases = ref([]);
+const suiteIds = ref([]);
 const suite = reactive({
   // id
   suiteId: undefined,
@@ -149,6 +149,7 @@ const suite = reactive({
   // 控制测试过程弹窗开关
   sseOpen: false,
 });
+const isFormDirty = ref(true);
 const form = ref({
   suiteNo: undefined,
   suiteTitle: undefined,
@@ -168,7 +169,7 @@ function clickRow(row) {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  roleIds.value = selection.map((item) => item.id);
+  suiteIds.value = selection.map((item) => item.id);
 }
 /** 保存选中的数据编号 */
 function getRowKey(row) {
@@ -182,8 +183,8 @@ function close() {
 /** 提交按钮 */
 function submitForm() {
   const userId = form.value.userId;
-  const rIds = roleIds.value.join(",");
-  updateAuthRole({ userId: userId, roleIds: rIds }).then((response) => {
+  const rIds = suiteIds.value.join(",");
+  updateAuthRole({ userId: userId, suiteIds: rIds }).then((response) => {
     proxy.$modal.msgSuccess("授权成功");
     close();
   });
@@ -240,29 +241,33 @@ function handleCloseSse() {
   testProcess.status = "process";
 }
 
-(() => {
+/**请求，初始化 */
+async function fetchData() {
   suite.suiteId = route.params && route.params.suiteId;
   if (suite.suiteId) {
     loading.value = true;
-    getSuite(suite.suiteId).then((response) => {
-      form.value = response.result;
-      suite.taskId = response.result.taskId;
-      if (response.result.status !== 0) {
-        suite.isReport = true;
-      }
-      testcases.value = response.result.testcases;
-      total.value = testcases.value.length;
-      //    nextTick(() => {
-      //      roles.value.forEach(row => {
-      //        if (row.flag) {
-      //          proxy.$refs["roleRef"].toggleRowSelection(row);
-      //        }
-      //      });
-      //    });
-      loading.value = false;
-    });
+    const response = await getSuite(suite.suiteId);
+    form.value = response.result;
+    suite.taskId = response.result.taskId;
+    if (response.result.status !== 0) {
+      suite.isReport = true;
+    }
+    testcases.value = response.result.testcases;
+    total.value = testcases.value.length;
+    loading.value = false;
   }
-})();
+}
+onMounted(async () => {
+  await fetchData();
+  /**初始化之后监听整个表单控制按钮状态 */
+  watch(
+    form,
+    (newValue, oldValue) => {
+      isFormDirty.value = false;
+    },
+    { deep: true }
+  );
+});
 </script>
 <style lang="scss" scoped>
 .operation {
