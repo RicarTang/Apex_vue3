@@ -1,6 +1,17 @@
 <template>
   <el-collapse v-model="collapseValue">
-    <el-collapse-item title="控制台" name="console" class="console-container">
+    <el-collapse-item name="console" class="console-container">
+      <template #title>
+        控制台
+        <el-button
+          type="primary"
+          text
+          round
+          style="margin-left: 20px"
+          @click.stop="cleanLogs"
+          >清除</el-button
+        >
+      </template>
       <div class="console-body" ref="consoleBodyRef">
         <p v-for="(log, index) in logs" :key="index" class="console-log">
           {{ log.message.message }}
@@ -24,7 +35,15 @@ const props = defineProps({
   },
 });
 
+const emits = defineEmits(["cleanLogs"]);
+
 const logs = computed(() => props.logs);
+
+// 清除log
+function cleanLogs() {
+  // emit传递给父组件
+  emits("cleanLogs", []);
+}
 
 // 滚动到底部
 function scrollToBottom() {

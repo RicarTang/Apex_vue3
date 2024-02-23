@@ -20,7 +20,13 @@
           v-if="suite.isReport"
           >查看allure报告</el-button
         >
-        <el-button type="primary" round @click="submitForm" :disabled="isFormDirty">提交修改</el-button>
+        <el-button
+          type="primary"
+          round
+          @click="submitForm"
+          :disabled="isFormDirty"
+          >提交修改</el-button
+        >
         <el-button @click="close" round>返回</el-button>
       </div>
     </el-form>
@@ -116,7 +122,7 @@
           ></loading-outlined>
         </template>
       </Result>
-      <Console :logs="suite.sseMessages"></Console>
+      <Console :logs="suite.sseMessages" @cleanLogs="cleanLogs"></Console>
     </el-dialog>
   </div>
 </template>
@@ -239,6 +245,11 @@ function handleCloseSse() {
   // 重置result状态
   testProcess.title = "测试运行中";
   testProcess.status = "process";
+}
+
+/**清除sse logs */
+function cleanLogs(val) {
+  suite.sseMessages = val;
 }
 
 /**请求，初始化 */
