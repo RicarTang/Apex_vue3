@@ -38,13 +38,10 @@ export function updateUser(userId, data) {
 
 // 删除用户
 export function delUser(userIds) {
-  const data = {
-    userIds
-  }
+  console.log(userIds);
   return request({
-    url: `/user/delete`,
+    url: `/user/${userIds}`,
     method: 'delete',
-    data: data
   })
 }
 

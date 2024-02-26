@@ -18,14 +18,10 @@ export function addSuite(data) {
   })
 }
 // 删除套件
-export function deleteSuite(data) {
-  const suiteIds = {
-    suiteIds: data
-  }
+export function deleteSuite(suiteIds) {
   return request({
-    url: '/testsuite/delete',
+    url: `/testsuite/${suiteIds}`,
     method: 'delete',
-    data: suiteIds
   })
 }
 // 修改套件

@@ -53,14 +53,10 @@ export function updateEnv(envId, data) {
   })
 }
 // 删除环境变量
-export function deleteEnv(data) {
-  const ids = {
-    envIds: data
-  }
+export function deleteEnv(envIds) {
   return request({
-    url: `/testenv/delete`,
+    url: `/testenv/${envIds}`,
     method: 'delete',
-    data: ids
   })
 }
 

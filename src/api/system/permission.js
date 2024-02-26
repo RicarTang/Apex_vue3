@@ -33,12 +33,8 @@ export function updatePermission(permissionId, data) {
 }
 // 删除权限
 export function deletePermission(permissionIds) {
-    const schema = {
-        permissionIds
-    }
     return request({
-        url: `/admin/permission/delete`,
+        url: `/admin/permission/${permissionIds}`,
         method: 'delete',
-        data: schema
     })
 }

@@ -26,13 +26,9 @@ export function getCase(caseId) {
 }
 // 删除测试用例
 export function deleteCase(caseIds) {
-  const data = {
-    caseIds
-  }
   return request({
-    url: `/testcase/delete`,
+    url: `/testcase/${caseIds}`,
     method: 'delete',
-    data: data
   })
 }
 // 更新测试用例
