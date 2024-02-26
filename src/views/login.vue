@@ -68,6 +68,8 @@
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from "@/store/modules/user";
+import { onMounted } from "vue";
+import { ElNotification } from 'element-plus'
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -97,6 +99,16 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(()=>{
+  ElNotification({
+    title: '欢迎登录',
+    message: h('i', { style: 'color: teal' }, '账号：admin,密码：123456'),
+    type: 'info',
+    offset: 100,
+    duration: 0,
+  })
+})
 
 function handleLogin() {
   proxy.$refs.loginRef.validate(async (valid) => {
