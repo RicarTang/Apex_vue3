@@ -127,12 +127,18 @@ service.interceptors.response.use(res => {
       }
     }
     let { message } = error;
+
     if (message == "Network Error") {
       message = "后端接口连接异常";
     } else if (message.includes("timeout")) {
       message = "系统接口请求超时";
     } else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substr(message.length - 3) + "异常";
+      if (error.response.data) {
+        message = error.response.data.message; // toast接口返回message
+      } else {
+        message = "系统接口" + message.substr(message.length - 3) + "异常"; // 接口没有返回toast默认message
+      }
+
     }
     ElMessage({ message: message, type: 'error', duration: 5 * 1000 })
     return Promise.reject(error)
