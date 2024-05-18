@@ -869,7 +869,7 @@ function handleDelete(row) {
     })
     .catch(() => {});
 }
-/**充值测试结果数据 */
+/**重置测试结果数据 */
 function resetTestResult() {
   execute.resultTitle = undefined;
   execute.resultSubTitle = undefined;

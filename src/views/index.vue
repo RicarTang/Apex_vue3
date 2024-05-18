@@ -18,15 +18,11 @@
         <el-col :xs="24" :sm="24" :md="12" :lg="8">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-statistic :value="15">
+              <el-statistic :value="homeData.project">
                 <template #title>
                   <div style="display: inline-flex; align-items: center">
                     参与项目
-                    <el-tooltip
-                      effect="dark"
-                      content="参与编写用例项目"
-                      placement="top"
-                    >
+                    <el-tooltip effect="dark" content="参与编写用例项目" placement="top">
                       <el-icon style="margin-left: 4px" :size="12">
                         <Warning />
                       </el-icon>
@@ -36,15 +32,11 @@
               </el-statistic>
             </el-col>
             <el-col :span="8">
-              <el-statistic :value="98500">
+              <el-statistic :value="homeData.caseNum">
                 <template #title>
                   <div style="display: inline-flex; align-items: center">
                     用例数量
-                    <el-tooltip
-                      effect="dark"
-                      content="编写用例数量"
-                      placement="top"
-                    >
+                    <el-tooltip effect="dark" content="编写用例数量" placement="top">
                       <el-icon style="margin-left: 4px" :size="12">
                         <Warning />
                       </el-icon>
@@ -54,15 +46,11 @@
               </el-statistic>
             </el-col>
             <el-col :span="8">
-              <el-statistic :value="8">
+              <el-statistic :value="homeData.scheduledTask">
                 <template #title>
                   <div style="display: inline-flex; align-items: center">
                     定时任务
-                    <el-tooltip
-                      effect="dark"
-                      content="总定时任务"
-                      placement="top"
-                    >
+                    <el-tooltip effect="dark" content="总定时任务" placement="top">
                       <el-icon style="margin-left: 4px" :size="12">
                         <Warning />
                       </el-icon>
@@ -85,31 +73,23 @@
             <template #header>
               <h3 style="vertical-align: middle">
                 <b>关注中的测试计划 (2个)</b>
-              </h3></template
-            >
+              </h3>
+            </template>
             <Card title="test">
               <el-row :gutter="18">
                 <el-col :span="8" :xs="24">
                   <Card hoverable>
                     <template #title>
-                      <h5 style="vertical-align: middle">
-                        最近一次测试情况
-                      </h5></template
-                    >
+                      <h5 style="vertical-align: middle">最近一次测试情况</h5>
+                    </template>
                     <template #extra>
-                      <el-tooltip
-                        effect="dark"
-                        content="最近一次测试情况"
-                        placement="top"
-                      >
-                        <el-icon><InfoFilled /></el-icon>
+                      <el-tooltip effect="dark" content="最近一次测试情况" placement="top">
+                        <el-icon>
+                          <InfoFilled />
+                        </el-icon>
                       </el-tooltip>
                     </template>
-                    <el-progress
-                      type="circle"
-                      :percentage="100"
-                      status="success"
-                    >
+                    <el-progress type="circle" :percentage="100" status="success">
                       <el-button type="success" circle>
                         <template #icon>
                           <Check />
@@ -121,22 +101,16 @@
                 <el-col :span="8" :xs="24">
                   <Card hoverable>
                     <template #title>
-                      <h5 style="vertical-align: middle">时间</h5></template
-                    >
+                      <h5 style="vertical-align: middle">时间</h5>
+                    </template>
                     <template #extra>
-                      <el-tooltip
-                        effect="dark"
-                        content="最近一次执行通过率"
-                        placement="top"
-                      >
-                        <el-icon><InfoFilled /></el-icon>
+                      <el-tooltip effect="dark" content="最近一次执行通过率" placement="top">
+                        <el-icon>
+                          <InfoFilled />
+                        </el-icon>
                       </el-tooltip>
                     </template>
-                    <el-progress
-                      type="circle"
-                      :percentage="100"
-                      status="success"
-                    >
+                    <el-progress type="circle" :percentage="100" status="success">
                       <el-button type="success" circle>
                         <template #icon>
                           <Check />
@@ -148,44 +122,35 @@
                 <el-col :span="8" :xs="24">
                   <Card hoverable style="height: 100%">
                     <template #title>
-                      <h5 style="vertical-align: middle">
-                        近七次通过率(%)
-                      </h5></template
-                    >
+                      <h5 style="vertical-align: middle">近七次通过率(%)</h5>
+                    </template>
                     <template #extra>
-                      <el-tooltip
-                        effect="dark"
-                        content="最近7次通过率"
-                        placement="top"
-                      >
-                        <el-icon><InfoFilled /></el-icon>
+                      <el-tooltip effect="dark" content="最近7次通过率" placement="top">
+                        <el-icon>
+                          <InfoFilled />
+                        </el-icon>
                       </el-tooltip>
                     </template>
-                    <div
-                      ref="recentSevenPassRateRef"
-                      style="height: 100%"
-                    ></div>
+                    <div ref="recentSevenPassRateRef" style="height: 100%"></div>
                   </Card>
                 </el-col>
               </el-row>
             </Card>
             <hr />
             <Card title="add">
-              <el-row> </el-row>
+              <el-row></el-row>
             </Card>
           </el-card>
         </el-col>
         <!-- 右侧用例统计 -->
         <el-col :xs="24" :sm="24" :md="8" :lg="6">
           <el-card>
-            <template #header
-              ><PieChart
-                style="width: 1em; height: 1em; vertical-align: middle"
-              />
+            <template #header>
+              <PieChart style="width: 1em; height: 1em; vertical-align: middle" />
               <span style="vertical-align: middle">
                 <b>最近7天编写测试用例数量</b>
-              </span></template
-            >
+              </span>
+            </template>
             <div class="el-table el-table--enable-row-hover el-table--medium">
               <div ref="caseTotalRef" style="height: 350px" />
             </div>
@@ -198,20 +163,38 @@
 
 <script setup name="Index">
 import * as echarts from "echarts";
-import { onMounted } from "vue";
+import { onMounted, reactive } from "vue";
 import useUserStore from "@/store/modules/user";
 import { Card } from "ant-design-vue";
+import { home } from "@/api/home";
 
 const userStore = useUserStore();
 
 const caseTotalRef = ref(null);
 const recentSevenPassRateRef = ref(null);
+const homeData = reactive({
+  // 参与项目
+  project: 0,
+  // 用例数量
+  caseNum: 0,
+  // 定时任务数量
+  scheduledTask: 0
+})
 
 onMounted(() => {
   // 组件挂在后执行渲染echarts图
   caseTotal();
   recentSevenPassRate();
+  getHomeData();
 });
+
+// 获取首页数据
+async function getHomeData(){
+  const data = await home();
+  homeData.project = data.result.project;
+  homeData.caseNum = data.result.caseNum;
+  homeData.scheduledTask = data.result.scheduledTask;
+}
 
 // 近7次通过率图
 function recentSevenPassRate() {
@@ -219,18 +202,18 @@ function recentSevenPassRate() {
   recentSevenPassRateIntance.setOption({
     xAxis: {
       type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     },
     yAxis: {
-      type: "value",
+      type: "value"
     },
     series: [
       {
         data: [820, 932, 901, 934, 1290, 1330, 1320],
         type: "line",
-        smooth: true,
-      },
-    ],
+        smooth: true
+      }
+    ]
   });
   // 响应式变更实例大小
   window.addEventListener("resize", () => {
@@ -245,18 +228,18 @@ function caseTotal() {
     xAxis: {
       type: "category",
       boundaryGap: false,
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     },
     yAxis: {
-      type: "value",
+      type: "value"
     },
     series: [
       {
         data: [820, 932, 901, 934, 1290, 1330, 1320],
         type: "line",
-        areaStyle: {},
-      },
-    ],
+        areaStyle: {}
+      }
+    ]
   });
   // 响应式变更实例大小
   window.addEventListener("resize", () => {
