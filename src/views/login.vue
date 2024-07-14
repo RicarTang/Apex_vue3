@@ -1,12 +1,7 @@
 <template>
   <div class="login">
-    <el-form
-      ref="loginRef"
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-    >
-      <h3 class="title">api测试平台</h3>
+    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
+      <h3 class="title">{{title}}</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -15,9 +10,9 @@
           auto-complete="off"
           placeholder="账号"
         >
-          <template #prefix
-            ><svg-icon icon-class="user" class="el-input__icon input-icon"
-          /></template>
+          <template #prefix>
+            <svg-icon icon-class="user" class="el-input__icon input-icon" />
+          </template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -29,16 +24,12 @@
           placeholder="密码"
           @keyup.enter="handleLogin"
         >
-          <template #prefix
-            ><svg-icon icon-class="password" class="el-input__icon input-icon"
-          /></template>
+          <template #prefix>
+            <svg-icon icon-class="password" class="el-input__icon input-icon" />
+          </template>
         </el-input>
       </el-form-item>
-      <el-checkbox
-        v-model="loginForm.rememberMe"
-        style="margin: 0px 0px 25px 0px"
-        >记住密码</el-checkbox
-      >
+      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0px 0px 25px 0px">记住密码</el-checkbox>
       <el-form-item style="width: 100%">
         <el-button
           :loading="loading"
@@ -51,9 +42,7 @@
           <span v-else>登 录 中...</span>
         </el-button>
         <div style="float: right" v-if="register">
-          <router-link class="link-type" :to="'/register'"
-            >立即注册</router-link
-          >
+          <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -69,22 +58,23 @@ import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from "@/store/modules/user";
 import { onMounted } from "vue";
-import { ElNotification } from 'element-plus'
+import { ElNotification } from "element-plus";
 
 const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
+const title = import.meta.env.VITE_APP_TITLE;
 
 const loginForm = ref({
   username: "admin",
   password: "admin123",
-  rememberMe: false,
+  rememberMe: false
 });
 
 const loginRules = {
   username: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
-  password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
+  password: [{ required: true, trigger: "blur", message: "请输入您的密码" }]
 };
 
 const loading = ref(false);
@@ -94,31 +84,31 @@ const redirect = ref(undefined);
 
 watch(
   route,
-  (newRoute) => {
+  newRoute => {
     redirect.value = newRoute.query && newRoute.query.redirect;
   },
   { immediate: true }
 );
 
-onMounted(()=>{
+onMounted(() => {
   ElNotification({
-    title: '欢迎登录',
-    message: h('i', { style: 'color: teal' }, '账号：admin,密码：123456'),
-    type: 'info',
+    title: "欢迎登录",
+    message: h("i", { style: "color: teal" }, "账号：admin,密码：123456"),
+    type: "info",
     offset: 100,
-    duration: 0,
-  })
-})
+    duration: 0
+  });
+});
 
 function handleLogin() {
-  proxy.$refs.loginRef.validate(async (valid) => {
+  proxy.$refs.loginRef.validate(async valid => {
     if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
         Cookies.set("username", loginForm.value.username, { expires: 30 });
         Cookies.set("password", encrypt(loginForm.value.password), {
-          expires: 30,
+          expires: 30
         });
         Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 });
       } else {
@@ -155,7 +145,7 @@ function getCookie() {
     username: username === undefined ? loginForm.value.username : username,
     password:
       password === undefined ? loginForm.value.password : decrypt(password),
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
   };
 }
 

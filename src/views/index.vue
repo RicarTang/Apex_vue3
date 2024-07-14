@@ -137,8 +137,26 @@
               </el-row>
             </Card>
             <hr />
-            <Card title="add">
+            <!-- <Card title="add">
               <el-row></el-row>
+            </Card>-->
+            <Card title="代码仓库地址">
+              <el-row>
+                <el-col>
+                  <github-outlined />前端github：
+                  <el-link
+                    href="https://github.com/RicarTang/Apex_vue3"
+                    target="_blank"
+                  >https://github.com/RicarTang/Apex_vue3</el-link>
+                </el-col>
+                <el-col>
+                  <github-outlined />后端github：
+                  <el-link
+                    href="https://github.com/RicarTang/Apex"
+                    target="_blank"
+                  >https://github.com/RicarTang/Apex</el-link>
+                </el-col>
+              </el-row>
             </Card>
           </el-card>
         </el-col>
@@ -166,6 +184,7 @@ import * as echarts from "echarts";
 import { onMounted, reactive } from "vue";
 import useUserStore from "@/store/modules/user";
 import { Card } from "ant-design-vue";
+import { GithubOutlined } from "@ant-design/icons-vue";
 import { home } from "@/api/home";
 
 const userStore = useUserStore();
@@ -179,7 +198,7 @@ const homeData = reactive({
   caseNum: 0,
   // 定时任务数量
   scheduledTask: 0
-})
+});
 
 onMounted(() => {
   // 组件挂在后执行渲染echarts图
@@ -189,7 +208,7 @@ onMounted(() => {
 });
 
 // 获取首页数据
-async function getHomeData(){
+async function getHomeData() {
   const data = await home();
   homeData.project = data.result.project;
   homeData.caseNum = data.result.caseNum;
